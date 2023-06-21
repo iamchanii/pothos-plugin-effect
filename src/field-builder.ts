@@ -9,18 +9,31 @@ const fieldBuilderProto = RootFieldBuilder.prototype as PothosSchemaTypes.RootFi
   FieldKind
 >;
 
-fieldBuilderProto.effect = function effect({ resolve, ...options }) {
+fieldBuilderProto.effect = function effect({ provideServices, resolve, ...options }) {
   return this.field({
     ...options,
-    resolve: (async (...args: [parent: any, args: any, context: any, info: any]) => {
+    resolve: (async (...[parent, args, context, info]: [parent: any, args: any, context: any, info: any]) => {
+      let s = [];
+
+      if (provideServices) {
+        console.log(provideServices);
+
+        s = provideServices.map(([tag, fn]) => {
+          return Effect.provideService(tag, fn(context));
+        });
+      }
+
       const result = await pipe(
-        resolve(...args),
+        resolve(parent, args, context, info),
+        ...s as any,
         Effect.runPromiseExit,
       );
 
       if (result._tag === 'Success') {
         return result.value;
       }
+
+      console.log(result);
 
       throw new GraphQLError('Failure');
     }) as never,
