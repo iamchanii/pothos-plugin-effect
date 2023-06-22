@@ -17,7 +17,11 @@ interface Foo {
 
 const Foo = Context.Tag<Foo>();
 
-export const builder = new SchemaBuilder({
+export const builder = new SchemaBuilder<{
+  Context: {
+    randomValue: number;
+  };
+}>({
   plugins: [EffectPlugin],
 });
 
@@ -26,14 +30,16 @@ builder.queryType({
     ping: t.string({
       resolve: () => 'pong',
     }),
-    pingEffect: t.effect({
+    ping2: t.effect({
       resolve: () => Effect.succeed('pong'),
       type: 'String',
     }),
-    pingService: t.effect({
-      provideServices: [
-        [Random, () => Random.of({ next: () => Effect.succeed(Math.random()) })],
-      ],
+    ping3: t.effect({
+      effect: {
+        services: (context) => [
+          [Random, Random.of({ next: () => Effect.succeed(context.randomValue) })],
+        ],
+      },
       resolve: () =>
         pipe(
           Random,

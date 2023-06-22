@@ -6,29 +6,33 @@ it('genereates schema', () => {
   expect(printSchema(schema)).toMatchSnapshot();
 });
 
-it('Effect.succeed', async () => {
-  const document = parse(`{ pingEffect }`);
+it('should handle Effect resolver', async () => {
+  const document = parse(`{ ping2 }`);
   const result = await execute({ document, schema });
 
-  expect(result.data).toEqual({ pingEffect: 'pong' });
+  expect(result.data).toEqual({ ping2: 'pong' });
 });
 
-describe('provideServices', () => {
-  const document = parse(`{ pingService }`);
+it('should provide services', async () => {
+  const document = parse(`{ ping3 }`);
 
-  it('case 1', async () => {
-    const result = await execute({
-      contextValue: {},
-      document,
-      schema,
-    });
-
-    expect(result).toMatchInlineSnapshot(`
-{
-  "data": {
-    "pingService": "not lucky...",
-  },
-}
-`);
+  const result = await execute({
+    contextValue: { randomValue: 0.777 },
+    document,
+    schema,
   });
+
+  expect(result.data).toEqual({ 'ping3': 'lucky!' });
+});
+
+it('should provide services - 2', async () => {
+  const document = parse(`{ ping3 }`);
+
+  const result = await execute({
+    contextValue: { randomValue: 0.1 },
+    document,
+    schema,
+  });
+
+  expect(result.data).toEqual({ 'ping3': 'not lucky...' });
 });

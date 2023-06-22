@@ -3,7 +3,7 @@
 exports[`genereates schema 1`] = `
 "type Query {
   ping: String!
-  pingEffect: String!
-  pingService: String!
+  ping2: String!
+  ping3: String!
 }"
 `;

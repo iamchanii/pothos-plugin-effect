@@ -10,4 +10,4 @@ export default pluginName;
 export class PothosEffectPlugin<Types extends SchemaTypes> extends BasePlugin<Types> {
 }
 
-SchemaBuilder.registerPlugin(pluginName, BasePlugin);
+SchemaBuilder.registerPlugin(pluginName, PothosEffectPlugin);
