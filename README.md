@@ -24,7 +24,7 @@ new SchemaBuilder<{
     defaultLayer: (context) => Layer.succeed(Random, {}),
     defaultContext: (context) => Context.empty(),
     defaultServices: (context) => [
-      [Random, (_context) => Random.of({ next: () => Effect.succeed(0.5) })],
+      [Random, Random.of({ next: () => Effect.succeed(0.5) })],
     ],
   },
 });
@@ -37,7 +37,7 @@ t.effect({
   type: 'String',
   effect: {
     services: (_context) => [
-      [Random, (_context) => Random.of({ next: () => Effect.succeed(0.5) })],
+      [Random, Random.of({ next: () => Effect.succeed(0.5) })],
     ],
     context: (_context) => Context.empty({}),
     layer: (_context) => Layer.succeed({}),
