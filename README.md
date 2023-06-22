@@ -1,6 +1,6 @@
 # pothos-plugin-effect
 
-Status: WIP
+> Work in progress. Keep watching.
 
 ## Installation
 
@@ -21,11 +21,12 @@ new SchemaBuilder<{
 }>({
   plugins: [EffectPlugin],
   effectOptions: {
-    defaultLayer: (context) => Layer.succeed(Random, {}),
-    defaultContext: (context) => Context.empty(),
-    defaultServices: (context) => [
-      [Random, Random.of({ next: () => Effect.succeed(0.5) })],
-    ],
+    // To be done:
+    // defaultLayer: (context) => Layer.succeed(Random, {}),
+    // defaultContext: (context) => Context.empty(),
+    // defaultServices: (context) => [
+    //   [Random, Random.of({ next: () => Effect.succeed(0.5) })],
+    // ],
   },
 });
 ```
@@ -39,8 +40,9 @@ t.effect({
     services: (_context) => [
       [Random, Random.of({ next: () => Effect.succeed(0.5) })],
     ],
-    context: (_context) => Context.empty({}),
-    layer: (_context) => Layer.succeed({}),
+    // To be done:
+    // context: (_context) => Context.empty({}),
+    // layer: (_context) => Layer.succeed({}),
   },
   resolve: () =>
     pipe(
