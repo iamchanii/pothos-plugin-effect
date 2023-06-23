@@ -5,5 +5,6 @@ exports[`genereates schema 1`] = `
   ping: String!
   ping2: String!
   ping3: String!
+  ping4: String!
 }"
 `;

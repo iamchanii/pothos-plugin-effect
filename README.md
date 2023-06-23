@@ -40,8 +40,8 @@ t.effect({
     services: (_context) => [
       [Random, Random.of({ next: () => Effect.succeed(0.5) })],
     ],
+    context: (_context) => Context.empty({}),
     // To be done:
-    // context: (_context) => Context.empty({}),
     // layer: (_context) => Layer.succeed({}),
   },
   resolve: () =>

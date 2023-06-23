@@ -14,10 +14,10 @@ fieldBuilderProto.effect = function effect({ effect = {}, resolve, ...options })
   return this.field({
     ...options,
     resolve: (async (parent: any, args: any, context_: any, info: any) => {
-      // TODO: Build services, context, layer from this.builder.options.
+      // TODO: Build services, layer from this.builder.options.
       let context = Context.empty();
 
-      if ('services' in effect) {
+      if ('services' in effect && effect.services) {
         const serviceEntries = effect.services(context_);
 
         for (const [tag, value] of serviceEntries) {
@@ -25,8 +25,12 @@ fieldBuilderProto.effect = function effect({ effect = {}, resolve, ...options })
         }
       }
 
+      if ('context' in effect && effect.context) {
+        context = Context.merge(context, effect.context(context_));
+      }
+
       const program = pipe(
-        resolve(parent, args, context_, info),
+        resolve(parent, args, context_, info) as Effect.Effect<never, never, any>,
         Effect.provideContext(context),
       );
 

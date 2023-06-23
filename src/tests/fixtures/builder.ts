@@ -25,6 +25,8 @@ export const builder = new SchemaBuilder<{
   plugins: [EffectPlugin],
 });
 
+const fooContext = Context.add(Context.empty(), Foo, { bar: () => Effect.succeed('bar!') });
+
 builder.queryType({
   fields: t => ({
     ping: t.string({
@@ -45,6 +47,18 @@ builder.queryType({
           Random,
           Effect.flatMap(random => random.next()),
           Effect.flatMap(n => Effect.succeed(n > 0.5 ? 'lucky!' : 'not lucky...')),
+        ),
+      type: 'String',
+    }),
+    ping4: t.effect({
+      effect: {
+        context: () => fooContext,
+      },
+      resolve: () =>
+        pipe(
+          Foo,
+          Effect.flatMap(foo => foo.bar()),
+          Effect.map(bar => `bar from context: ${bar}`),
         ),
       type: 'String',
     }),

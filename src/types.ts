@@ -1,4 +1,4 @@
-import type * as Context from '@effect/data/Context';
+import type * as C from '@effect/data/Context';
 import type * as Effect from '@effect/io/Effect';
 import type {
   FieldKind,
@@ -15,13 +15,17 @@ export type DropFirst<T extends readonly unknown[]> = T extends [any?, ...infer 
 
 export type First<T extends readonly unknown[]> = T extends [infer U, ...unknown[]] ? U : never;
 
-export type Service = Context.Tag<any, any>;
+export type Service = C.Tag<any, any>;
 
 export type ServiceEntry = [Service, any];
 
-export type InferService<T> = T extends ServiceEntry ? T[0] extends Context.Tag<any, infer U> ? U
+export type InferService<T> = T extends ServiceEntry ? T[0] extends C.Tag<any, infer U> ? U
   : never
   : never;
+
+export type Context = C.Context<any>;
+
+export type InferContext<T> = T extends C.Context<infer U> ? U : never;
 
 export type InferRequirementsFromServiceEntries<T, Acc = never> = T extends readonly [infer U, ...infer V]
   ? InferRequirementsFromServiceEntries<V, Acc | InferService<U>>
@@ -30,9 +34,11 @@ export type InferRequirementsFromServiceEntries<T, Acc = never> = T extends read
 export type EffectFieldReturnType<
   Types extends SchemaTypes,
   Type extends TypeParam<Types>,
-  ServiceEntries extends readonly ServiceEntry[],
+  $ServiceEntries extends readonly ServiceEntry[],
+  $Context extends Context,
 > = Effect.Effect<
-  InferRequirementsFromServiceEntries<ServiceEntries>,
+  | InferContext<$Context>
+  | InferRequirementsFromServiceEntries<$ServiceEntries>,
   unknown,
   OutputShape<Types, Type>
 >;
@@ -45,7 +51,19 @@ export type EffectFieldOptions<
   Args extends InputFieldMap,
   ResolveReturnShape,
   // Effect Types:
-  ServiceEntries extends readonly ServiceEntry[],
+  $ServiceEntries extends readonly ServiceEntry[],
+  $Context extends Context,
+  $EffectFieldReturnType extends EffectFieldReturnType<
+    Types,
+    Type,
+    $ServiceEntries,
+    $Context
+  > = EffectFieldReturnType<
+    Types,
+    Type,
+    $ServiceEntries,
+    $Context
+  >,
   // Pothos Types:
   Kind extends FieldKind = FieldKind,
 > =
@@ -64,9 +82,9 @@ export type EffectFieldOptions<
   >
   & {
     effect?: {
-      services: (context: Types['Context']) => ServiceEntries;
+      context?: (context: Types['Context']) => $Context;
+      services?: (context: Types['Context']) => $ServiceEntries;
       // To be done:
-      // context: (context: Types['Context']) => unknown;
       // layer: (context: Types['Context']) => unknown;
     };
     resolve(
@@ -74,7 +92,7 @@ export type EffectFieldOptions<
       args: Args,
       context: Types['Context'],
       info: GraphQLResolveInfo,
-    ): EffectFieldReturnType<Types, Type, ServiceEntries>;
+    ): $EffectFieldReturnType;
   };
 
 export type EffectField<
@@ -86,9 +104,10 @@ export type EffectField<
   Type extends TypeParam<Types>,
   ResolveShape,
   // Effect Types:
-  ServiceEntries extends
+  $ServiceEntries extends
     | readonly []
     | readonly [ServiceEntry, ...ServiceEntry[]],
+  $Context extends Context,
 >(
   options: EffectFieldOptions<
     Types,
@@ -96,6 +115,7 @@ export type EffectField<
     Type,
     Args,
     ResolveShape,
-    ServiceEntries
+    $ServiceEntries,
+    $Context
   >,
 ) => FieldRef<unknown>;

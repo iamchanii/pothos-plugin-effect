@@ -36,3 +36,15 @@ it('should provide services - 2', async () => {
 
   expect(result.data).toEqual({ 'ping3': 'not lucky...' });
 });
+
+it('effect.context', async () => {
+  const document = parse(`{ ping4 }`);
+
+  const result = await execute({
+    contextValue: {},
+    document,
+    schema,
+  });
+
+  expect(result.data).toEqual({ 'ping4': 'bar from context: bar!' });
+});
