@@ -25,8 +25,8 @@ fieldBuilderProto.effect = function effect({ effect = {}, resolve, ...options })
         }
       }
 
-      if ('context' in effect && effect.context) {
-        context = Context.merge(context, effect.context(context_));
+      if ('context' in effect && effect.contexts) {
+        context = Context.merge(context, effect.contexts(context_));
       }
 
       const program = pipe(

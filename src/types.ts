@@ -11,6 +11,8 @@ import type {
 } from '@pothos/core';
 import type { GraphQLResolveInfo } from 'graphql';
 
+type Equals<X, Y> = (<T>() => T extends X ? 1 : 2) extends (<T>() => T extends Y ? 1 : 2) ? true : false;
+
 export type Service = C.Tag<any, any>;
 
 export type ServiceEntry = [Service, any];
@@ -23,25 +25,19 @@ export type InferService<T> = T extends ServiceEntry ? T[0] extends C.Tag<any, i
   : never
   : never;
 
+export type InferService2<T> = T;
+
 export type Context = C.Context<any>;
 
 export type InferContext<T> = T extends C.Context<infer U> ? U : never;
 
-export type InferRequirementsFromServiceEntries<T, Acc = never> = T extends readonly [infer U, ...infer V]
-  ? InferRequirementsFromServiceEntries<V, Acc | InferService<U>>
-  : Acc;
+export type InferRequirementsFromServiceEntries<T extends [...ServiceEntry[]]> = Equals<T, ServiceEntry[]> extends true
+  ? {}
+  : { [K in T[number] as K extends [C.Tag<infer U, any>, any] ? U : never]: true };
 
-export type EffectFieldReturnType<
-  Types extends SchemaTypes,
-  Type extends TypeParam<Types>,
-  $ServicesFn extends ServicesFn<Types>,
-  $Context extends Context,
-> = Effect.Effect<
-  | InferContext<$Context>
-  | undefined extends $ServicesFn ? never : InferRequirementsFromServiceEntries<ReturnType<$ServicesFn>>,
-  unknown,
-  OutputShape<Types, Type>
->;
+export type InferRequirementsFromContexts<T extends [...Context[]]> = Equals<T, Context[]> extends true ? {} : {
+  [K in T[number] as K extends C.Context<infer U> ? U : never]: true;
+};
 
 export type EffectFieldOptions<
   // Pothos Types:
@@ -51,19 +47,23 @@ export type EffectFieldOptions<
   Args extends InputFieldMap,
   ResolveReturnShape,
   // Effect Types:
-  $ServicesFn extends ServicesFn<Types>,
-  $Context extends Context,
-  $EffectFieldReturnType extends EffectFieldReturnType<
-    Types,
-    Type,
-    $ServicesFn,
-    $Context
-  > = EffectFieldReturnType<
-    Types,
-    Type,
-    $ServicesFn,
-    $Context
-  >,
+  ServicesShape extends [...ServiceEntry[]],
+  ContextsShape extends [...Context[]],
+  // $ServicesFn extends ServicesFn<Types>,
+  // $Context extends Context,
+  // $EffectFieldReturnType extends EffectFieldReturnType<
+  //   Types,
+  //   Type,
+  //   $ServicesFn,
+  //   $Context
+  // > = EffectFieldReturnType<
+  //   Types,
+  //   Type,
+  //   $ServicesFn,
+  //   $Context
+  // >,
+  EffectContext =
+    keyof (InferRequirementsFromContexts<ContextsShape> & InferRequirementsFromServiceEntries<ServicesShape>),
   // Pothos Types:
   Kind extends FieldKind = FieldKind,
 > =
@@ -82,8 +82,8 @@ export type EffectFieldOptions<
   >
   & {
     effect?: {
-      context?: (context: Types['Context']) => $Context;
-      services?: $ServicesFn;
+      contexts?: (context: Types['Context']) => ContextsShape;
+      services?: (context: Types['Context']) => ServicesShape;
       // To be done:
       // layer: (context: Types['Context']) => unknown;
     };
@@ -92,7 +92,7 @@ export type EffectFieldOptions<
       args: Args,
       context: Types['Context'],
       info: GraphQLResolveInfo,
-    ): $EffectFieldReturnType;
+    ): Effect.Effect<EffectContext, never, OutputShape<Types, Type>>;
   };
 
 export type EffectField<
@@ -104,16 +104,19 @@ export type EffectField<
   Type extends TypeParam<Types>,
   ResolveShape,
   // Effect Types:
-  $ServicesFn extends ServicesFn<Types>,
-  $Context extends Context,
->(
+  ServicesShape extends [...ServiceEntry[]],
+  ContextsShape extends [...Context[]],
+> // $ServicesFn extends ServicesFn<Types>,
+// $Context extends Context,
+(
   options: EffectFieldOptions<
     Types,
     ParentShape,
     Type,
     Args,
     ResolveShape,
-    $ServicesFn,
-    $Context
-  >,
+    ServicesShape,
+    ContextsShape
+  >, // $ServicesFn,
+  // $Context
 ) => FieldRef<unknown>;
