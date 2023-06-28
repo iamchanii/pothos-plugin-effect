@@ -2,7 +2,15 @@
 
 import type * as EffectContext from '@effect/data/Context';
 import type * as EffectLayer from '@effect/io/Layer';
-import type { FieldKind, FieldOptionsFromKind, InputFieldMap, OutputShape, SchemaTypes, TypeParam } from '@pothos/core';
+import type {
+  FieldKind,
+  FieldOptionsFromKind,
+  InputFieldMap,
+  InputShapeFromFields,
+  OutputShape,
+  SchemaTypes,
+  TypeParam,
+} from '@pothos/core';
 import type { GraphQLResolveInfo } from 'graphql';
 import type { NotAnyType } from 'type-plus';
 
@@ -92,7 +100,7 @@ export type FieldOptions<
     };
     resolve(
       parent: ParentShape,
-      args: Args,
+      args: InputShapeFromFields<Args>,
       context: Types['Context'],
       info: GraphQLResolveInfo,
     ): Effect.Effect<

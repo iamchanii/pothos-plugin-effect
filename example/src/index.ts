@@ -25,7 +25,7 @@ builder.queryType({
       resolve: (_parent, args) =>
         pipe(
           GitHub,
-          Effect.flatMap(github => github.getUser(String(args.username))),
+          Effect.flatMap(github => github.getUser(args.username)),
           Effect.map(user => user.followers),
           Effect.catchTag('NotFound', () => Effect.succeed(0)),
         ),
