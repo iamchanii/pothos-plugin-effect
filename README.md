@@ -37,12 +37,9 @@ new SchemaBuilder<{
 t.effect({
   type: 'String',
   effect: {
-    services: (_context) => [
+    services: [
       [Random, Random.of({ next: () => Effect.succeed(0.5) })],
     ],
-    context: (_context) => Context.empty({}),
-    // To be done:
-    // layer: (_context) => Layer.succeed({}),
   },
   resolve: () =>
     pipe(

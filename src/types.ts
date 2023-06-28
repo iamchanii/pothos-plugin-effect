@@ -1,39 +1,60 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
 import type * as EffectContext from '@effect/data/Context';
+import type * as EffectLayer from '@effect/io/Layer';
 import type { FieldKind, FieldOptionsFromKind, InputFieldMap, OutputShape, SchemaTypes, TypeParam } from '@pothos/core';
 import type { GraphQLResolveInfo } from 'graphql';
+import type { NotAnyType } from 'type-plus';
 
 import * as Effect from '@effect/io/Effect';
 
-type Equals<X, Y> = (<T>() => T extends X ? 1 : 2) extends (<T>() => T extends Y ? 1 : 2) ? true : false;
+// eslint-disable-next-line @typescript-eslint/no-namespace
+declare namespace Infer {
+  export type Tag<T> = T extends EffectContext.Tag<any, any> ? EffectContext.Tag.Identifier<T> : never;
+
+  export type Context<T> = T extends (...args: any[]) => EffectContext.Context<infer U> ? U
+    : T extends EffectContext.Context<infer U> ? U
+    : never;
+
+  export type Layer<T> = T extends (...args: any[]) => EffectLayer.Layer<any, any, infer U> ? U
+    : T extends EffectLayer.Layer<any, any, infer U> ? U
+    : never;
+}
 
 export type ServiceEntry = [
   tag: EffectContext.Tag<any, any>,
-  service: any,
+  service: ((context: any) => any) | any,
 ];
 
-export type Context = EffectContext.Context<any>;
+export type Context = ((context: any) => EffectContext.Context<any>) | EffectContext.Context<any>;
+
+export type Layer = ((context: any) => EffectLayer.Layer<any, any, any>) | EffectLayer.Layer<any, any, any>;
 
 type GetEffectRequirementsFromServiceEntries<
-  ServiceEntries extends [...ServiceEntry[]],
-> = Equals<ServiceEntries, ServiceEntry[]> extends true ? never
-  : keyof {
-    [K in ServiceEntries[number] as K extends [EffectContext.Tag<infer U, any>, any] ? U : never]: true;
-  };
+  ServiceEntries extends readonly [...ServiceEntry[]],
+> = NotAnyType<
+  keyof { [K in ServiceEntries[number][0] as Infer.Tag<K>]: true }
+>;
 
 type GetEffectRequirementsFromContexts<
-  Contexts extends [...Context[]],
-> = Equals<Contexts, Context[]> extends true ? never
-  : keyof {
-    [K in Contexts[number] as K extends EffectContext.Context<infer U> ? U : never]: true;
-  };
+  Contexts extends readonly [...Context[]],
+> = NotAnyType<
+  keyof { [K in Contexts[number] as Infer.Context<K>]: true }
+>;
+
+type GetEffectRequirementsFromLayers<
+  Layers extends readonly [...Layer[]],
+> = NotAnyType<
+  keyof { [K in Layers[number] as Infer.Layer<K>]: true }
+>;
 
 type GetEffectRequirements<
-  ServiceEntries extends [...ServiceEntry[]],
-  Contexts extends [...Context[]],
+  ServiceEntries extends readonly [...ServiceEntry[]],
+  Contexts extends readonly [...Context[]],
+  Layers extends readonly [...Layer[]],
 > =
   | GetEffectRequirementsFromContexts<Contexts>
+  | GetEffectRequirementsFromLayers<Layers>
   | GetEffectRequirementsFromServiceEntries<ServiceEntries>;
 
 export type FieldOptions<
@@ -44,9 +65,9 @@ export type FieldOptions<
   Args extends InputFieldMap,
   ResolveReturnShape,
   // Effect Types:
-  ServiceEntriesShape extends [...ServiceEntry[]],
-  ContextsShape extends [...Context[]],
-  EffectContext = GetEffectRequirements<ServiceEntriesShape, ContextsShape>,
+  ServiceEntriesShape extends readonly [...ServiceEntry[]],
+  ContextsShape extends readonly [...Context[]],
+  LayersShape extends readonly [...Layer[]],
   // Pothos Types:
   Kind extends FieldKind = FieldKind,
 > =
@@ -65,15 +86,18 @@ export type FieldOptions<
   >
   & {
     effect?: {
-      contexts?: (context: Types['Context']) => ContextsShape;
-      services?: (context: Types['Context']) => ServiceEntriesShape;
-      // To be done:
-      // layer: (context: Types['Context']) => unknown;
+      contexts?: ContextsShape;
+      layers?: LayersShape;
+      services?: ServiceEntriesShape;
     };
     resolve(
       parent: ParentShape,
       args: Args,
       context: Types['Context'],
       info: GraphQLResolveInfo,
-    ): Effect.Effect<EffectContext, never, OutputShape<Types, Type>>;
+    ): Effect.Effect<
+      GetEffectRequirements<ServiceEntriesShape, ContextsShape, LayersShape>,
+      never,
+      OutputShape<Types, Type>
+    >;
   };

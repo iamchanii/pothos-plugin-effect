@@ -21,8 +21,9 @@ declare global {
         Type extends TypeParam<Types>,
         ResolveShape,
         // Effect Types:
-        ServiceEntriesShape extends [...EffectPluginTypes.ServiceEntry[]],
-        ContextsShape extends [...EffectPluginTypes.Context[]],
+        ServiceEntriesShape extends readonly [...EffectPluginTypes.ServiceEntry[]],
+        ContextsShape extends readonly [...EffectPluginTypes.Context[]],
+        LayersShape extends readonly [...EffectPluginTypes.Layer[]],
       >(
         options: EffectPluginTypes.FieldOptions<
           // Pothos Types:
@@ -33,7 +34,8 @@ declare global {
           ResolveShape,
           // Effect Types:
           ServiceEntriesShape,
-          ContextsShape
+          ContextsShape,
+          LayersShape
         >,
       ) => FieldRef<unknown>;
     }

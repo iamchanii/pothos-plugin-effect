@@ -10,6 +10,7 @@ module.exports = {
   plugins: ['@typescript-eslint', 'dprint-integration'],
   root: true,
   rules: {
+    '@typescript-eslint/ban-ts-comment': 'off',
     'dprint-integration/dprint': [
       'error',
       restDprintOptions,
