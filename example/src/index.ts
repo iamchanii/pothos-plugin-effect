@@ -56,7 +56,7 @@ builder.queryType({
         username: t.arg.string({ required: true }),
       },
       effect: {
-        layers: [FetchLive, GitHubStub],
+        layers: [GitHubStub],
       },
       resolve: (_parent, args) =>
         pipe(
