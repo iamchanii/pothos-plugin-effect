@@ -2,7 +2,7 @@
 
 This is a demo showing minimal functionality.
 
-![](./example.mp4)
+https://github.com/iamchanii/pothos-plugin-effect/assets/26643843/6f8d3d39-9c0b-440b-96ed-33f8da6d4d46
 
 ## Setup
 
