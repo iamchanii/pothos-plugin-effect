@@ -1,13 +1,13 @@
-import type { FieldKind, SchemaTypes } from '@pothos/core';
+import type { FieldKind, FieldRef, InputFieldMap, SchemaTypes, TypeParam } from '@pothos/core';
 
-import type { PothosEffectPlugin } from './index.js';
-import type * as PothosEffectPluginTypes from './types.js';
+import type { EffectPlugin } from './index.js';
+import type * as EffectPluginTypes from './types.js';
 
 /* eslint-disable @typescript-eslint/no-namespace */
 declare global {
   export namespace PothosSchemaTypes {
     export interface Plugins<Types extends SchemaTypes> {
-      effect: PothosEffectPlugin<Types>;
+      effect: EffectPlugin<Types>;
     }
 
     export interface RootFieldBuilder<
@@ -15,7 +15,27 @@ declare global {
       ParentShape,
       Kind extends FieldKind = FieldKind,
     > {
-      effect: PothosEffectPluginTypes.EffectField<Types, ParentShape>;
+      effect: <
+        // Pothos Types:
+        Args extends InputFieldMap,
+        Type extends TypeParam<Types>,
+        ResolveShape,
+        // Effect Types:
+        ServiceEntriesShape extends [...EffectPluginTypes.ServiceEntry[]],
+        ContextsShape extends [...EffectPluginTypes.Context[]],
+      >(
+        options: EffectPluginTypes.FieldOptions<
+          // Pothos Types:
+          Types,
+          ParentShape,
+          Type,
+          Args,
+          ResolveShape,
+          // Effect Types:
+          ServiceEntriesShape,
+          ContextsShape
+        >,
+      ) => FieldRef<unknown>;
     }
   }
 }

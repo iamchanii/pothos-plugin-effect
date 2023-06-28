@@ -25,8 +25,6 @@ export const builder = new SchemaBuilder<{
   plugins: [EffectPlugin],
 });
 
-const fooContext = Context.add(Context.empty(), Foo, { bar: () => Effect.succeed('bar!') });
-
 builder.queryType({
   fields: t => ({
     ping: t.string({
@@ -42,16 +40,8 @@ builder.queryType({
           pipe(
             Context.empty(),
             Context.add(Foo, Foo.of({ bar: () => Effect.succeed('bar') })),
-            // Context.add(Random, Random.of({ next: () => Effect.succeed(1) })),
+            Context.add(Random, Random.of({ next: () => Effect.succeed(1) })),
           ),
-          // pipe(
-          //   Context.empty(),
-          //   // Context.add(Foo, Foo.of({ bar: () => Effect.succeed('bar') })),
-          //   Context.add(Random, Random.of({ next: () => Effect.succeed(1) })),
-          // ),
-        ],
-        services: () => [
-          [Random, Random.of({ next: () => Effect.succeed(0.5) })],
         ],
       },
       resolve: () =>
@@ -59,35 +49,8 @@ builder.queryType({
           Effect.all(Random, Foo),
           Effect.flatMap(([random]) => random.next()),
           Effect.map(String),
-          // Effect.succeed('pong'),
         ),
       type: 'String',
     }),
-    // ping3: t.effect({
-    //   effect: {
-    //     services: (context) => [
-    //       [Random, Random.of({ next: () => Effect.succeed(context.randomValue) })],
-    //     ],
-    //   },
-    //   resolve: () =>
-    //     pipe(
-    //       Random,
-    //       Effect.flatMap(random => random.next()),
-    //       Effect.flatMap(n => Effect.succeed(n > 0.5 ? 'lucky!' : 'not lucky...')),
-    //     ),
-    //   type: 'String',
-    // }),
-    // ping4: t.effect({
-    //   effect: {
-    //     context: () => fooContext,
-    //   },
-    //   resolve: () =>
-    //     pipe(
-    //       Foo,
-    //       Effect.flatMap(foo => foo.bar()),
-    //       Effect.map(bar => `bar from context: ${bar}`),
-    //     ),
-    //   type: 'String',
-    // }),
   }),
 });

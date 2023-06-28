@@ -7,7 +7,7 @@ const pluginName = 'effect';
 
 export default pluginName;
 
-export class PothosEffectPlugin<Types extends SchemaTypes> extends BasePlugin<Types> {
+export class EffectPlugin<Types extends SchemaTypes> extends BasePlugin<Types> {
 }
 
-SchemaBuilder.registerPlugin(pluginName, PothosEffectPlugin);
+SchemaBuilder.registerPlugin(pluginName, EffectPlugin);
