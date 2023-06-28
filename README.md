@@ -54,6 +54,8 @@ t.effect({
 });
 ```
 
+[**[Example]**](./example)
+
 ## Licenses
 
 MIT
