@@ -14,20 +14,8 @@ pnpm add pothos-plugin-effect @effect/io @effect/data
 ```ts
 import EffectPlugin from 'pothos-plugin-effect';
 
-new SchemaBuilder<{
-  EffectDefaultLayer: Layer.Layer<never, never, Random>;
-  EffectDefaultContext: Context.Context<Random>;
-  EffectDefaultServices: Random;
-}>({
+new SchemaBuilder({
   plugins: [EffectPlugin],
-  effectOptions: {
-    // To be done:
-    // defaultLayer: (context) => Layer.succeed(Random, {}),
-    // defaultContext: (context) => Context.empty(),
-    // defaultServices: (context) => [
-    //   [Random, Random.of({ next: () => Effect.succeed(0.5) })],
-    // ],
-  },
 });
 ```
 
@@ -38,7 +26,14 @@ t.effect({
   type: 'String',
   effect: {
     services: [
+      // [Tag, Service]
       [Random, Random.of({ next: () => Effect.succeed(0.5) })],
+      // or You can provide service using context.
+      [
+        Random,
+        (context: SchemaTypes['Context']) =>
+          Random.of({ next: () => Effect.succeed(context.randomValue) }),
+      ],
     ],
   },
   resolve: () =>
@@ -54,7 +49,7 @@ t.effect({
 });
 ```
 
-[**[Example]**](./example)
+See an [example](./example) in action.
 
 ## Licenses
 
