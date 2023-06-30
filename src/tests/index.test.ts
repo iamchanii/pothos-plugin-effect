@@ -6,7 +6,7 @@ import SchemaBuilder from '@pothos/core';
 import { execute, parse } from 'graphql';
 
 import EffectPlugin from '../index.ts';
-import { Dice } from './fixtures/services.ts';
+import { Dice, Notification } from './fixtures/services.ts';
 
 interface SchemaTypes {
   Context: {
@@ -15,6 +15,14 @@ interface SchemaTypes {
 }
 
 let builder: InstanceType<typeof SchemaBuilder<SchemaTypes>>;
+
+beforeEach(() => {
+  builder = new SchemaBuilder<SchemaTypes>({
+    plugins: [EffectPlugin],
+  });
+
+  builder.queryType({});
+});
 
 it('should reject Effect if requirements are not met', async () => {
   builder.queryField('error', t =>
@@ -38,14 +46,6 @@ it('should reject Effect if requirements are not met', async () => {
 
   expect(result.data).toBeNull();
   expect(result.errors).not.toBeNull();
-});
-
-beforeEach(() => {
-  builder = new SchemaBuilder<SchemaTypes>({
-    plugins: [EffectPlugin],
-  });
-
-  builder.queryType({});
 });
 
 describe('effect.services', () => {
@@ -212,5 +212,93 @@ describe('effect.layers', () => {
     });
 
     expect(result.data).toEqual({ roll: 42 });
+  });
+});
+
+describe('effectOptions.globalLayer', () => {
+  interface SchemaTypes2 {
+    Context: {
+      message: string;
+    };
+    EffectGlobalLayer: Layer.Layer<never, never, Notification>;
+  }
+
+  it('should resolve Effect with injected global layer', async () => {
+    const builder = new SchemaBuilder<SchemaTypes2>({
+      effectOptions: {
+        globalLayer: Layer.succeed(
+          Notification,
+          Notification.of({ notify: (message) => Effect.log(message) }),
+        ),
+      },
+      plugins: [EffectPlugin],
+    });
+
+    builder.queryType({});
+
+    const consoleSpy = jest.spyOn(console, 'log');
+
+    builder.queryField('roll', t =>
+      t.effect({
+        effect: {
+          layers: [],
+        },
+        resolve: () =>
+          pipe(
+            Notification,
+            Effect.tap(notification => notification.notify('Hello World!')),
+            Effect.map(() => 1),
+          ),
+        type: 'Int',
+      }));
+
+    const schema = builder.toSchema();
+    const document = parse(`{ roll }`);
+    const result = await execute({ document, schema });
+
+    expect(result.data).toEqual({ roll: 1 });
+    expect(consoleSpy.mock.lastCall?.at(0)).toContain('Hello World!');
+
+    consoleSpy.mockRestore();
+  });
+
+  it('should inject global layer with context and resolve effect', async () => {
+    const builder = new SchemaBuilder<SchemaTypes2>({
+      effectOptions: {
+        globalLayer: (context) =>
+          Layer.succeed(
+            Notification,
+            Notification.of({ notify: () => Effect.log(context.message) }),
+          ),
+      },
+      plugins: [EffectPlugin],
+    });
+
+    builder.queryType({});
+
+    const consoleSpy = jest.spyOn(console, 'log');
+
+    builder.queryField('roll', t =>
+      t.effect({
+        effect: {
+          layers: [],
+        },
+        resolve: () =>
+          pipe(
+            Notification,
+            Effect.tap(notification => notification.notify('Hello World!')),
+            Effect.map(() => 1),
+          ),
+        type: 'Int',
+      }));
+
+    const schema = builder.toSchema();
+    const document = parse(`{ roll }`);
+    const result = await execute({ contextValue: { message: 'Hola!' }, document, schema });
+
+    expect(result.data).toEqual({ roll: 1 });
+    expect(consoleSpy.mock.lastCall?.at(0)).toContain('Hola!');
+
+    consoleSpy.mockRestore();
   });
 });

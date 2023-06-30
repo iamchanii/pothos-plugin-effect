@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/ban-types */
+import type * as Layer from '@effect/io/Layer';
 import type { FieldKind, FieldRef, InputFieldMap, SchemaTypes, TypeParam } from '@pothos/core';
 
 import type { EffectPlugin } from './index.js';
@@ -8,6 +10,18 @@ declare global {
   export namespace PothosSchemaTypes {
     export interface Plugins<Types extends SchemaTypes> {
       effect: EffectPlugin<Types>;
+    }
+
+    export interface SchemaBuilderOptions<Types extends SchemaTypes> {
+      effectOptions?: EffectPluginTypes.PluginOptions<Types>;
+    }
+
+    export interface UserSchemaTypes {
+      EffectGlobalLayer: Layer.Layer<never, never, any>;
+    }
+
+    export interface ExtendDefaultTypes<PartialTypes extends Partial<UserSchemaTypes>> {
+      EffectGlobalLayer: PartialTypes['EffectGlobalLayer'] & {};
     }
 
     export interface RootFieldBuilder<

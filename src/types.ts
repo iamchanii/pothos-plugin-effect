@@ -3,6 +3,7 @@
 import type * as EffectContext from '@effect/data/Context';
 import type * as EffectLayer from '@effect/io/Layer';
 import type {
+  EmptyToOptional,
   FieldKind,
   FieldOptionsFromKind,
   InputFieldMap,
@@ -57,13 +58,15 @@ type GetEffectRequirementsFromLayers<
 >;
 
 type GetEffectRequirements<
+  Types extends SchemaTypes,
   ServiceEntries extends readonly [...ServiceEntry[]],
   Contexts extends readonly [...Context[]],
   Layers extends readonly [...Layer[]],
 > =
   | GetEffectRequirementsFromContexts<Contexts>
   | GetEffectRequirementsFromLayers<Layers>
-  | GetEffectRequirementsFromServiceEntries<ServiceEntries>;
+  | GetEffectRequirementsFromServiceEntries<ServiceEntries>
+  | Infer.Layer<Types['EffectGlobalLayer']>;
 
 export type FieldOptions<
   // Pothos Types:
@@ -104,8 +107,17 @@ export type FieldOptions<
       context: Types['Context'],
       info: GraphQLResolveInfo,
     ): Effect.Effect<
-      GetEffectRequirements<ServiceEntriesShape, ContextsShape, LayersShape>,
+      GetEffectRequirements<
+        Types,
+        ServiceEntriesShape,
+        ContextsShape,
+        LayersShape
+      >,
       never,
       OutputShape<Types, Type>
     >;
   };
+
+export type PluginOptions<Types extends SchemaTypes> = EmptyToOptional<{
+  globalLayer?: ((conext: Types['Context']) => Types['EffectGlobalLayer']) | Types['EffectGlobalLayer'];
+}>;

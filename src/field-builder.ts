@@ -17,7 +17,11 @@ fieldBuilderProto.effect = function effect({ effect = {}, resolve, ...options })
     resolve: (async (_parent: any, _args: any, _context: any, _info: GraphQLResolveInfo) => {
       // TODO: Build services, layer from this.builder.options.
       let context = Context.empty();
-      let layer = Layer.context<any>();
+      let layer = this.builder.options.effectOptions?.globalLayer
+        ? typeof this.builder.options.effectOptions?.globalLayer === 'function'
+          ? this.builder.options.effectOptions?.globalLayer(_context)
+          : this.builder.options.effectOptions?.globalLayer
+        : Layer.context<any>();
 
       if (effect.services) {
         for (const [tag, serviceOrServiceFunction] of effect.services) {
