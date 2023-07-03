@@ -66,6 +66,7 @@ type GetEffectRequirements<
   | GetEffectRequirementsFromContexts<Contexts>
   | GetEffectRequirementsFromLayers<Layers>
   | GetEffectRequirementsFromServiceEntries<ServiceEntries>
+  | Infer.Context<Types['EffectGlobalContext']>
   | Infer.Layer<Types['EffectGlobalLayer']>;
 
 export type FieldOptions<
@@ -119,5 +120,6 @@ export type FieldOptions<
   };
 
 export type PluginOptions<Types extends SchemaTypes> = EmptyToOptional<{
+  globalContext?: ((conext: Types['Context']) => Types['EffectGlobalContext']) | Types['EffectGlobalContext'];
   globalLayer?: ((conext: Types['Context']) => Types['EffectGlobalLayer']) | Types['EffectGlobalLayer'];
 }>;

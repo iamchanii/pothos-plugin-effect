@@ -1,4 +1,5 @@
 /* eslint-disable @typescript-eslint/ban-types */
+import type * as Context from '@effect/data/Context';
 import type * as Layer from '@effect/io/Layer';
 import type { FieldKind, FieldRef, InputFieldMap, SchemaTypes, TypeParam } from '@pothos/core';
 
@@ -17,10 +18,12 @@ declare global {
     }
 
     export interface UserSchemaTypes {
+      EffectGlobalContext: Context.Context<any>;
       EffectGlobalLayer: Layer.Layer<never, never, any>;
     }
 
     export interface ExtendDefaultTypes<PartialTypes extends Partial<UserSchemaTypes>> {
+      EffectGlobalContext: PartialTypes['EffectGlobalContext'] & {};
       EffectGlobalLayer: PartialTypes['EffectGlobalLayer'] & {};
     }
 
