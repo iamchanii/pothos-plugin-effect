@@ -390,3 +390,36 @@ describe('effectOptions.globalContext', () => {
     consoleSpy.mockRestore();
   });
 });
+
+describe('catch tags', () => {
+  it('should catch tag as schema type', async () => {
+    builder.queryField('foo', t =>
+      t.effect({
+        effect: {
+          catchTags: {
+            NotFound: true,
+          },
+        },
+        resolve: () => Effect.succeed('foo'),
+        type: 'String',
+      }));
+
+    const schema = builder.toSchema();
+    const document = parse(`{
+      foo {
+        ... on NotFound {
+          message
+        }
+        ... on QueryFooSuccess {
+          data
+        }
+      }
+    }`);
+    const result = await execute({
+      document,
+      schema,
+    });
+
+    expect(result.data).toEqual({ foo: { data: 'foo' } });
+  });
+});
