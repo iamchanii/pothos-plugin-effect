@@ -3,79 +3,108 @@ import { pipe } from '@effect/data/Function';
 import * as Effect from '@effect/io/Effect';
 import * as Layer from '@effect/io/Layer';
 import { FieldKind, Resolver, RootFieldBuilder, SchemaTypes } from '@pothos/core';
-import { GraphQLError, GraphQLResolveInfo } from 'graphql';
+import { GraphQLResolveInfo } from 'graphql';
 
 const fieldBuilderProto = RootFieldBuilder.prototype as PothosSchemaTypes.RootFieldBuilder<
   SchemaTypes,
   unknown,
   FieldKind
 >;
-
 fieldBuilderProto.effect = function effect({ effect = {}, resolve, ...options }) {
   return this.field({
     ...options,
     resolve: (async (_parent: any, _args: any, _context: any, _info: GraphQLResolveInfo) => {
-      // TODO: Build services, layer from this.builder.options.
-      let context = this.builder.options.effectOptions?.globalContext
-        ? typeof this.builder.options.effectOptions?.globalContext === 'function'
-          ? this.builder.options.effectOptions?.globalContext(_context)
-          : this.builder.options.effectOptions?.globalContext
-        : Context.empty();
+      const effectOptions = this.builder.options.effectOptions;
 
-      let layer = this.builder.options.effectOptions?.globalLayer
-        ? typeof this.builder.options.effectOptions?.globalLayer === 'function'
-          ? this.builder.options.effectOptions?.globalLayer(_context)
-          : this.builder.options.effectOptions?.globalLayer
-        : Layer.context<any>();
-
-      if (effect.services) {
-        for (const [tag, serviceOrServiceFunction] of effect.services) {
-          context = Context.add(
-            context,
-            tag,
-            typeof serviceOrServiceFunction === 'function'
-              ? serviceOrServiceFunction(_context)
-              : serviceOrServiceFunction,
+      return pipe(
+        Effect.Do(),
+        Effect.bind('context', () => {
+          return pipe(
+            getGlobalContextFromBuilderOptions(),
+            Effect.flatMap(mergeProvidedContexts),
+            Effect.flatMap(addProvidedServices),
           );
-        }
-      }
-
-      if (effect.contexts) {
-        for (const contextOrContextFunction of effect.contexts) {
-          context = Context.merge(
-            context,
-            typeof contextOrContextFunction === 'function'
-              ? contextOrContextFunction(_context)
-              : contextOrContextFunction,
+        }),
+        Effect.bind('layer', () => {
+          return pipe(
+            getGlobalLayerFromBuilderOptions(),
+            Effect.flatMap(provideLayers),
           );
-        }
-      }
-
-      if (effect.layers) {
-        for (const layerOrLayerFunction of effect.layers) {
-          const nextLayer = typeof layerOrLayerFunction === 'function'
-            ? layerOrLayerFunction(_context)
-            : layerOrLayerFunction;
-
-          layer = Layer.provide(layer, nextLayer) as Layer.Layer<any, never, any>;
-        }
-      }
-
-      const program = pipe(
-        resolve(_parent, _args, _context, _info) as Effect.Effect<never, never, any>,
-        Effect.provideLayer(layer as Layer.Layer<never, never, any>),
-        Effect.provideContext(context),
+        }),
+        Effect.flatMap(({ context, layer }) => {
+          return pipe(
+            resolve(_parent, _args, _context, _info) as Effect.Effect<never, never, any>,
+            Effect.provideLayer(layer),
+            Effect.provideContext(context),
+          );
+        }),
+        // TODO: Handle caught errors
+        Effect.runPromise,
       );
 
-      const result = await Effect.runPromiseExit(program);
+      function getGlobalContextFromBuilderOptions(): Effect.Effect<never, never, Context.Context<any>> {
+        return pipe(
+          Effect.gen(function*(_) {
+            if (typeof effectOptions?.globalContext === 'function') {
+              return effectOptions?.globalContext(_context);
+            }
 
-      if (result._tag === 'Success') {
-        return result.value;
+            if (typeof effectOptions?.globalContext !== 'undefined') {
+              return effectOptions?.globalContext;
+            }
+
+            return Context.empty() as Context.Context<any>;
+          }),
+        );
       }
 
-      throw new GraphQLError('Failure', {
-        originalError: result.cause._tag === 'Die' ? result.cause.defect as Error : null,
-      });
+      function mergeProvidedContexts(context: Context.Context<any>): Effect.Effect<never, never, Context.Context<any>> {
+        return Effect.reduce(effect.contexts ?? [], context, (acc, context) => {
+          return pipe(
+            acc,
+            Context.merge(typeof context === 'function' ? context(_context) : context),
+            Effect.succeed,
+          );
+        });
+      }
+
+      function addProvidedServices(context: Context.Context<any>): Effect.Effect<never, never, Context.Context<any>> {
+        return Effect.reduce(effect.services ?? [], context, (acc, [tag, service]) => {
+          return pipe(
+            acc,
+            Context.add(tag, typeof service === 'function' ? service(_context) : service),
+            Effect.succeed,
+          );
+        });
+      }
+
+      function getGlobalLayerFromBuilderOptions(): Effect.Effect<never, never, Layer.Layer<never, never, any>> {
+        return pipe(
+          Effect.gen(function*(_) {
+            if (typeof effectOptions?.globalLayer === 'function') {
+              return effectOptions?.globalLayer(_context);
+            }
+
+            if (typeof effectOptions?.globalLayer !== 'undefined') {
+              return effectOptions?.globalLayer;
+            }
+
+            return Layer.context<any>() as Layer.Layer<never, never, any>;
+          }),
+        );
+      }
+
+      function provideLayers(
+        layer: Layer.Layer<never, never, any>,
+      ): Effect.Effect<never, never, Layer.Layer<never, never, any>> {
+        return Effect.reduce(effect.layers ?? [], layer, (acc, layer) => {
+          return pipe(
+            acc,
+            Layer.provide((typeof layer === 'function' ? layer(_context) : layer) as Layer.Layer<never, never, any>),
+            Effect.succeed,
+          );
+        });
+      }
     }) as Resolver<any, any, any, any>,
   });
 };
