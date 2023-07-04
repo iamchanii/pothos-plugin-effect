@@ -38,7 +38,6 @@ fieldBuilderProto.effect = function effect({ effect = {}, resolve, ...options })
             Effect.provideContext(context),
           );
         }),
-        // TODO: Handle caught errors
         Effect.runPromise,
       );
 
