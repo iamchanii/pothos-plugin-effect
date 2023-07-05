@@ -1,6 +1,16 @@
-# Effect Integration Plugin
+# pothos-plugin-effect
+
+[![Version on NPM](https://img.shields.io/npm/v/pothos-plugin-effect)](https://www.npmjs.com/package/pothos-plugin-effect)
 
 The Effect integration plugin adds the `t.effect()` field method to implement resolvers using [Effect](https://effect.website/).
+
+## Features
+
+- Write resolver functions using Effect Ecosystems.
+- Support providing local layers, contexts and services.
+- Support providing global layer and context.
+- Automatic handle uncaught errors with Errors plugin.
+- ~~Support `Option<T>` for nullable field.~~ (In Progress)
 
 ## Examples
 
