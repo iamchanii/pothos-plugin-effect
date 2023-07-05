@@ -16,7 +16,7 @@ fieldBuilderProto.effect = function effect({ effect = {}, resolve, ...options })
     resolve: (async (_parent: any, _args: any, _context: any, _info: GraphQLResolveInfo) => {
       const effectOptions = this.builder.options.effectOptions;
 
-      return pipe(
+      const result = await pipe(
         Effect.Do(),
         Effect.bind('context', () => {
           return pipe(
@@ -38,8 +38,18 @@ fieldBuilderProto.effect = function effect({ effect = {}, resolve, ...options })
             Effect.provideContext(context),
           );
         }),
-        Effect.runPromise,
+        Effect.runPromiseExit,
       );
+
+      if (result._tag === 'Success') {
+        return result.value;
+      }
+
+      if (result.cause._tag === 'Annotated' && result.cause.cause._tag === 'Fail') {
+        throw result.cause.cause.error;
+      }
+
+      throw result.cause;
 
       function getGlobalContextFromBuilderOptions(): Effect.Effect<never, never, Context.Context<any>> {
         return pipe(

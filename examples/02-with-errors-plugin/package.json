@@ -1,11 +1,12 @@
 {
-  "name": "example",
+  "name": "examples-02-with-errors-plugin",
   "type": "module",
   "scripts": {
     "dev": "tsx watch src/index.ts"
   },
   "dependencies": {
     "@pothos/core": "^3.30.0",
+    "@pothos/plugin-errors": "^3.11.1",
     "graphql": "^16.6.0",
     "graphql-yoga": "^4.0.1",
     "pothos-plugin-effect": "workspace:^"

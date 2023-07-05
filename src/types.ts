@@ -9,6 +9,7 @@ import type {
   InputFieldMap,
   InputShapeFromFields,
   OutputShape,
+  PluginName,
   SchemaTypes,
   TypeParam,
 } from '@pothos/core';
@@ -69,6 +70,10 @@ type GetEffectRequirements<
   | Infer.Context<Types['EffectGlobalContext']>
   | Infer.Layer<Types['EffectGlobalLayer']>;
 
+type GetEffectErrors<Errors extends readonly [...any[]]> = 'errors' extends PluginName
+  ? keyof { [K in Errors[number] as InstanceType<K>]: true }
+  : never;
+
 export type FieldOptions<
   // Pothos Types:
   Types extends SchemaTypes,
@@ -80,6 +85,7 @@ export type FieldOptions<
   ServiceEntriesShape extends readonly [...ServiceEntry[]],
   ContextsShape extends readonly [...Context[]],
   LayersShape extends readonly [...Layer[]],
+  ErrorsShape extends readonly [...any[]],
   // Pothos Types:
   Kind extends FieldKind = FieldKind,
 > =
@@ -102,6 +108,7 @@ export type FieldOptions<
       layers?: LayersShape;
       services?: ServiceEntriesShape;
     };
+    errors?: 'errors' extends PluginName ? { types: ErrorsShape } : never;
     resolve(
       parent: ParentShape,
       args: InputShapeFromFields<Args>,
@@ -114,7 +121,7 @@ export type FieldOptions<
         ContextsShape,
         LayersShape
       >,
-      never,
+      GetEffectErrors<ErrorsShape>,
       OutputShape<Types, Type>
     >;
   };

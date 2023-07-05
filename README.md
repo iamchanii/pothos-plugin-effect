@@ -2,6 +2,11 @@
 
 The Effect integration plugin adds the `t.effect()` field method to implement resolvers using [Effect](https://effect.website/).
 
+## Examples
+
+- [01-basic](/examples/01-basic/)
+- [02-with-error-plugin](/examples/02-with-error-plugin/)
+
 ## Usage
 
 ### Install
@@ -256,11 +261,6 @@ builder.queryFields(t => ({
   }),
 }));
 ```
-
-## Examples
-
-- [01-basic](/examples/01-basic/)
-- [02-with-error-plugin](/examples/02-with-error-plugin/)
 
 ## Acknowledges
 

@@ -41,6 +41,7 @@ declare global {
         ServiceEntriesShape extends readonly [...EffectPluginTypes.ServiceEntry[]],
         ContextsShape extends readonly [...EffectPluginTypes.Context[]],
         LayersShape extends readonly [...EffectPluginTypes.Layer[]],
+        ErrorsShape extends readonly [...any[]],
       >(
         options: EffectPluginTypes.FieldOptions<
           // Pothos Types:
@@ -52,7 +53,8 @@ declare global {
           // Effect Types:
           ServiceEntriesShape,
           ContextsShape,
-          LayersShape
+          LayersShape,
+          ErrorsShape
         >,
       ) => FieldRef<unknown>;
     }

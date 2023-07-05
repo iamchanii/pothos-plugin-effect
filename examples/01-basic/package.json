@@ -1,0 +1,16 @@
+{
+  "name": "examples-01-basic",
+  "type": "module",
+  "scripts": {
+    "dev": "tsx watch src/index.ts"
+  },
+  "dependencies": {
+    "@pothos/core": "^3.30.0",
+    "graphql": "^16.6.0",
+    "graphql-yoga": "^4.0.1",
+    "pothos-plugin-effect": "workspace:^"
+  },
+  "devDependencies": {
+    "tsx": "^3.12.7"
+  }
+}
