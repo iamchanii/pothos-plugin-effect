@@ -76,10 +76,11 @@ type GetEffectErrors<Errors extends readonly [...any[]]> = 'errors' extends Plug
   ? NotAnyType<keyof { [K in Errors[number] as InstanceType<K>]: true }>
   : never;
 
-type GetOutputOptionShape<Type, Nullable> = Nullable extends { items: true; list: false } ? EffectOption.Option<Type>[]
+type GetEffectOutputShape<Type, Nullable> = Nullable extends true ? EffectOption.Option<Type>
+  : Nullable extends { items: true; list: false } ? EffectOption.Option<Type>[]
   : Nullable extends { items: false; list: true } ? EffectOption.Option<Type[]>
   : Nullable extends { items: true; list: true } ? EffectOption.Option<EffectOption.Option<Type>[]>
-  : never;
+  : Type;
 
 export type FieldOptions<
   // Pothos Types:
@@ -130,10 +131,10 @@ export type FieldOptions<
         LayersShape
       >,
       GetEffectErrors<ErrorsShape>,
-      [Type] extends [null | readonly (infer Item)[] | undefined]
-        ? GetOutputOptionShape<OutputShape<Types, Item>, Nullable>
-        : Nullable extends true ? EffectOption.Option<OutputShape<Types, Type>>
-        : OutputShape<Types, Type>
+      GetEffectOutputShape<
+        OutputShape<Types, [Type] extends [null | readonly (infer Item)[] | undefined] ? Item : Type>,
+        Nullable
+      >
     >;
   };
 
