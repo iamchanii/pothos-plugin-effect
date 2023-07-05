@@ -1,5 +1,6 @@
 import * as Context from '@effect/data/Context';
 import { pipe } from '@effect/data/Function';
+import * as Option from '@effect/data/Option';
 import * as Effect from '@effect/io/Effect';
 import * as Layer from '@effect/io/Layer';
 import SchemaBuilder from '@pothos/core';
@@ -388,5 +389,113 @@ describe('effectOptions.globalContext', () => {
     expect(consoleSpy.mock.lastCall?.at(0)).toContain('Hola!');
 
     consoleSpy.mockRestore();
+  });
+});
+
+describe('Option', () => {
+  it('should resolve Option<T> to T if Some', async () => {
+    builder.queryField('roll', t =>
+      t.effect({
+        nullable: true,
+        resolve: () => Effect.succeed(Option.some(6)),
+        type: 'Int',
+      }));
+
+    const schema = builder.toSchema();
+    const document = parse(`{ roll }`);
+    const result = await execute({ document, schema });
+
+    expect(result.data).toEqual({ roll: 6 });
+    expect(result.errors).toBeUndefined();
+  });
+
+  it('should resolve Option<T> to null if None', async () => {
+    builder.queryField('roll', t =>
+      t.effect({
+        nullable: true,
+        resolve: () => Effect.succeed(Option.none()),
+        type: 'Int',
+      }));
+
+    const schema = builder.toSchema();
+    const document = parse(`{ roll }`);
+    const result = await execute({ document, schema });
+
+    expect(result.data).toEqual({ roll: null });
+    expect(result.errors).toBeUndefined();
+  });
+
+  it('should resolve Option<T>[]', async () => {
+    builder.queryField('roll', t =>
+      t.effect({
+        nullable: { items: true, list: false },
+        resolve: () =>
+          Effect.succeed([
+            Option.some(1),
+            Option.some(2),
+            Option.none(),
+            Option.some(4),
+          ]),
+        type: ['Int'],
+      }));
+
+    const schema = builder.toSchema();
+    const document = parse(`{ roll }`);
+    const result = await execute({ document, schema });
+
+    expect(result.data).toEqual({ roll: [1, 2, null, 4] });
+    expect(result.errors).toBeUndefined();
+  });
+
+  it('should resolve Option<T[]>', async () => {
+    builder.queryField('roll', t =>
+      t.effect({
+        nullable: { items: false, list: true },
+        resolve: () => Effect.succeed(Option.some([1, 2, 3, 4])),
+        type: ['Int'],
+      }));
+
+    builder.queryField('roll2', t =>
+      t.effect({
+        nullable: { items: false, list: true },
+        resolve: () => Effect.succeed(Option.none()),
+        type: ['Int'],
+      }));
+
+    const schema = builder.toSchema();
+    const document = parse(`{ roll roll2 }`);
+    const result = await execute({ document, schema });
+
+    expect(result.data).toEqual({ roll: [1, 2, 3, 4], roll2: null });
+    expect(result.errors).toBeUndefined();
+  });
+
+  it('should resolve Option<Option<T>[]>', async () => {
+    builder.queryField('roll', t =>
+      t.effect({
+        nullable: { items: true, list: true },
+        resolve: () =>
+          Effect.succeed(Option.some([
+            Option.some(1),
+            Option.some(2),
+            Option.none(),
+            Option.some(4),
+          ])),
+        type: ['Int'],
+      }));
+
+    builder.queryField('roll2', t =>
+      t.effect({
+        nullable: { items: true, list: true },
+        resolve: () => Effect.succeed(Option.none()),
+        type: ['Int'],
+      }));
+
+    const schema = builder.toSchema();
+    const document = parse(`{ roll roll2 }`);
+    const result = await execute({ document, schema });
+
+    expect(result.data).toEqual({ roll: [1, 2, null, 4], roll2: null });
+    expect(result.errors).toBeUndefined();
   });
 });

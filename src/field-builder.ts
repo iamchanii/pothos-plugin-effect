@@ -1,6 +1,9 @@
 import * as Context from '@effect/data/Context';
 import { pipe } from '@effect/data/Function';
+import * as Option from '@effect/data/Option';
+import * as Cause from '@effect/io/Cause';
 import * as Effect from '@effect/io/Effect';
+import * as Exit from '@effect/io/Exit';
 import * as Layer from '@effect/io/Layer';
 import { FieldKind, Resolver, RootFieldBuilder, SchemaTypes } from '@pothos/core';
 import { GraphQLResolveInfo } from 'graphql';
@@ -41,15 +44,31 @@ fieldBuilderProto.effect = function effect({ effect = {}, resolve, ...options })
         Effect.runPromiseExit,
       );
 
-      if (result._tag === 'Success') {
-        return result.value;
+      if (Exit.isSuccess(result)) {
+        if (!options.nullable) {
+          return result.value;
+        }
+
+        if (Array.isArray(result.value)) {
+          return result.value.map(Option.match(() => null, (value) => value));
+        }
+
+        if (Option.isOption(result.value)) {
+          return Option.match(result.value, () => null, (value) => {
+            if (typeof options.nullable === 'object' && options.nullable.items && Array.isArray(value)) {
+              return value.map(Option.match(() => null, (value) => value));
+            }
+
+            return value;
+          });
+        }
       }
 
-      if (result.cause._tag === 'Annotated' && result.cause.cause._tag === 'Fail') {
+      if (Exit.isFailure(result) && Cause.isAnnotatedType(result.cause) && Cause.isFailType(result.cause.cause)) {
         throw result.cause.cause.error;
       }
 
-      throw result.cause;
+      throw result as never;
 
       function getGlobalContextFromBuilderOptions(): Effect.Effect<never, never, Context.Context<any>> {
         return pipe(

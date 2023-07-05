@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/ban-types */
 import type * as Context from '@effect/data/Context';
 import type * as Layer from '@effect/io/Layer';
-import type { FieldKind, FieldRef, InputFieldMap, SchemaTypes, TypeParam } from '@pothos/core';
+import type { FieldKind, FieldNullability, FieldRef, InputFieldMap, SchemaTypes, TypeParam } from '@pothos/core';
 
 import type { EffectPlugin } from './index.js';
 import type * as EffectPluginTypes from './types.js';
@@ -36,6 +36,7 @@ declare global {
         // Pothos Types:
         Args extends InputFieldMap,
         Type extends TypeParam<Types>,
+        Nullable extends FieldNullability<Type>,
         ResolveShape,
         // Effect Types:
         ServiceEntriesShape extends readonly [...EffectPluginTypes.ServiceEntry[]],
@@ -49,6 +50,7 @@ declare global {
           ParentShape,
           Type,
           Args,
+          Nullable,
           ResolveShape,
           // Effect Types:
           ServiceEntriesShape,

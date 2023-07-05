@@ -1,10 +1,12 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
 import type * as EffectContext from '@effect/data/Context';
+import type * as EffectOption from '@effect/data/Option';
 import type * as EffectLayer from '@effect/io/Layer';
 import type {
   EmptyToOptional,
   FieldKind,
+  FieldNullability,
   FieldOptionsFromKind,
   InputFieldMap,
   InputShapeFromFields,
@@ -74,12 +76,18 @@ type GetEffectErrors<Errors extends readonly [...any[]]> = 'errors' extends Plug
   ? NotAnyType<keyof { [K in Errors[number] as InstanceType<K>]: true }>
   : never;
 
+type GetOutputOptionShape<Type, Nullable> = Nullable extends { items: true; list: false } ? EffectOption.Option<Type>[]
+  : Nullable extends { items: false; list: true } ? EffectOption.Option<Type[]>
+  : Nullable extends { items: true; list: true } ? EffectOption.Option<EffectOption.Option<Type>[]>
+  : never;
+
 export type FieldOptions<
   // Pothos Types:
   Types extends SchemaTypes,
   ParentShape,
   Type extends TypeParam<Types>,
   Args extends InputFieldMap,
+  Nullable extends FieldNullability<Type>,
   ResolveReturnShape,
   // Effect Types:
   ServiceEntriesShape extends readonly [...ServiceEntry[]],
@@ -94,7 +102,7 @@ export type FieldOptions<
       Types,
       ParentShape,
       Type,
-      false,
+      Nullable,
       Args,
       Kind,
       ParentShape,
@@ -122,7 +130,10 @@ export type FieldOptions<
         LayersShape
       >,
       GetEffectErrors<ErrorsShape>,
-      OutputShape<Types, Type>
+      [Type] extends [null | readonly (infer Item)[] | undefined]
+        ? GetOutputOptionShape<OutputShape<Types, Item>, Nullable>
+        : Nullable extends true ? EffectOption.Option<OutputShape<Types, Type>>
+        : OutputShape<Types, Type>
     >;
   };
 

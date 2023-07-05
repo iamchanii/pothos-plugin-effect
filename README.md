@@ -10,7 +10,7 @@ The Effect integration plugin adds the `t.effect()` field method to implement re
 - Support providing local layers, contexts and services.
 - Support providing global layer and context.
 - Automatic handle uncaught errors with Errors plugin.
-- ~~Support `Option<T>` for nullable field.~~ (In Progress)
+- Support `Option<T>` for nullable field.
 
 ## Examples
 
