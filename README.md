@@ -5,7 +5,7 @@ The Effect integration plugin adds the `t.effect()` field method to implement re
 ## Examples
 
 - [01-basic](/examples/01-basic/)
-- [02-with-error-plugin](/examples/02-with-error-plugin/)
+- [02-with-errors-plugin](/examples/02-with-errors-plugin/)
 
 ## Usage
 
