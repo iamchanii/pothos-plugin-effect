@@ -266,7 +266,6 @@ builder.queryFields(t => ({
 
 - Pothos by [@hayes](https://github.com/hayes) ([GitHub](https://github.com/hayes/pothos)/[Docs](https://pothos-graphql.dev/)) - A nice GraphQL Schema builder. I heavily relied on the README for this project and The documentation of the plugin implementation is excellent.
 - Effect ([GitHub](https://github.com/effect-TS/)/[Docs](https://effect.website/))
-- Nanobundle by [@cometkim](https://github.com/cometkim) ([GitHub](https://github.com/cometkim/nanobundle))
 
 ## Licenses
 

@@ -71,7 +71,7 @@ type GetEffectRequirements<
   | Infer.Layer<Types['EffectGlobalLayer']>;
 
 type GetEffectErrors<Errors extends readonly [...any[]]> = 'errors' extends PluginName
-  ? keyof { [K in Errors[number] as InstanceType<K>]: true }
+  ? NotAnyType<keyof { [K in Errors[number] as InstanceType<K>]: true }>
   : never;
 
 export type FieldOptions<
