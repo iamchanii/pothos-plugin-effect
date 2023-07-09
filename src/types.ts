@@ -114,6 +114,7 @@ export type FieldOptions<
   & {
     effect?: {
       contexts?: ContextsShape;
+      failErrorConstructor?: { new(message: string): unknown };
       layers?: LayersShape;
       services?: ServiceEntriesShape;
     };
@@ -139,6 +140,7 @@ export type FieldOptions<
   };
 
 export type PluginOptions<Types extends SchemaTypes> = EmptyToOptional<{
+  failErrorConstructor?: { new(message: string): unknown };
   globalContext?: ((conext: Types['Context']) => Types['EffectGlobalContext']) | Types['EffectGlobalContext'];
   globalLayer?: ((conext: Types['Context']) => Types['EffectGlobalLayer']) | Types['EffectGlobalLayer'];
 }>;
