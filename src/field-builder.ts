@@ -20,7 +20,7 @@ fieldBuilderProto.effect = function effect({ effect = {}, resolve, ...options })
       const effectOptions = this.builder.options.effectOptions;
 
       const result = await pipe(
-        Effect.Do(),
+        Effect.Do,
         Effect.bind('context', () => {
           return pipe(
             getGlobalContextFromBuilderOptions(),
@@ -50,16 +50,25 @@ fieldBuilderProto.effect = function effect({ effect = {}, resolve, ...options })
         }
 
         if (Array.isArray(result.value)) {
-          return result.value.map(Option.match(() => null, (value) => value));
+          return result.value.map(Option.match({
+            onNone: () => null,
+            onSome: (value) => value,
+          }));
         }
 
         if (Option.isOption(result.value)) {
-          return Option.match(result.value, () => null, (value) => {
-            if (typeof options.nullable === 'object' && options.nullable.items && Array.isArray(value)) {
-              return value.map(Option.match(() => null, (value) => value));
-            }
+          return Option.match(result.value, {
+            onNone: () => null,
+            onSome: (value) => {
+              if (typeof options.nullable === 'object' && options.nullable.items && Array.isArray(value)) {
+                return value.map(Option.match({
+                  onNone: () => null,
+                  onSome: (value) => value,
+                }));
+              }
 
-            return value;
+              return value;
+            },
           });
         }
       }

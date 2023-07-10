@@ -13,11 +13,11 @@ importers:
         version: 7.2.1
     devDependencies:
       '@effect/data':
-        specifier: ~0.12.10
-        version: 0.12.10
+        specifier: ~0.13
+        version: 0.13.6
       '@effect/io':
-        specifier: ^0.30
-        version: 0.30.0
+        specifier: ^0.31
+        version: 0.31.3
       '@pothos/core':
         specifier: ^3.30.0
         version: 3.30.0(graphql@16.6.0)
@@ -486,14 +486,14 @@ packages:
     resolution: {integrity: sha512-QIdXKI+bbtV7l+k3eBsPtbWFD4ELwY+Hbd9uH2sIOK6ZNzBquTO/EJNX77Pr25kdaj39lPr2Do1YDZM4iQVqXg==}
     dev: true
 
-  /@effect/data@0.12.10:
-    resolution: {integrity: sha512-zIz/DgumH2LgGdr1Wc9ChET5JSG0k/G5kDc8rn4a6yIJ0v2d5rfnbRWIJO2fWmdFvc+128JyaBvYguIyz9JaAQ==}
+  /@effect/data@0.13.6:
+    resolution: {integrity: sha512-nWNGS7SQKUD7qRamHE9iamrdV9JUuS5o8X7hLrk6jjLOQ47tDh6da190o7h6cNck74HZBNXeb78LaRGkK9Sc5g==}
     dev: true
 
-  /@effect/io@0.30.0:
-    resolution: {integrity: sha512-xYfKS+eJU1bfdgB4dYNs5LmrImTJHNC4oXCPXHuzoGN7KzZBCagC4quWwTOLq7igBHp1OUZyNzonM/kBnUH26Q==}
+  /@effect/io@0.31.3:
+    resolution: {integrity: sha512-v8OltakxYj+TBUYk8ZnhrcebGd8xKavZZLjZm1p/uJqnqU8EgJq1aKCHaH7H5UdMsaZIunJG1W0NL2zDtdDYbw==}
     dependencies:
-      '@effect/data': 0.12.10
+      '@effect/data': 0.13.6
     dev: true
 
   /@envelop/core@4.0.0:
