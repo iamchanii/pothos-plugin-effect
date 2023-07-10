@@ -4,7 +4,7 @@
     "access": "public",
     "registiry": "https://registry.npmjs.org"
   },
-  "version": "0.3.0",
+  "version": "0.3.1",
   "files": [
     "package.json",
     "README.md",
