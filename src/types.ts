@@ -16,21 +16,19 @@ import type {
   TypeParam,
 } from '@pothos/core';
 import type { GraphQLResolveInfo } from 'graphql';
-import type { NotAnyType } from 'type-plus';
+import type { IsEqual, NotAnyType } from 'type-plus';
 
 import * as Effect from '@effect/io/Effect';
 
+type WithContext<T> = ((context: any) => T) | T;
+
+type UnboxWithContext<T> = T extends (context: any) => infer U ? U : T;
+
 // eslint-disable-next-line @typescript-eslint/no-namespace
 declare namespace Infer {
-  export type Tag<T> = T extends EffectContext.Tag<any, any> ? EffectContext.Tag.Identifier<T> : never;
-
-  export type Context<T> = T extends (...args: any[]) => EffectContext.Context<infer U> ? U
-    : T extends EffectContext.Context<infer U> ? U
-    : never;
-
-  export type Layer<T> = T extends (...args: any[]) => EffectLayer.Layer<any, any, infer U> ? U
-    : T extends EffectLayer.Layer<any, any, infer U> ? U
-    : never;
+  export type Tag<T> = T extends EffectContext.Tag<infer U, any> ? U : never;
+  export type Context<T> = T extends EffectContext.Context<infer U> ? U : never;
+  export type Layer<T> = T extends EffectLayer.Layer<any, any, infer U> ? U : never;
 }
 
 export type ServiceEntry = [
@@ -38,9 +36,9 @@ export type ServiceEntry = [
   service: ((context: any) => any) | any,
 ];
 
-export type Context = ((context: any) => EffectContext.Context<any>) | EffectContext.Context<any>;
+export type Context = WithContext<EffectContext.Context<any>>;
 
-export type Layer = ((context: any) => EffectLayer.Layer<any, any, any>) | EffectLayer.Layer<any, any, any>;
+export type Layer = WithContext<EffectLayer.Layer<any, any, any>>;
 
 type GetEffectRequirementsFromServiceEntries<
   ServiceEntries extends readonly [...ServiceEntry[]],
@@ -51,13 +49,13 @@ type GetEffectRequirementsFromServiceEntries<
 type GetEffectRequirementsFromContexts<
   Contexts extends readonly [...Context[]],
 > = NotAnyType<
-  keyof { [K in Contexts[number] as Infer.Context<K>]: true }
+  keyof { [K in Contexts[number] as Infer.Context<UnboxWithContext<K>>]: true }
 >;
 
 type GetEffectRequirementsFromLayers<
   Layers extends readonly [...Layer[]],
 > = NotAnyType<
-  keyof { [K in Layers[number] as Infer.Layer<K>]: true }
+  keyof { [K in Layers[number] as Infer.Layer<UnboxWithContext<K>>]: true }
 >;
 
 type GetEffectRequirements<
@@ -76,10 +74,10 @@ type GetEffectErrors<Errors extends readonly [...any[]]> = 'errors' extends Plug
   ? NotAnyType<keyof { [K in Errors[number] as InstanceType<K>]: true }>
   : never;
 
-type GetEffectOutputShape<Type, Nullable> = Nullable extends true ? EffectOption.Option<Type>
-  : Nullable extends { items: true; list: false } ? EffectOption.Option<Type>[]
-  : Nullable extends { items: false; list: true } ? EffectOption.Option<Type[]>
-  : Nullable extends { items: true; list: true } ? EffectOption.Option<EffectOption.Option<Type>[]>
+type GetEffectOutputShape<Type, Nullable> = IsEqual<Nullable, true> extends true ? EffectOption.Option<Type>
+  : IsEqual<Nullable, { items: true; list: false }> extends true ? EffectOption.Option<Type>[]
+  : IsEqual<Nullable, { items: false; list: true }> extends true ? EffectOption.Option<Type[]>
+  : IsEqual<Nullable, { items: true; list: true }> extends true ? EffectOption.Option<EffectOption.Option<Type>[]>
   : Type;
 
 export type FieldOptions<
