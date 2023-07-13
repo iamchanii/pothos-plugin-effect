@@ -116,7 +116,7 @@ export type FieldOptions<
       layers?: LayersShape;
       services?: ServiceEntriesShape;
     };
-    errors?: 'errors' extends PluginName ? { types: ErrorsShape } : never;
+    errors?: 'errors' extends PluginName ? { types?: ErrorsShape } : never;
     resolve(
       parent: ParentShape,
       args: InputShapeFromFields<Args>,
@@ -138,7 +138,7 @@ export type FieldOptions<
   };
 
 export type PluginOptions<Types extends SchemaTypes> = EmptyToOptional<{
-  failErrorConstructor?: { new(message: string): unknown };
+  defaultFailErrorConstructor?: { new(message: string): unknown };
   globalContext?: ((conext: Types['Context']) => Types['EffectGlobalContext']) | Types['EffectGlobalContext'];
   globalLayer?: ((conext: Types['Context']) => Types['EffectGlobalLayer']) | Types['EffectGlobalLayer'];
 }>;

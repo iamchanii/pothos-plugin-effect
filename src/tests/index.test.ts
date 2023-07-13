@@ -169,11 +169,13 @@ describe('effect.layers', () => {
             Layer.succeed(Dice, Dice.of({ roll: () => Effect.succeed(6) })),
           ],
         },
-        resolve: () =>
-          pipe(
+        // FIXME: After update effect/io, To avoid type error, should be use function instead of arrow function
+        resolve() {
+          return pipe(
             Dice,
             Effect.flatMap(dice => dice.roll()),
-          ),
+          );
+        },
         type: 'Int',
       }));
 
@@ -497,5 +499,81 @@ describe('Option', () => {
 
     expect(result.data).toEqual({ roll: [1, 2, null, 4], roll2: null });
     expect(result.errors).toBeUndefined();
+  });
+});
+
+describe('failErrorConstructor', () => {
+  class NonError {
+    readonly _tag = 'NonError';
+  }
+
+  class CustomError extends Error {
+    readonly _tag = 'CustomError';
+  }
+
+  it('should catch non-error object', async () => {
+    builder.queryField('roll', t =>
+      t.effect({
+        // @ts-expect-error
+        resolve() {
+          return Effect.fail(new NonError());
+        },
+        type: ['Int'],
+      }));
+
+    const schema = builder.toSchema();
+    const document = parse(`{ roll }`);
+    const result = await execute({ document, schema });
+
+    expect(result.errors?.at(0)?.originalError).toBeInstanceOf(Error);
+    expect(result.errors?.at(0)?.message).toContain('NonError');
+  });
+
+  it('should catch non-error object as custom error using failErrorConstructor', async () => {
+    builder.queryField('roll', t =>
+      t.effect({
+        effect: {
+          failErrorConstructor: CustomError,
+        },
+        // @ts-expect-error
+        resolve() {
+          return Effect.fail(new NonError());
+        },
+        type: ['Int'],
+      }));
+
+    const schema = builder.toSchema();
+    const document = parse(`{ roll }`);
+    const result = await execute({ document, schema });
+
+    expect(result.errors?.at(0)?.originalError).toBeInstanceOf(CustomError);
+    expect(result.errors?.at(0)?.message).toContain('NonError');
+  });
+
+  it('should catch non-error object as custom error using defaultFailErrorConstructor', async () => {
+    builder = new SchemaBuilder<SchemaTypes>({
+      effectOptions: {
+        defaultFailErrorConstructor: CustomError,
+      },
+      plugins: [EffectPlugin],
+    });
+
+    builder.queryType({});
+
+    builder.queryField('roll', t =>
+      t.effect({
+        // @ts-expect-error
+        resolve() {
+          return Effect.fail(new NonError());
+        },
+        type: ['Int'],
+      }));
+
+    const schema = builder.toSchema();
+    const document = parse(`{ roll }`);
+    const result = await execute({ document, schema });
+
+    expect(result.errors?.at(0)?.originalError).toBeInstanceOf(CustomError);
+    expect(result.errors?.at(0)?.message).toContain('NonError');
   });
 });
