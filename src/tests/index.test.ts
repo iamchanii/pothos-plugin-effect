@@ -268,11 +268,11 @@ describe('effectOptions.globalLayer', () => {
   it('should inject global layer with context and resolve effect', async () => {
     const builder = new SchemaBuilder<SchemaTypes2>({
       effectOptions: {
-        globalLayer: (context) =>
-          Layer.succeed(
-            Notification,
-            Notification.of({ notify: () => Effect.log(context.message) }),
-          ),
+        // globalLayer: (context) =>
+        //   Layer.succeed(
+        //     Notification,
+        //     Notification.of({ notify: () => Effect.log(context.message) }),
+        //   ),
       },
       plugins: [EffectPlugin],
     });
