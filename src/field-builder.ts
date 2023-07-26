@@ -1,5 +1,5 @@
 import * as Context from '@effect/data/Context';
-import { pipe } from '@effect/data/Function';
+import { pipe, constNull } from '@effect/data/Function';
 import * as Option from '@effect/data/Option';
 import * as Cause from '@effect/io/Cause';
 import * as Effect from '@effect/io/Effect';
@@ -50,10 +50,7 @@ fieldBuilderProto.effect = function effect({ effect = {}, resolve, ...options })
         }
 
         if (Array.isArray(result.value)) {
-          return result.value.map(Option.match({
-            onNone: () => null,
-            onSome: (value) => value,
-          }));
+          return result.value.map(Option.getOrElse(constNull));
         }
 
         if (Option.isOption(result.value)) {
@@ -61,10 +58,7 @@ fieldBuilderProto.effect = function effect({ effect = {}, resolve, ...options })
             onNone: () => null,
             onSome: (value) => {
               if (typeof options.nullable === 'object' && options.nullable.items && Array.isArray(value)) {
-                return value.map(Option.match({
-                  onNone: () => null,
-                  onSome: (value) => value,
-                }));
+                return value.map(Option.getOrElse(constNull));
               }
 
               return value;
