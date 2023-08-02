@@ -1,8 +1,10 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
-import type * as EffectContext from '@effect/data/Context';
-import type * as EffectOption from '@effect/data/Option';
-import type * as EffectLayer from '@effect/io/Layer';
+import type {
+  Context as EffectContext,
+  Layer as EffectLayer,
+  Option as EffectOption
+} from 'effect';
 import type {
   EmptyToOptional,
   FieldKind,
@@ -18,7 +20,7 @@ import type {
 import type { GraphQLResolveInfo } from 'graphql';
 import type { IsEqual, NotAnyType } from 'type-plus';
 
-import * as Effect from '@effect/io/Effect';
+import { Effect } from 'effect';
 
 type WithContext<T> = ((context: any) => T) | T;
 
