@@ -22,8 +22,8 @@ The Effect integration plugin adds the `t.effect()` field method to implement re
 ### Install
 
 ```bash
-# @effect/io and @effect/data is peer-dependencies.
-pnpm install pothos-plugin-effect @effect/io @effect/data
+# effect is a peer-dependency
+pnpm install pothos-plugin-effect effect
 ```
 
 ### Setup
@@ -46,7 +46,7 @@ This option provides the global `Context` that is available to all `t.effect()` 
 
 ```ts
 import EffectPlugin from 'pothos-plugin-effect';
-import * as Context from '@effect/data/context';
+import { Context } from 'effect';
 import { Dice } from '../contexts';
 
 declare const DiceContext: Context.Context<Dice>;
@@ -84,7 +84,7 @@ This option provides the global `Layer` that is available to all `t.effect()` fu
 
 ```ts
 import EffectPlugin from 'pothos-plugin-effect';
-import * as Layer from '@effect/io/Layer';
+import { Layer } from 'effect';
 import { Dice } from '../contexts';
 
 declare const DiceLayer: Layer.Layer<never, never, Dice>;

@@ -1,7 +1,4 @@
-import * as Context from '@effect/data/Context';
-import * as Effect from '@effect/io/Effect';
-import * as Layer from '@effect/io/layer';
-import { pipe } from 'graphql-yoga';
+import { Context, Effect, Layer, pipe } from 'effect';
 
 import { Fetch } from './Fetch.js';
 
