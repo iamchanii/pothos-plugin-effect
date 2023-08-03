@@ -1,7 +1,4 @@
-import * as Context from '@effect/data/Context';
-import * as Effect from '@effect/io/Effect';
-import * as Layer from '@effect/io/layer';
-import { pipe } from 'graphql-yoga';
+import { Context, Effect, Layer, pipe } from 'effect';
 
 import { Fetch } from './Fetch.js';
 
@@ -44,11 +41,11 @@ export const GitHubLive = Layer.effect(
       GitHub.of({
         getUser: username =>
           pipe(
-            Effect.if(
-              username === 'admin',
-              /* onTrue  */ Effect.fail(new ForbiddenUser(username)),
-              /* onFalse */ Effect.succeed(username),
-            ),
+            username === 'admin',
+            Effect.if({
+              onTrue: Effect.fail(new ForbiddenUser(username)),
+              onFalse: Effect.succeed(username),
+            }),
             Effect.flatMap(username => fetch.get(`https://api.github.com/users/${username}`)),
             Effect.flatMap(response => Effect.promise(() => response.json() as Promise<GitHubUser>)),
             Effect.catchTag('RequestError', () => Effect.fail(new NotFound(username))),

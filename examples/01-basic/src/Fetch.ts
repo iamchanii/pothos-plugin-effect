@@ -1,7 +1,4 @@
-import * as Context from '@effect/data/Context';
-import { pipe } from '@effect/data/Function';
-import * as Effect from '@effect/io/Effect';
-import * as Layer from '@effect/io/layer';
+import { Context, Effect, Layer, pipe } from 'effect';
 
 export class RequestError {
   readonly _tag = 'RequestError';
@@ -19,10 +16,10 @@ export const FetchLive = Layer.succeed(
   Fetch.of({
     get: (input, init) =>
       pipe(
-        Effect.tryCatchPromise(
-          () => fetch(input, init),
-          () => new RequestError(null),
-        ),
+        Effect.tryPromise({
+          try: () => fetch(input, init),
+          catch: () => new RequestError(null),
+        }),
         Effect.flatMap(response =>
           response.ok
             ? Effect.succeed(response)

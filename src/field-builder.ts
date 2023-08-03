@@ -1,10 +1,5 @@
-import * as Context from '@effect/data/Context';
-import { pipe, constNull } from '@effect/data/Function';
-import * as Option from '@effect/data/Option';
-import * as Cause from '@effect/io/Cause';
-import * as Effect from '@effect/io/Effect';
-import * as Exit from '@effect/io/Exit';
-import * as Layer from '@effect/io/Layer';
+import { Cause, Context, Effect, Exit, Layer, Option, pipe } from 'effect';
+import { constNull } from 'effect/Function';
 import { FieldKind, Resolver, RootFieldBuilder, SchemaTypes } from '@pothos/core';
 import { GraphQLResolveInfo } from 'graphql';
 

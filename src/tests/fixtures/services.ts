@@ -1,5 +1,4 @@
-import * as Context from '@effect/data/Context';
-import * as Effect from '@effect/io/Effect';
+import { Context, Effect } from 'effect';
 
 export interface Dice {
   readonly roll: () => Effect.Effect<never, never, number>;

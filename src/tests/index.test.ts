@@ -1,8 +1,4 @@
-import * as Context from '@effect/data/Context';
-import { pipe } from '@effect/data/Function';
-import * as Option from '@effect/data/Option';
-import * as Effect from '@effect/io/Effect';
-import * as Layer from '@effect/io/Layer';
+import { Context, Effect, Layer, Option, pipe } from 'effect';
 import SchemaBuilder from '@pothos/core';
 import { execute, parse } from 'graphql';
 
