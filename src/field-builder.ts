@@ -1,6 +1,6 @@
+import { FieldKind, Resolver, RootFieldBuilder, SchemaTypes } from '@pothos/core';
 import { Cause, Context, Effect, Exit, Layer, Option, pipe } from 'effect';
 import { constNull } from 'effect/Function';
-import { FieldKind, Resolver, RootFieldBuilder, SchemaTypes } from '@pothos/core';
 import { GraphQLResolveInfo } from 'graphql';
 
 const fieldBuilderProto = RootFieldBuilder.prototype as PothosSchemaTypes.RootFieldBuilder<

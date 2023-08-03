@@ -1,6 +1,6 @@
-import { Effect, pipe } from 'effect';
 import SchemaBuilder from '@pothos/core';
 import ErrorsPlugin from '@pothos/plugin-errors';
+import { Effect, pipe } from 'effect';
 import { createYoga } from 'graphql-yoga';
 import { createServer } from 'node:http';
 import EffectPlugin from 'pothos-plugin-effect';

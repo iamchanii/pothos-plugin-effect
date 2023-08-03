@@ -43,8 +43,8 @@ export const GitHubLive = Layer.effect(
           pipe(
             username === 'admin',
             Effect.if({
-              onTrue: Effect.fail(new ForbiddenUser(username)),
               onFalse: Effect.succeed(username),
+              onTrue: Effect.fail(new ForbiddenUser(username)),
             }),
             Effect.flatMap(username => fetch.get(`https://api.github.com/users/${username}`)),
             Effect.flatMap(response => Effect.promise(() => response.json() as Promise<GitHubUser>)),

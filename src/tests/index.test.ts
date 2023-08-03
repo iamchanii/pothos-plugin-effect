@@ -1,5 +1,5 @@
-import { Context, Effect, Layer, Option, pipe } from 'effect';
 import SchemaBuilder from '@pothos/core';
+import { Context, Effect, Layer, Option, pipe } from 'effect';
 import { execute, parse } from 'graphql';
 
 import EffectPlugin from '../index.ts';

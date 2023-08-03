@@ -1,11 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
 import type {
-  Context as EffectContext,
-  Layer as EffectLayer,
-  Option as EffectOption
-} from 'effect';
-import type {
   EmptyToOptional,
   FieldKind,
   FieldNullability,
@@ -17,6 +12,7 @@ import type {
   SchemaTypes,
   TypeParam,
 } from '@pothos/core';
+import type { Context as EffectContext, Layer as EffectLayer, Option as EffectOption } from 'effect';
 import type { GraphQLResolveInfo } from 'graphql';
 import type { IsEqual, NotAnyType } from 'type-plus';
 

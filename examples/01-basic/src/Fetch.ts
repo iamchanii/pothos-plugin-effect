@@ -17,8 +17,8 @@ export const FetchLive = Layer.succeed(
     get: (input, init) =>
       pipe(
         Effect.tryPromise({
-          try: () => fetch(input, init),
           catch: () => new RequestError(null),
+          try: () => fetch(input, init),
         }),
         Effect.flatMap(response =>
           response.ok

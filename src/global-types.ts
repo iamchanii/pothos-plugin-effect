@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/ban-types */
-import type { Context, Layer } from 'effect';
 import type { FieldKind, FieldNullability, FieldRef, InputFieldMap, SchemaTypes, TypeParam } from '@pothos/core';
+import type { Context, Layer } from 'effect';
 
 import type { EffectPlugin } from './index.js';
 import type * as EffectPluginTypes from './types.js';
