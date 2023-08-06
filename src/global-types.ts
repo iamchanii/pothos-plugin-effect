@@ -1,5 +1,19 @@
 /* eslint-disable @typescript-eslint/ban-types */
-import type { FieldKind, FieldNullability, FieldRef, InputFieldMap, SchemaTypes, TypeParam } from '@pothos/core';
+/* eslint-disable @typescript-eslint/no-unused-vars */
+/* eslint-disable @typescript-eslint/no-empty-interface */
+import type {
+  FieldKind,
+  FieldNullability,
+  FieldRef,
+  InputFieldMap,
+  InterfaceParam,
+  NormalizeArgs,
+  OutputType,
+  PluginName,
+  SchemaTypes,
+  ShapeFromTypeParam,
+  TypeParam,
+} from '@pothos/core';
 import type { Context, Layer } from 'effect';
 
 import type { EffectPlugin } from './index.js';
@@ -58,6 +72,108 @@ declare global {
           ErrorsShape
         >,
       ) => FieldRef<unknown>;
+
+      effectConnection: 'relay' extends PluginName ? <
+          Type extends OutputType<Types>,
+          Nullable extends boolean,
+          ResolveReturnShape,
+          // Effect Types:
+          ServiceEntriesShape extends readonly [...EffectPluginTypes.ServiceEntry[]],
+          ContextsShape extends readonly [...EffectPluginTypes.Context[]],
+          LayersShape extends readonly [...EffectPluginTypes.Layer[]],
+          ErrorsShape extends readonly [...any[]],
+          // Relay Types:
+          Args extends InputFieldMap = {},
+          ConnectionInterfaces extends InterfaceParam<Types>[] = [],
+          EdgeInterfaces extends InterfaceParam<Types>[] = [],
+        >(
+          options: EffectPluginTypes.ConnectionFieldOptions<
+            Types,
+            ParentShape,
+            Type,
+            Args,
+            Nullable,
+            ResolveReturnShape,
+            ServiceEntriesShape,
+            ContextsShape,
+            LayersShape,
+            ErrorsShape,
+            Kind
+          >,
+          ...args: NormalizeArgs<
+            [
+              connectionOptions:
+                | ConnectionObjectOptions<
+                  Types,
+                  Type,
+                  false,
+                  false,
+                  ResolveReturnShape,
+                  ConnectionInterfaces
+                >
+                | ObjectRef<
+                  EffectPluginTypes.ShapeFromConnection<
+                    ConnectionShapeHelper<Types, ShapeFromTypeParam<Types, Type, false>, false>
+                  >
+                >,
+              edgeOptions:
+                | ConnectionEdgeObjectOptions<
+                  Types,
+                  Type,
+                  false,
+                  ResolveReturnShape,
+                  EdgeInterfaces
+                >
+                | ObjectRef<{
+                  cursor: string;
+                  node?: ShapeFromTypeParam<Types, Type, false> | null | undefined;
+                }>,
+            ],
+            0
+          >
+        ) => FieldRef<
+          EffectPluginTypes.ShapeFromConnection<
+            ConnectionShapeHelper<Types, ShapeFromTypeParam<Types, Type, false>, Nullable>
+          >
+        >
+        : '@pothos/plugin-relay is required to use this method';
     }
+
+    export interface ConnectionShapeHelper<Types extends SchemaTypes, T, Nullable> {}
+
+    export interface DefaultConnectionArguments {
+      after?: null | string | undefined;
+      before?: null | string | undefined;
+      first?: null | number | undefined;
+      last?: null | number | undefined;
+    }
+
+    export interface ConnectionFieldOptions<
+      Types extends SchemaTypes,
+      ParentShape,
+      Type extends OutputType<Types>,
+      Nullable extends boolean,
+      EdgeNullability extends FieldNullability<[unknown]>,
+      NodeNullability extends boolean,
+      Args extends InputFieldMap,
+      ResolveReturnShape,
+    > {}
+
+    export interface ConnectionObjectOptions<
+      Types extends SchemaTypes,
+      Type extends OutputType<Types>,
+      EdgeNullability extends FieldNullability<[unknown]>,
+      NodeNullability extends boolean,
+      Resolved,
+      Interfaces extends InterfaceParam<Types>[] = [],
+    > {}
+
+    export interface ConnectionEdgeObjectOptions<
+      Types extends SchemaTypes,
+      Type extends OutputType<Types>,
+      NodeNullability extends boolean,
+      Resolved,
+      Interfaces extends InterfaceParam<Types>[] = [],
+    > {}
   }
 }

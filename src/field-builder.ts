@@ -1,4 +1,5 @@
-import { FieldKind, Resolver, RootFieldBuilder, SchemaTypes } from '@pothos/core';
+import { FieldKind, ObjectRef, Resolver, RootFieldBuilder, SchemaTypes } from '@pothos/core';
+import { ConnectionShape } from '@pothos/plugin-relay';
 import { Cause, Context, Effect, Exit, Layer, Option, pipe } from 'effect';
 import { constNull } from 'effect/Function';
 import { GraphQLResolveInfo } from 'graphql';
@@ -140,3 +141,59 @@ fieldBuilderProto.effect = function effect({ effect = {}, resolve, ...options })
     }) as Resolver<any, any, any, any>,
   });
 };
+
+fieldBuilderProto.effectConnection = function connection(
+  { edgesNullable, nodeNullable, type, ...fieldOptions },
+  connectionOptionsOrRef = {} as never,
+  edgeOptionsOrRef = {} as never,
+) {
+  const connectionRef = connectionOptionsOrRef instanceof ObjectRef
+    ? connectionOptionsOrRef
+    : this.builder.objectRef<ConnectionShape<SchemaTypes, unknown, boolean>>(
+      'Unnamed connection',
+    );
+
+  const fieldRef = this.effect({
+    ...this.builder.options.relayOptions?.defaultConnectionFieldOptions,
+    ...fieldOptions,
+    args: {
+      ...fieldOptions.args,
+      ...this.arg.connectionArgs(),
+    },
+    resolve: fieldOptions.resolve as never,
+    type: connectionRef,
+  } as never);
+
+  if (!(connectionOptionsOrRef instanceof ObjectRef)) {
+    this.builder.configStore.onFieldUse(fieldRef, (fieldConfig) => {
+      const connectionName = connectionOptionsOrRef.name
+        ?? `${this.typename}${capitalize(fieldConfig.name)}${
+          fieldConfig.name.toLowerCase().endsWith('connection') ? '' : 'Connection'
+        }`;
+
+      this.builder.connectionObject(
+        {
+          edgesNullable,
+          nodeNullable,
+          type,
+          ...connectionOptionsOrRef,
+          name: connectionName,
+        },
+        edgeOptionsOrRef instanceof ObjectRef
+          ? edgeOptionsOrRef
+          : {
+            name: `${connectionName}Edge`,
+            ...edgeOptionsOrRef,
+          },
+      );
+
+      this.builder.configStore.associateRefWithName(connectionRef, connectionName);
+    });
+  }
+
+  return fieldRef as never;
+};
+
+export function capitalize(s: string) {
+  return `${s.slice(0, 1).toUpperCase()}${s.slice(1)}`;
+}

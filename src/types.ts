@@ -8,8 +8,10 @@ import type {
   InputFieldMap,
   InputShapeFromFields,
   OutputShape,
+  OutputType,
   PluginName,
   SchemaTypes,
+  ShapeFromTypeParam,
   TypeParam,
 } from '@pothos/core';
 import type { Context as EffectContext, Layer as EffectLayer, Option as EffectOption } from 'effect';
@@ -134,6 +136,78 @@ export type FieldOptions<
       >
     >;
   };
+
+export type ConnectionFieldOptions<
+  // Pothos Types:
+  Types extends SchemaTypes,
+  ParentShape,
+  Type extends OutputType<Types>,
+  Args extends InputFieldMap,
+  Nullable extends boolean,
+  ResolveReturnShape,
+  // Effect Types:
+  ServiceEntriesShape extends readonly [...ServiceEntry[]],
+  ContextsShape extends readonly [...Context[]],
+  LayersShape extends readonly [...Layer[]],
+  ErrorsShape extends readonly [...any[]],
+  // Pothos Types:
+  Kind extends FieldKind = FieldKind,
+> =
+  & Omit<
+    FieldOptions<
+      Types,
+      ParentShape,
+      Type,
+      Args,
+      Nullable,
+      ResolveReturnShape,
+      ServiceEntriesShape,
+      ContextsShape,
+      LayersShape,
+      ErrorsShape,
+      Kind
+    >,
+    'args' | 'resolve' | 'type'
+  >
+  & Omit<
+    PothosSchemaTypes.ConnectionFieldOptions<
+      Types,
+      ParentShape,
+      Type,
+      Nullable,
+      false,
+      false,
+      Args,
+      ResolveReturnShape
+    >,
+    'resolve'
+  >
+  & (
+    & InputShapeFromFields<Args>
+    & PothosSchemaTypes.DefaultConnectionArguments extends infer ConnectionArgs ? {
+        resolve(
+          parent: ParentShape,
+          args: ConnectionArgs,
+          context: Types['Context'],
+          info: GraphQLResolveInfo,
+        ): Effect.Effect<
+          GetEffectRequirements<
+            Types,
+            ServiceEntriesShape,
+            ContextsShape,
+            LayersShape
+          >,
+          GetEffectErrors<ErrorsShape>,
+          ShapeFromConnection<
+            PothosSchemaTypes.ConnectionShapeHelper<Types, ShapeFromTypeParam<Types, Type, false>, Nullable>
+          >
+        >;
+        type: Type;
+      }
+      : never
+  );
+
+export type ShapeFromConnection<T> = T extends { shape: unknown } ? T['shape'] : never;
 
 export type PluginOptions<Types extends SchemaTypes> = EmptyToOptional<{
   defaultFailErrorConstructor?: { new(message: string): unknown };

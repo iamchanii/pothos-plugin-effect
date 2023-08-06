@@ -1,4 +1,5 @@
 import SchemaBuilder from '@pothos/core';
+import RelayPlugin, { resolveArrayConnection } from '@pothos/plugin-relay';
 import { Context, Effect, Layer, Option, pipe } from 'effect';
 import { execute, parse } from 'graphql';
 
@@ -16,6 +17,7 @@ let builder: InstanceType<typeof SchemaBuilder<SchemaTypes>>;
 beforeEach(() => {
   builder = new SchemaBuilder<SchemaTypes>({
     plugins: [EffectPlugin],
+    relayOptions: {},
   });
 
   builder.queryType({});
@@ -231,6 +233,7 @@ describe('effectOptions.globalLayer', () => {
         ),
       },
       plugins: [EffectPlugin],
+      relayOptions: {},
     });
 
     builder.queryType({});
@@ -271,6 +274,7 @@ describe('effectOptions.globalLayer', () => {
           ),
       },
       plugins: [EffectPlugin],
+      relayOptions: {},
     });
 
     builder.queryType({});
@@ -319,6 +323,7 @@ describe('effectOptions.globalContext', () => {
         ),
       },
       plugins: [EffectPlugin],
+      relayOptions: {},
     });
 
     builder.queryType({});
@@ -359,6 +364,7 @@ describe('effectOptions.globalContext', () => {
           ),
       },
       plugins: [EffectPlugin],
+      relayOptions: {},
     });
 
     builder.queryType({});
@@ -552,6 +558,7 @@ describe('failErrorConstructor', () => {
         defaultFailErrorConstructor: CustomError,
       },
       plugins: [EffectPlugin],
+      relayOptions: {},
     });
 
     builder.queryType({});
@@ -571,5 +578,38 @@ describe('failErrorConstructor', () => {
 
     expect(result.errors?.at(0)?.originalError).toBeInstanceOf(CustomError);
     expect(result.errors?.at(0)?.message).toContain('NonError');
+  });
+});
+
+describe('effect connection', () => {
+  it('t.effectConnection fields should allow querying for paginated effects', async () => {
+    builder = new SchemaBuilder<SchemaTypes>({
+      effectOptions: {},
+      plugins: [EffectPlugin, RelayPlugin],
+      relayOptions: {},
+    });
+
+    builder.queryType({});
+
+    builder.queryField('roll', t =>
+      t.effectConnection({
+        resolve: (root, args) => Effect.succeed(resolveArrayConnection({ args }, [1, 2, 3, 4])),
+        type: 'Int',
+      }));
+
+    const schema = builder.toSchema();
+    const document = parse(`{ roll { edges { node }} }`);
+    const result = await execute({ document, schema });
+
+    expect(result.data).toEqual({
+      roll: {
+        edges: [
+          { node: 1 },
+          { node: 2 },
+          { node: 3 },
+          { node: 4 },
+        ],
+      },
+    });
   });
 });
