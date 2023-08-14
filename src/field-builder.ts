@@ -63,7 +63,13 @@ fieldBuilderProto.effect = function effect({ effect = {}, resolve, ...options })
         }
       }
 
+      // fixme: result should not be Exit.Exit<never, any>
+      // because never cannot be checked if it's an instanceof Error
       if (Exit.isFailure(result)) {
+        if (Cause.isFailType(result.cause) && (result.cause.error as any instanceof Error)) {
+          throw result.cause.error;
+        }
+
         if (Cause.isAnnotatedType(result.cause) && Cause.isFailType(result.cause.cause)) {
           throw result.cause.cause.error;
         }
