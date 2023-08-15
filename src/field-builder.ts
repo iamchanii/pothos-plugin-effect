@@ -70,10 +70,6 @@ fieldBuilderProto.effect = function effect({ effect = {}, resolve, ...options })
           throw result.cause.error;
         }
 
-        if (Cause.isAnnotatedType(result.cause) && Cause.isFailType(result.cause.cause)) {
-          throw result.cause.cause.error;
-        }
-
         throw new (effect.failErrorConstructor ?? effectOptions?.defaultFailErrorConstructor ?? Error)(
           Cause.pretty(result.cause),
         );
