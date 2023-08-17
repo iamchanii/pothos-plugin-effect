@@ -66,12 +66,15 @@ fieldBuilderProto.effect = function effect({ effect = {}, resolve, ...options })
       // fixme: result should not be Exit.Exit<never, any>
       // because never cannot be checked if it's an instanceof Error
       if (Exit.isFailure(result)) {
-        if (Cause.isFailType(result.cause) && (result.cause.error as any instanceof Error)) {
-          throw result.cause.error;
+        const cause = Cause.unannotate(result.cause);
+
+        // todo: shoud it handle empty/die/interrupt/etc cases?
+        if (Cause.isFailType(cause) && cause.error as unknown instanceof Error) {
+          throw cause.error;
         }
 
         throw new (effect.failErrorConstructor ?? effectOptions?.defaultFailErrorConstructor ?? Error)(
-          Cause.pretty(result.cause),
+          Cause.pretty(cause),
         );
       }
 
