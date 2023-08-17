@@ -513,6 +513,24 @@ describe('failErrorConstructor', () => {
     readonly _tag = 'CustomError';
   }
 
+  it('should preserve the type of error-object', async () => {
+    builder.queryField('roll', t =>
+      t.effect({
+        // @ts-expect-error
+        resolve() {
+          return Effect.fail(new CustomError("Boom!"));
+        },
+        type: ['Int'],
+      }));
+
+    const schema = builder.toSchema();
+    const document = parse(`{ roll }`);
+    const result = await execute({ document, schema });
+
+    expect(result.errors?.at(0)?.originalError).toBeInstanceOf(CustomError);
+    expect(result.errors?.at(0)?.message).toContain('Boom!');
+  });
+
   it('should catch non-error object', async () => {
     builder.queryField('roll', t =>
       t.effect({
