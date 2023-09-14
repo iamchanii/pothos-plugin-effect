@@ -11,6 +11,7 @@ module.exports = {
   root: true,
   rules: {
     '@typescript-eslint/ban-ts-comment': 'off',
+    '@typescript-eslint/no-explicit-any': 'off',
     'dprint-integration/dprint': [
       'error',
       restDprintOptions,

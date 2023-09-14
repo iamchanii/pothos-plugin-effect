@@ -6,7 +6,6 @@ import './global-types.ts';
 const pluginName = 'effect';
 
 export default pluginName;
-
 export class EffectPlugin<Types extends SchemaTypes> extends BasePlugin<Types> {
 }
 

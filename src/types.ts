@@ -14,8 +14,8 @@ import type {
   ShapeFromTypeParam,
   TypeParam,
 } from '@pothos/core';
-import type { Context as EffectContext, Layer as EffectLayer, Option as EffectOption } from 'effect';
-import type { GraphQLResolveInfo } from 'graphql';
+import type { Context as EffectContext, Layer as EffectLayer, Option as EffectOption, Runtime } from 'effect';
+import type { GraphQLResolveInfo as OriginGraphQLResolveInfo } from 'graphql';
 import type { IsEqual, NotAnyType } from 'type-plus';
 
 import { Effect } from 'effect';
@@ -121,7 +121,7 @@ export type FieldOptions<
       parent: ParentShape,
       args: InputShapeFromFields<Args>,
       context: Types['Context'],
-      info: GraphQLResolveInfo,
+      info: OriginGraphQLResolveInfo,
     ): Effect.Effect<
       GetEffectRequirements<
         Types,
@@ -189,7 +189,7 @@ export type ConnectionFieldOptions<
           parent: ParentShape,
           args: ConnectionArgs,
           context: Types['Context'],
-          info: GraphQLResolveInfo,
+          info: OriginGraphQLResolveInfo,
         ): Effect.Effect<
           GetEffectRequirements<
             Types,
@@ -211,6 +211,6 @@ export type ShapeFromConnection<T> = T extends { shape: unknown } ? T['shape'] :
 
 export type PluginOptions<Types extends SchemaTypes> = EmptyToOptional<{
   defaultFailErrorConstructor?: { new(message: string): unknown };
-  globalContext?: ((conext: Types['Context']) => Types['EffectGlobalContext']) | Types['EffectGlobalContext'];
-  globalLayer?: ((conext: Types['Context']) => Types['EffectGlobalLayer']) | Types['EffectGlobalLayer'];
+  globalContext?: Types['EffectGlobalContext'];
+  globalLayer?: Types['EffectGlobalLayer'];
 }>;

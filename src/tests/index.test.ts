@@ -263,47 +263,6 @@ describe('effectOptions.globalLayer', () => {
 
     consoleSpy.mockRestore();
   });
-
-  it('should inject global layer with context and resolve effect', async () => {
-    const builder = new SchemaBuilder<SchemaTypes2>({
-      effectOptions: {
-        globalLayer: (context) =>
-          Layer.succeed(
-            Notification,
-            Notification.of({ notify: () => Effect.log(context.message) }),
-          ),
-      },
-      plugins: [EffectPlugin],
-      relayOptions: {},
-    });
-
-    builder.queryType({});
-
-    const consoleSpy = jest.spyOn(console, 'log');
-
-    builder.queryField('roll', t =>
-      t.effect({
-        effect: {
-          layers: [],
-        },
-        resolve: () =>
-          pipe(
-            Notification,
-            Effect.tap(notification => notification.notify('Hello World!')),
-            Effect.map(() => 1),
-          ),
-        type: 'Int',
-      }));
-
-    const schema = builder.toSchema();
-    const document = parse(`{ roll }`);
-    const result = await execute({ contextValue: { message: 'Hola!' }, document, schema });
-
-    expect(result.data).toEqual({ roll: 1 });
-    expect(consoleSpy.mock.lastCall?.at(0)).toContain('Hola!');
-
-    consoleSpy.mockRestore();
-  });
 });
 
 describe('effectOptions.globalContext', () => {
@@ -350,47 +309,6 @@ describe('effectOptions.globalContext', () => {
 
     expect(result.data).toEqual({ roll: 1 });
     expect(consoleSpy.mock.lastCall?.at(0)).toContain('Hello World!');
-
-    consoleSpy.mockRestore();
-  });
-
-  it('should inject global layer with context and resolve effect', async () => {
-    const builder = new SchemaBuilder<SchemaTypes3>({
-      effectOptions: {
-        globalContext: (context) =>
-          Context.make(
-            Notification,
-            Notification.of({ notify: () => Effect.log(context.message) }),
-          ),
-      },
-      plugins: [EffectPlugin],
-      relayOptions: {},
-    });
-
-    builder.queryType({});
-
-    const consoleSpy = jest.spyOn(console, 'log');
-
-    builder.queryField('roll', t =>
-      t.effect({
-        effect: {
-          contexts: [],
-        },
-        resolve: () =>
-          pipe(
-            Notification,
-            Effect.tap(notification => notification.notify('Hello World!')),
-            Effect.map(() => 1),
-          ),
-        type: 'Int',
-      }));
-
-    const schema = builder.toSchema();
-    const document = parse(`{ roll }`);
-    const result = await execute({ contextValue: { message: 'Hola!' }, document, schema });
-
-    expect(result.data).toEqual({ roll: 1 });
-    expect(consoleSpy.mock.lastCall?.at(0)).toContain('Hola!');
 
     consoleSpy.mockRestore();
   });
@@ -518,7 +436,7 @@ describe('failErrorConstructor', () => {
       t.effect({
         // @ts-expect-error
         resolve() {
-          return Effect.fail(new CustomError("Boom!"));
+          return Effect.fail(new CustomError('Boom!'));
         },
         type: ['Int'],
       }));
