@@ -31,8 +31,8 @@ declare global {
     }
 
     export interface UserSchemaTypes {
-      EffectGlobalContext: Context.Context<any>;
-      EffectGlobalLayer: Layer.Layer<never, never, any>;
+      EffectGlobalContext: Context.Context<never>;
+      EffectGlobalLayer: Layer.Layer<never, never, never>;
     }
 
     export interface ExtendDefaultTypes<PartialTypes extends Partial<UserSchemaTypes>> {
