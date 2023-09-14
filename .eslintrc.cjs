@@ -3,7 +3,6 @@ const { typescript, ...restDprintOptions } = require('./dprint.json');
 
 module.exports = {
   extends: [
-    'plugin:perfectionist/recommended-natural',
     'plugin:@typescript-eslint/recommended',
   ],
   parser: '@typescript-eslint/parser',
