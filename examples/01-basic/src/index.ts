@@ -4,9 +4,9 @@ import { createYoga } from 'graphql-yoga';
 import { createServer } from 'node:http';
 import EffectPlugin from 'pothos-plugin-effect';
 
-import { Dice } from './Dice.js';
-import { FetchLive } from './Fetch.js';
-import { GitHub, GitHubLive, GitHubStub } from './GitHub.js';
+import { Dice } from './Dice';
+import { FetchLive } from './Fetch';
+import { GitHub, GitHubLive, GitHubStub } from './GitHub';
 
 const builder = new SchemaBuilder({
   plugins: [EffectPlugin],

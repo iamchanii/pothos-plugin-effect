@@ -14,7 +14,7 @@ import type {
   ShapeFromTypeParam,
   TypeParam,
 } from '@pothos/core';
-import type { Context as EffectContext, Layer as EffectLayer, Option as EffectOption, Runtime } from 'effect';
+import type { Context as EffectContext, Layer as EffectLayer, Option as EffectOption } from 'effect';
 import type { GraphQLResolveInfo as OriginGraphQLResolveInfo } from 'graphql';
 import type { IsEqual, NotAnyType } from 'type-plus';
 

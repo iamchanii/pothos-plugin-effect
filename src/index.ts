@@ -1,7 +1,7 @@
 import SchemaBuilder, { BasePlugin, SchemaTypes } from '@pothos/core';
 
-import './field-builder.ts';
-import './global-types.ts';
+import './field-builder';
+import './global-types';
 
 const pluginName = 'effect';
 

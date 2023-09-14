@@ -3,8 +3,8 @@ import RelayPlugin, { resolveArrayConnection } from '@pothos/plugin-relay';
 import { Context, Effect, Layer, Option, pipe } from 'effect';
 import { execute, parse } from 'graphql';
 
-import EffectPlugin from '../index.ts';
-import { Dice, Notification } from './fixtures/services.ts';
+import EffectPlugin from '../index';
+import { Dice, Notification } from './fixtures/services';
 
 interface SchemaTypes {
   Context: {

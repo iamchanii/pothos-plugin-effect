@@ -5,8 +5,8 @@ import { createYoga } from 'graphql-yoga';
 import { createServer } from 'node:http';
 import EffectPlugin from 'pothos-plugin-effect';
 
-import { FetchLive } from './Fetch.js';
-import { ForbiddenUser, GitHub, GitHubLive, NotFound } from './GitHub.js';
+import { FetchLive } from './Fetch';
+import { ForbiddenUser, GitHub, GitHubLive, NotFound } from './GitHub';
 
 const builder = new SchemaBuilder({
   plugins: [ErrorsPlugin, EffectPlugin],

@@ -1,6 +1,6 @@
 import { Context, Effect, Layer, pipe } from 'effect';
 
-import { Fetch } from './Fetch.js';
+import { Fetch } from './Fetch';
 
 export class NotFound extends Error {
   readonly _tag = 'NotFound';

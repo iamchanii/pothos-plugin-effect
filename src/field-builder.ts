@@ -3,7 +3,7 @@ import { ConnectionShape } from '@pothos/plugin-relay';
 import { Cause, Context, Effect, Exit, Function, Layer, Option, pipe } from 'effect';
 import { GraphQLResolveInfo } from 'graphql';
 
-import type * as EffectPluginTypes from './types.js';
+import type * as EffectPluginTypes from './types';
 
 // Check if result is a failure, if so, throw it.
 // If custom FailErrorConstructor is provided, use it to throw error.

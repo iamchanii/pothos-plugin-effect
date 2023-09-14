@@ -16,8 +16,8 @@ import type {
 } from '@pothos/core';
 import type { Context, Layer } from 'effect';
 
-import type { EffectPlugin } from './index.js';
-import type * as EffectPluginTypes from './types.js';
+import type { EffectPlugin } from './index';
+import type * as EffectPluginTypes from './types';
 
 /* eslint-disable @typescript-eslint/no-namespace */
 declare global {
