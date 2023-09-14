@@ -112,7 +112,7 @@ export type FieldOptions<
   & {
     effect?: {
       contexts?: ContextsShape;
-      failErrorConstructor?: { new(message: string): unknown };
+      failErrorConstructor?: { new(...args: any[]): unknown };
       layers?: LayersShape;
       services?: ServiceEntriesShape;
     };
@@ -210,7 +210,7 @@ export type ConnectionFieldOptions<
 export type ShapeFromConnection<T> = T extends { shape: unknown } ? T['shape'] : never;
 
 export type PluginOptions<Types extends SchemaTypes> = EmptyToOptional<
-  & { defaultFailErrorConstructor?: { new(message: string): unknown } }
+  & { defaultFailErrorConstructor?: { new(...args: any[]): unknown } }
   & IsNever<
     Infer.Context<Types['EffectGlobalContext']>,
     { globalContext?: never },

@@ -16,7 +16,7 @@ function checkAndThrowResultIfFailure<E, A>(
     const cause = Cause.unannotate(result.cause);
 
     // TODO: shoud it handle empty/die/interrupt/etc cases?
-    if (Cause.isFailType(cause) && cause.error as unknown instanceof Error) {
+    if (Cause.isFailType(cause) && (cause.error as unknown) instanceof Error) {
       throw cause.error;
     }
 
