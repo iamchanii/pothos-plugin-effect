@@ -16,7 +16,7 @@ import type {
 } from '@pothos/core';
 import type { Context as EffectContext, Layer as EffectLayer, Option as EffectOption } from 'effect';
 import type { GraphQLResolveInfo as OriginGraphQLResolveInfo } from 'graphql';
-import type { IsEqual, NotAnyType } from 'type-plus';
+import type { IsEqual, IsNever, NotAnyType } from 'type-plus';
 
 import { Effect } from 'effect';
 
@@ -209,8 +209,16 @@ export type ConnectionFieldOptions<
 
 export type ShapeFromConnection<T> = T extends { shape: unknown } ? T['shape'] : never;
 
-export type PluginOptions<Types extends SchemaTypes> = EmptyToOptional<{
-  defaultFailErrorConstructor?: { new(message: string): unknown };
-  globalContext?: Types['EffectGlobalContext'];
-  globalLayer?: Types['EffectGlobalLayer'];
-}>;
+export type PluginOptions<Types extends SchemaTypes> = EmptyToOptional<
+  & { defaultFailErrorConstructor?: { new(message: string): unknown } }
+  & IsNever<
+    Infer.Context<Types['EffectGlobalContext']>,
+    { globalContext?: never },
+    { globalContext: Types['EffectGlobalContext'] }
+  >
+  & IsNever<
+    Infer.Layer<Types['EffectGlobalLayer']>,
+    { globalLayer?: never },
+    { globalLayer: Types['EffectGlobalLayer'] }
+  >
+>;
