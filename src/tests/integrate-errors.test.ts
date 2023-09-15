@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/ban-types */
 import SchemaBuilder from '@pothos/core';
 import ErrorsPlugin from '@pothos/plugin-errors';
 import EffectPlugin from '../index';

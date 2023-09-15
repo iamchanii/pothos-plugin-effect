@@ -6,7 +6,6 @@ import EffectPlugin from '../index';
 import { Dice } from './fixtures/services';
 
 describe('essential', () => {
-  // eslint-disable-next-line @typescript-eslint/ban-types
   let builder: InstanceType<typeof SchemaBuilder<{}>>;
 
   beforeEach(() => {
