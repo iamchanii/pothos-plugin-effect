@@ -292,7 +292,6 @@ it('should return data as error type when field effect throw error, failErrorCon
   }`);
   const result = await execute({ document, schema });
 
-  console.log(result.errors);
   expect(result.data).toEqual({
     totalUserCount: {
       __typename: 'UnexpectedError',
