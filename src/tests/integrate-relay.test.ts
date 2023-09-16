@@ -10,6 +10,7 @@ beforeEach(() => {
   builder = new SchemaBuilder<{}>({
     plugins: [RelayPlugin, EffectPlugin],
     relayOptions: {},
+    prisma: {} as never,
   });
 
   builder.queryType({});

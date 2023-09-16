@@ -12,6 +12,7 @@ describe('essential', () => {
     builder = new SchemaBuilder({
       plugins: [EffectPlugin],
       relayOptions: {},
+      prisma: {} as never,
     });
 
     builder.queryType({});
@@ -357,6 +358,7 @@ describe('global', () => {
       effectOptions: {
         globalContext: Context.make(Dice, Dice.of({ roll: () => Effect.succeed(42) })),
       },
+      prisma: {} as never,
     });
 
     builder.queryType({
@@ -421,6 +423,7 @@ describe('global', () => {
       effectOptions: {
         globalLayer: Layer.succeed(Dice, Dice.of({ roll: () => Effect.succeed(42) })),
       },
+      prisma: {} as never,
     });
 
     builder.queryType({

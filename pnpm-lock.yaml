@@ -4,6 +4,11 @@ settings:
   autoInstallPeers: true
   excludeLinksFromLockfile: false
 
+patchedDependencies:
+  '@pothos/plugin-prisma@3.59.2':
+    hash: pw3vmkwtcxz7llwguvfwsq4qie
+    path: patches/@pothos__plugin-prisma@3.59.2.patch
+
 importers:
 
   .:
@@ -18,9 +23,15 @@ importers:
       '@pothos/plugin-errors':
         specifier: ^3.11.1
         version: 3.11.1(@pothos/core@3.35.0)(graphql@16.8.0)
+      '@pothos/plugin-prisma':
+        specifier: ^3.59.2
+        version: 3.59.2(patch_hash=pw3vmkwtcxz7llwguvfwsq4qie)(@pothos/core@3.35.0)(@prisma/client@5.3.0)(graphql@16.8.0)(typescript@5.2.2)
       '@pothos/plugin-relay':
         specifier: ^3.43.1
         version: 3.43.1(@pothos/core@3.35.0)(graphql@16.8.0)
+      '@prisma/client':
+        specifier: ^5.3.0
+        version: 5.3.0(prisma@5.3.0)
       '@swc/core':
         specifier: ^1.3.84
         version: 1.3.84
@@ -57,9 +68,15 @@ importers:
       nanobundle:
         specifier: ^1.6.0
         version: 1.6.0(typescript@5.2.2)
+      prisma:
+        specifier: ^5.3.0
+        version: 5.3.0
       release-it:
         specifier: ^16.1.5
         version: 16.1.5
+      tsx:
+        specifier: ^3.12.7
+        version: 3.12.7
       typescript:
         specifier: ^5.2.2
         version: 5.2.2
@@ -1402,6 +1419,25 @@ packages:
       '@pothos/core': 3.35.0(graphql@16.8.0)
       graphql: 16.8.0
 
+  /@pothos/plugin-prisma@3.59.2(patch_hash=pw3vmkwtcxz7llwguvfwsq4qie)(@pothos/core@3.35.0)(@prisma/client@5.3.0)(graphql@16.8.0)(typescript@5.2.2):
+    resolution: {integrity: sha512-gbOEFKxCuvMTd9n3TmZ3TZUybT8m43EN0DBA2IVdsiTeaj/C3AWzewrt1bZ6jjNbqKElKRmOVg/NsdoEdoxefA==}
+    hasBin: true
+    peerDependencies:
+      '@pothos/core': '*'
+      '@prisma/client': '*'
+      graphql: '>=15.1.0'
+      typescript: '>=4.7.2'
+    dependencies:
+      '@pothos/core': 3.35.0(graphql@16.8.0)
+      '@prisma/client': 5.3.0(prisma@5.3.0)
+      '@prisma/generator-helper': 5.3.0
+      graphql: 16.8.0
+      typescript: 5.2.2
+    transitivePeerDependencies:
+      - supports-color
+    dev: true
+    patched: true
+
   /@pothos/plugin-relay@3.43.1(@pothos/core@3.35.0)(graphql@16.8.0):
     resolution: {integrity: sha512-T5oFVpTIQW69v2FhXhaxmX3BkqJqONy/wnvtBY110JhpbE8Qa04lDglufr56q0Kkv8CGXxl4387ZeX7NgGrZ7A==}
     peerDependencies:
@@ -1410,6 +1446,50 @@ packages:
     dependencies:
       '@pothos/core': 3.35.0(graphql@16.8.0)
       graphql: 16.8.0
+    dev: true
+
+  /@prisma/client@5.3.0(prisma@5.3.0):
+    resolution: {integrity: sha512-cduYBlwj6oBfAUx2OI5i7t3NlpVeOtkN7pAqv0cw0B6gs4y8cY1mr8ZYywja0NUCOCqEWDkcZWBTVBwm6mnRIw==}
+    engines: {node: '>=16.13'}
+    requiresBuild: true
+    peerDependencies:
+      prisma: '*'
+    peerDependenciesMeta:
+      prisma:
+        optional: true
+    dependencies:
+      '@prisma/engines-version': 5.3.0-36.e90b936d84779543cbe0e494bc8b9d7337fad8e4
+      prisma: 5.3.0
+    dev: true
+
+  /@prisma/debug@5.3.0:
+    resolution: {integrity: sha512-2Zxa9aVqSn4GKI1TU6aL6WaGZQJZGeEaBxKIpJI4uykJak7pMeH2Q/xbH6oRuKpHhK1SkRTiEi0GnWQ7XrMyLw==}
+    dependencies:
+      '@types/debug': 4.1.8
+      debug: 4.3.4
+      strip-ansi: 6.0.1
+    transitivePeerDependencies:
+      - supports-color
+    dev: true
+
+  /@prisma/engines-version@5.3.0-36.e90b936d84779543cbe0e494bc8b9d7337fad8e4:
+    resolution: {integrity: sha512-uftIog5FQ/OUR8Vb9TzpNBJ6L+zJnBgmd1A0uPJUzuvGMU32UmeyobpdXVzST5UprKryTdWOYXQFVyiQ2OU4Nw==}
+    dev: true
+
+  /@prisma/engines@5.3.0:
+    resolution: {integrity: sha512-3U3u/pa+QYfrV2z2rU6cBmzOZYPVEh1cXvg35PbaYFBQipFep54tp+mD9KJhlouT57pMKPERgjcPFR+UZ/BWjg==}
+    requiresBuild: true
+    dev: true
+
+  /@prisma/generator-helper@5.3.0:
+    resolution: {integrity: sha512-M3wsE6oYBGHPLyMzc64H+/rBAQw3hLIfW478uW4tWxHcucOHcZWRY4Cn91l9Y3FTUqKiIJeETH4c3vl1rdxPRg==}
+    dependencies:
+      '@prisma/debug': 5.3.0
+      '@types/cross-spawn': 6.0.2
+      cross-spawn: 7.0.3
+      kleur: 4.1.5
+    transitivePeerDependencies:
+      - supports-color
     dev: true
 
   /@repeaterjs/repeater@3.0.4:
@@ -1605,6 +1685,18 @@ packages:
       '@babel/types': 7.22.17
     dev: true
 
+  /@types/cross-spawn@6.0.2:
+    resolution: {integrity: sha512-KuwNhp3eza+Rhu8IFI5HUXRP0LIhqH5cAjubUvGXXthh4YYBuP2ntwEX+Cz8GJoZUHlKo247wPWOfA9LYEq4cw==}
+    dependencies:
+      '@types/node': 20.6.0
+    dev: true
+
+  /@types/debug@4.1.8:
+    resolution: {integrity: sha512-/vPO1EPOs306Cvhwv7KfVfYvOJqA/S/AXjaHQiJboCZzcNDb+TIJFN9/2C9DZ//ijSKWioNyUxD792QmDJ+HKQ==}
+    dependencies:
+      '@types/ms': 0.7.31
+    dev: true
+
   /@types/graceful-fs@4.1.6:
     resolution: {integrity: sha512-Sig0SNORX9fdW+bQuTEovKj3uHcUL6LQKbCrrqb1X7J6/ReAbhCXRAhc+SMejhLELFj2QcyuxmUooZ4bt5ReSw==}
     dependencies:
@@ -1644,6 +1736,10 @@ packages:
 
   /@types/minimist@1.2.2:
     resolution: {integrity: sha512-jhuKLIRrhvCPLqwPcx6INqmKeiA5EWrsCOPhrlFSrbrmU4ZMPjj5Ul/oLCMDO98XRUIwVm78xICz4EPCektzeQ==}
+    dev: true
+
+  /@types/ms@0.7.31:
+    resolution: {integrity: sha512-iiUgKzV9AuaEkZqkOLDIvlQiL6ltuZd9tGcW3gwpnX8JbuiuhFlEGmmFXEXkN50Cvq7Os88IY2v0dkDqXYWVgA==}
     dev: true
 
   /@types/node@20.6.0:
@@ -5118,6 +5214,15 @@ packages:
       '@jest/schemas': 29.6.3
       ansi-styles: 5.2.0
       react-is: 18.2.0
+    dev: true
+
+  /prisma@5.3.0:
+    resolution: {integrity: sha512-eLUR2gyKk8iRLAfy1H3Jel4SZQmjauTPTYX4UFFmwrMTrPnQzipspt48s6e45H5PKYq9zT5MQ9qWbkq9Ru4EAg==}
+    engines: {node: '>=16.13'}
+    hasBin: true
+    requiresBuild: true
+    dependencies:
+      '@prisma/engines': 5.3.0
     dev: true
 
   /promise.allsettled@1.0.6:
