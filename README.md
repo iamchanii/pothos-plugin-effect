@@ -28,10 +28,9 @@ builder.queryFields(t => ({
 
 - [Getting Started](./docs/01-getting-started.md)
 - [Context Management](./docs/02-context-management.md)
-- Integrations
-  - Relay Plugin
-  - Errors Plugin
-  - Prisma Plugin
+- Integration with Relay Plugin
+- Integration with Errors Plugin
+- Integration with Prisma Plugin
 
 ## Acknowledges
 
