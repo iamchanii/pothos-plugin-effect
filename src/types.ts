@@ -17,6 +17,7 @@ import type {
   TypeParam,
   typeBrandKey,
 } from '@pothos/core';
+import type { PrismaModelTypes, PrismaInterfaceRef, PrismaObjectRef } from '@pothos/plugin-prisma';
 import type { Context as EffectContext, Layer as EffectLayer, Option as EffectOption } from 'effect';
 import type { GraphQLResolveInfo } from 'graphql';
 import type { IsEqual, IsNever, NotAnyType } from 'type-plus';
@@ -84,9 +85,9 @@ type GetEffectOutputShape<Type, Nullable> = IsEqual<Nullable, true> extends true
   : Type;
 
 export type FieldEffectOptions<
-  ServiceEntriesShape extends readonly [...ServiceEntry[]],
-  ContextsShape extends readonly [...Context[]],
-  LayersShape extends readonly [...Layer[]],
+  ServiceEntriesShape extends readonly [...ServiceEntry[]] = readonly [...ServiceEntry[]],
+  ContextsShape extends readonly [...Context[]] = readonly [...Context[]],
+  LayersShape extends readonly [...Layer[]] = readonly [...Layer[]],
 > = {
   contexts?: ContextsShape;
   layers?: LayersShape;
@@ -232,31 +233,9 @@ export type PluginOptions<Types extends SchemaTypes> = EmptyToOptional<
   >
 >;
 
-export type PrismaRef<Model extends import('@pothos/plugin-prisma').PrismaModelTypes, T = {}> =
-  | import('@pothos/plugin-prisma').PrismaInterfaceRef<Model, T>
-  | import('@pothos/plugin-prisma').PrismaObjectRef<Model, T>;
-
-export interface PrismaModelTypes {
-  Name: string;
-  Shape: {};
-  Include: unknown;
-  Select: unknown;
-  OrderBy: unknown;
-  Where: {};
-  WhereUnique: {};
-  Create: {};
-  Update: {};
-  ListRelations: string;
-  RelationName: string;
-  Relations: Record<
-    string,
-    {
-      Shape: unknown;
-      Name: string;
-      // Types: PrismaModelTypes;
-    }
-  >;
-}
+export type PrismaRef<Model extends PrismaModelTypes, T = {}> =
+  | PrismaInterfaceRef<Model, T>
+  | PrismaObjectRef<Model, T>;
 
 export type WithBrand<T> = T & { [typeBrandKey]: string };
 

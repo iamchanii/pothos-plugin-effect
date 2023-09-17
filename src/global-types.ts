@@ -13,6 +13,7 @@ import type {
   ShapeFromTypeParam,
   TypeParam,
 } from '@pothos/core';
+import { PrismaModelTypes, prismaModelKey } from '@pothos/plugin-prisma';
 import type { Context, Layer } from 'effect';
 
 import type { EffectPlugin } from './index';
@@ -141,10 +142,10 @@ declare global {
           // Pothos Types:
           Args extends InputFieldMap,
           TypeParam extends
-            | EffectPluginTypes.PrismaRef<import('@pothos/plugin-prisma').PrismaModelTypes>
+            | EffectPluginTypes.PrismaRef<PrismaModelTypes>
             | keyof Types['PrismaTypes']
             | [keyof Types['PrismaTypes']]
-            | [EffectPluginTypes.PrismaRef<import('@pothos/plugin-prisma').PrismaModelTypes>],
+            | [EffectPluginTypes.PrismaRef<PrismaModelTypes>],
           Nullable extends FieldNullability<Type>,
           ResolveShape,
           ResolveReturnShape,
@@ -156,13 +157,11 @@ declare global {
           LayersShape extends readonly [...EffectPluginTypes.Layer[]],
           ErrorsShape extends readonly [...any[]],
           // Pothos Types:
-          Model extends import('@pothos/plugin-prisma').PrismaModelTypes =
-            & import('@pothos/plugin-prisma').PrismaModelTypes
+          Model extends PrismaModelTypes =
+            & PrismaModelTypes
             & (TypeParam extends [keyof Types['PrismaTypes']] ? Types['PrismaTypes'][TypeParam[0]]
-              : TypeParam extends [EffectPluginTypes.PrismaRef<import('@pothos/plugin-prisma').PrismaModelTypes>]
-                ? TypeParam[0][typeof import('@pothos/plugin-prisma').prismaModelKey]
-              : TypeParam extends EffectPluginTypes.PrismaRef<import('@pothos/plugin-prisma').PrismaModelTypes>
-                ? TypeParam[typeof import('@pothos/plugin-prisma').prismaModelKey]
+              : TypeParam extends [EffectPluginTypes.PrismaRef<PrismaModelTypes>] ? TypeParam[0][typeof prismaModelKey]
+              : TypeParam extends EffectPluginTypes.PrismaRef<PrismaModelTypes> ? TypeParam[typeof prismaModelKey]
               : TypeParam extends keyof Types['PrismaTypes'] ? Types['PrismaTypes'][TypeParam]
               : never),
         >(

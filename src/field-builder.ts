@@ -1,10 +1,9 @@
 import { FieldKind, ObjectRef, RootFieldBuilder, SchemaTypes } from '@pothos/core';
 import { ConnectionShape } from '@pothos/plugin-relay';
 import { Cause, Context, Effect, Exit, Function, Layer, Option, pipe } from 'effect';
-import { GraphQLResolveInfo } from 'graphql';
 
 import type * as EffectPluginTypes from './types';
-import { queryFromInfo } from '@pothos/plugin-prisma';
+import { GraphQLResolveInfo } from 'graphql';
 
 const fieldBuilderProto = RootFieldBuilder.prototype as PothosSchemaTypes.RootFieldBuilder<
   SchemaTypes,
@@ -113,15 +112,14 @@ function makeEffectLayer(
     layer = Layer.provide(layer, nextLayer) as any;
   });
 
-  return layer;
+  return layer as unknown as Layer.Layer<never, never, never>;
 }
 
 async function resolveEffectField(
   this: typeof fieldBuilderProto,
   fieldResult: any,
   executionContext: any,
-  // FIXME: resolve any types
-  effect: any,
+  effect: EffectPluginTypes.FieldEffectOptions,
   nullable: any,
 ) {
   const effectOptions = this.builder.options.effectOptions;
@@ -132,10 +130,10 @@ async function resolveEffectField(
 
   // Provide layer and context to resolve field effect
   const program = pipe(
-    fieldResult,
+    fieldResult as Effect.Effect<never, never, any>,
     Effect.provideSomeLayer(layer),
     Effect.provideSomeContext(context),
-  ) as Effect.Effect<never, never, any>;
+  );
 
   // Run effect via runPromiseExit to handle error or success value
   const result = await Effect.runPromiseExit(program);
@@ -150,17 +148,15 @@ async function resolveEffectField(
 fieldBuilderProto.effect = function effect({ effect = {}, resolve, ...options }) {
   return this.field({
     ...options,
-    // FIXME: resolve type error
-    // @ts-expect-error
-    resolve: (async (parent: unknown, args: any, context_: any, info: GraphQLResolveInfo) => {
+    resolve: ((parent: any, args: any, context: {}, info: GraphQLResolveInfo) => {
       return resolveEffectField.call(
         this,
-        resolve(parent, args, context_, info),
-        context_,
+        resolve(parent, args, context, info),
+        context,
         effect,
         options.nullable,
       );
-    }),
+    }) as never,
   });
 };
 
@@ -223,9 +219,8 @@ export function capitalize(s: string) {
 fieldBuilderProto.prismaEffect = function prismaEffect({ effect = {}, resolve, ...options }) {
   return this.prismaField({
     ...options,
-    // FIXME: resolve type error
-    // @ts-expect-error
-    resolve: (_query, parent, args, context, info) => {
+    resolve: (async (_query: any, parent: any, args: any, context: {}, info: GraphQLResolveInfo) => {
+      const { queryFromInfo } = await import('@pothos/plugin-prisma');
       const query = queryFromInfo({
         context,
         info,
@@ -239,6 +234,6 @@ fieldBuilderProto.prismaEffect = function prismaEffect({ effect = {}, resolve, .
         effect,
         options.nullable,
       );
-    },
+    }) as never,
   });
 };
