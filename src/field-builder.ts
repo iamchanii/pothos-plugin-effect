@@ -1,9 +1,9 @@
 import { FieldKind, ObjectRef, RootFieldBuilder, SchemaTypes } from '@pothos/core';
-import { ConnectionShape } from '@pothos/plugin-relay';
+import type { ConnectionShape } from '@pothos/plugin-relay';
 import { Cause, Context, Effect, Exit, Function, Layer, Option, pipe } from 'effect';
 
+import type { GraphQLResolveInfo } from 'graphql';
 import type * as EffectPluginTypes from './types';
-import { GraphQLResolveInfo } from 'graphql';
 
 const fieldBuilderProto = RootFieldBuilder.prototype as PothosSchemaTypes.RootFieldBuilder<
   SchemaTypes,
@@ -219,14 +219,7 @@ export function capitalize(s: string) {
 fieldBuilderProto.prismaEffect = function prismaEffect({ effect = {}, resolve, ...options }) {
   return this.prismaField({
     ...options,
-    resolve: (async (_query: any, parent: any, args: any, context: {}, info: GraphQLResolveInfo) => {
-      const { queryFromInfo } = await import('@pothos/plugin-prisma');
-      const query = queryFromInfo({
-        context,
-        info,
-        withUsageCheck: !!this.builder.options.prisma?.onUnusedQuery,
-      });
-
+    resolve: ((query: any, parent: any, args: any, context: {}, info: GraphQLResolveInfo) => {
       return resolveEffectField.call(
         this,
         resolve(query, parent, args, context, info),

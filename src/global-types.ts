@@ -13,7 +13,7 @@ import type {
   ShapeFromTypeParam,
   TypeParam,
 } from '@pothos/core';
-import { PrismaModelTypes, prismaModelKey } from '@pothos/plugin-prisma';
+import type { PrismaModelTypes, prismaModelKey } from '@pothos/plugin-prisma';
 import type { Context, Layer } from 'effect';
 
 import type { EffectPlugin } from './index';
