@@ -4,6 +4,6 @@ T.B.D
 
 ---
 
-**Previous**: [Context Management](./02-context-management.md)
+**Previous**: [Integration with Errors Plugin](./04-integration-with-errors-plugin.md)
 
-**Next**: [Integration with Errors Plugin](./04-integration-with-errors-plugin.md)
+**Next**: [Integration with Prisma Plugin](./05-integration-with-prisma-plugin.md)

@@ -154,7 +154,7 @@ builder.queryFields(t => ({
       return Effect.succeed([
         Option.none(),
         Option.none(),
-        Option.some('task 1'),****
+        Option.some('task 1'),
       ]);
     },
   }),
