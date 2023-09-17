@@ -26,9 +26,8 @@ builder.queryFields(t => ({
 
 ## Documentations
 
-- Getting Started
-- Manage services, contexts and layers
-- Nullablity
+- [Getting Started](./docs/01-getting-started.md)
+- [Context Management](./docs/02-context-management.md)
 - Integrations
   - Relay Plugin
   - Errors Plugin
