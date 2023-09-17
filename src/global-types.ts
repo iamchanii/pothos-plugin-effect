@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/ban-types */
 /* eslint-disable @typescript-eslint/no-unused-vars */
 /* eslint-disable @typescript-eslint/no-empty-interface */
 import type {
@@ -16,8 +15,8 @@ import type {
 } from '@pothos/core';
 import type { Context, Layer } from 'effect';
 
-import type { EffectPlugin } from './index.js';
-import type * as EffectPluginTypes from './types.js';
+import type { EffectPlugin } from './index';
+import type * as EffectPluginTypes from './types';
 
 /* eslint-disable @typescript-eslint/no-namespace */
 declare global {
@@ -31,8 +30,8 @@ declare global {
     }
 
     export interface UserSchemaTypes {
-      EffectGlobalContext: Context.Context<any>;
-      EffectGlobalLayer: Layer.Layer<never, never, any>;
+      EffectGlobalContext: Context.Context<never>;
+      EffectGlobalLayer: Layer.Layer<never, never, never>;
     }
 
     export interface ExtendDefaultTypes<PartialTypes extends Partial<UserSchemaTypes>> {

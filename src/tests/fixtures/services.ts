@@ -5,9 +5,3 @@ export interface Dice {
 }
 
 export const Dice = Context.Tag<Dice>();
-
-export interface Notification {
-  readonly notify: (message: string) => Effect.Effect<never, never, void>;
-}
-
-export const Notification = Context.Tag<Notification>();

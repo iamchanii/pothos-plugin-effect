@@ -10,7 +10,7 @@
   "markdown": {},
   "toml": {},
   "includes": ["**/*.{ts,tsx,js,jsx,cjs,mjs,json,md,toml}"],
-  "excludes": ["**/node_modules", "**/*-lock.json"],
+  "excludes": ["**/node_modules", "**/*-lock.json", "**/dist"],
   "plugins": [
     "https://plugins.dprint.dev/typescript-0.85.0.wasm",
     "https://plugins.dprint.dev/json-0.17.4.wasm",

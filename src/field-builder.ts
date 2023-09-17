@@ -1,8 +1,113 @@
 import { FieldKind, ObjectRef, Resolver, RootFieldBuilder, SchemaTypes } from '@pothos/core';
 import { ConnectionShape } from '@pothos/plugin-relay';
-import { Cause, Context, Effect, Exit, Layer, Option, pipe } from 'effect';
-import { constNull } from 'effect/Function';
+import { Cause, Context, Effect, Exit, Function, Layer, Option, pipe } from 'effect';
 import { GraphQLResolveInfo } from 'graphql';
+
+import type * as EffectPluginTypes from './types';
+
+// Check if result is a failure, if so, throw it.
+// If custom FailErrorConstructor is provided, use it to throw error.
+function checkAndThrowResultIfFailure<E, A>(
+  result: Exit.Exit<E, A>,
+  FailErrorConstructor: { new(message: string): unknown } = Error,
+): asserts result is Exit.Success<E, A> {
+  // Check if result is a failure
+  if (Exit.isFailure(result)) {
+    const cause = Cause.unannotate(result.cause);
+
+    // TODO: shoud it handle empty/die/interrupt/etc cases?
+    if (Cause.isFailType(cause) && (cause.error as unknown) instanceof Error) {
+      throw cause.error;
+    }
+
+    throw new FailErrorConstructor(Cause.pretty(cause));
+  }
+}
+
+// Handle success value(of Exit.Success)
+// based on fields' options.nullable, return the mapped value.
+function handleSuccessValue(
+  value: any,
+  nullable:
+    | { items: boolean; list: boolean }
+    | boolean
+    | undefined,
+): any {
+  if (!nullable) {
+    return value;
+  }
+
+  if (Array.isArray(value)) {
+    return value.map(Option.getOrElse(Function.constNull));
+  }
+
+  if (Option.isOption(value)) {
+    return Option.match(value, {
+      onNone: Function.constNull,
+      onSome: (value) => {
+        if (typeof nullable == 'object' && nullable.items && Array.isArray(value)) {
+          return value.map(Option.getOrElse(Function.constNull));
+        }
+
+        return value;
+      },
+    });
+  }
+
+  throw new TypeError('Unreachable value is occured', { cause: value });
+}
+
+// Make a context for field effect.
+function makeEffectContext(
+  executionContext: any,
+  globalContext: Context.Context<unknown> | undefined,
+  contexts: readonly EffectPluginTypes.Context[] = [],
+  services: readonly EffectPluginTypes.ServiceEntry[] = [],
+) {
+  // If provided, use global context or use empty context
+  let context = globalContext ?? Context.empty();
+
+  // Merge provided field contexts
+  contexts.forEach((nextContextOrContextFunction) => {
+    const nextContext = typeof nextContextOrContextFunction === 'function'
+      ? nextContextOrContextFunction(executionContext)
+      : nextContextOrContextFunction;
+
+    context = Context.merge(context, nextContext);
+  }, context);
+
+  // Add provided field service entries. (entry is a tuple of [tag, service])
+  services.forEach(([tag, nextServiceOrServiceFunction]) => {
+    const nextService = typeof nextServiceOrServiceFunction === 'function'
+      ? nextServiceOrServiceFunction(executionContext)
+      : nextServiceOrServiceFunction;
+
+    context = Context.add(context, tag, nextService);
+  }, context);
+
+  return context;
+}
+
+// Make a layer for field effect.
+function makeEffectLayer(
+  executionContext: any,
+  globalLayer: Layer.Layer<unknown, never, unknown> | undefined,
+  layers: readonly EffectPluginTypes.Layer[] = [],
+) {
+  // If provided, use global layer or use empty layer
+  let layer = globalLayer ?? Layer.context();
+
+  // Provide all provided field layers
+  layers.forEach((nextLayerOrLayerFunction) => {
+    const nextLayer = typeof nextLayerOrLayerFunction === 'function'
+      ? nextLayerOrLayerFunction(executionContext)
+      : nextLayerOrLayerFunction;
+
+    layer = Layer.provide(layer, nextLayer) as any;
+  });
+
+  return layer;
+}
 
 const fieldBuilderProto = RootFieldBuilder.prototype as PothosSchemaTypes.RootFieldBuilder<
   SchemaTypes,
@@ -12,137 +117,28 @@ const fieldBuilderProto = RootFieldBuilder.prototype as PothosSchemaTypes.RootFi
 fieldBuilderProto.effect = function effect({ effect = {}, resolve, ...options }) {
   return this.field({
     ...options,
-    resolve: (async (_parent: any, _args: any, _context: any, _info: GraphQLResolveInfo) => {
+    resolve: (async (parent: unknown, args: any, context_: any, info: GraphQLResolveInfo) => {
       const effectOptions = this.builder.options.effectOptions;
 
-      const result = await pipe(
-        Effect.Do,
-        Effect.bind('context', () => {
-          return pipe(
-            getGlobalContextFromBuilderOptions(),
-            Effect.flatMap(mergeProvidedContexts),
-            Effect.flatMap(addProvidedServices),
-          );
-        }),
-        Effect.bind('layer', () => {
-          return pipe(
-            getGlobalLayerFromBuilderOptions(),
-            Effect.flatMap(provideLayers),
-          );
-        }),
-        Effect.flatMap(({ context, layer }) => {
-          return pipe(
-            resolve(_parent, _args, _context, _info) as Effect.Effect<never, never, any>,
-            Effect.provideLayer(layer),
-            Effect.provideContext(context),
-          );
-        }),
-        Effect.runPromiseExit,
-      );
+      // Make effect context and layer
+      const context = makeEffectContext(context_, effectOptions?.globalContext, effect.contexts, effect.services);
+      const layer = makeEffectLayer(context_, effectOptions?.globalLayer, effect.layers);
 
-      if (Exit.isSuccess(result)) {
-        if (!options.nullable) {
-          return result.value;
-        }
+      // Provide layer and context to resolve field effect
+      const program = pipe(
+        resolve(parent, args, context_, info) as Effect.Effect<never, never, any>,
+        Effect.provideSomeLayer(layer),
+        Effect.provideSomeContext(context),
+      ) as Effect.Effect<never, never, any>;
 
-        if (Array.isArray(result.value)) {
-          return result.value.map(Option.getOrElse(constNull));
-        }
+      // Run effect via runPromiseExit to handle error or success value
+      const result = await Effect.runPromiseExit(program);
 
-        if (Option.isOption(result.value)) {
-          return Option.match(result.value, {
-            onNone: () => null,
-            onSome: (value) => {
-              if (typeof options.nullable === 'object' && options.nullable.items && Array.isArray(value)) {
-                return value.map(Option.getOrElse(constNull));
-              }
+      // Check if result is a failure, if so, throw it.
+      checkAndThrowResultIfFailure(result, effect.failErrorConstructor || effectOptions?.defaultFailErrorConstructor);
 
-              return value;
-            },
-          });
-        }
-      }
-
-      // fixme: result should not be Exit.Exit<never, any>
-      // because never cannot be checked if it's an instanceof Error
-      if (Exit.isFailure(result)) {
-        const cause = Cause.unannotate(result.cause);
-
-        // todo: shoud it handle empty/die/interrupt/etc cases?
-        if (Cause.isFailType(cause) && cause.error as unknown instanceof Error) {
-          throw cause.error;
-        }
-
-        throw new (effect.failErrorConstructor ?? effectOptions?.defaultFailErrorConstructor ?? Error)(
-          Cause.pretty(cause),
-        );
-      }
-
-      throw result as never;
-
-      function getGlobalContextFromBuilderOptions(): Effect.Effect<never, never, Context.Context<any>> {
-        return pipe(
-          Effect.gen(function*(_) {
-            if (typeof effectOptions?.globalContext === 'function') {
-              return effectOptions?.globalContext(_context);
-            }
-
-            if (typeof effectOptions?.globalContext !== 'undefined') {
-              return effectOptions?.globalContext;
-            }
-
-            return Context.empty() as Context.Context<any>;
-          }),
-        );
-      }
-
-      function mergeProvidedContexts(context: Context.Context<any>): Effect.Effect<never, never, Context.Context<any>> {
-        return Effect.reduce(effect.contexts ?? [], context, (acc, context) => {
-          return pipe(
-            acc,
-            Context.merge(typeof context === 'function' ? context(_context) : context),
-            Effect.succeed,
-          );
-        });
-      }
-
-      function addProvidedServices(context: Context.Context<any>): Effect.Effect<never, never, Context.Context<any>> {
-        return Effect.reduce(effect.services ?? [], context, (acc, [tag, service]) => {
-          return pipe(
-            acc,
-            Context.add(tag, typeof service === 'function' ? service(_context) : service),
-            Effect.succeed,
-          );
-        });
-      }
-
-      function getGlobalLayerFromBuilderOptions(): Effect.Effect<never, never, Layer.Layer<never, never, any>> {
-        return pipe(
-          Effect.gen(function*(_) {
-            if (typeof effectOptions?.globalLayer === 'function') {
-              return effectOptions?.globalLayer(_context);
-            }
-
-            if (typeof effectOptions?.globalLayer !== 'undefined') {
-              return effectOptions?.globalLayer;
-            }
-
-            return Layer.context<any>() as Layer.Layer<never, never, any>;
-          }),
-        );
-      }
-
-      function provideLayers(
-        layer: Layer.Layer<never, never, any>,
-      ): Effect.Effect<never, never, Layer.Layer<never, never, any>> {
-        return Effect.reduce(effect.layers ?? [], layer, (acc, layer) => {
-          return pipe(
-            acc,
-            Layer.provide((typeof layer === 'function' ? layer(_context) : layer) as Layer.Layer<never, never, any>),
-            Effect.succeed,
-          );
-        });
-      }
+      // Or not, handle success value
+      return handleSuccessValue(result.value, options.nullable);
     }) as Resolver<any, any, any, any>,
   });
 };

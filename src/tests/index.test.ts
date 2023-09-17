@@ -1,180 +1,59 @@
 import SchemaBuilder from '@pothos/core';
-import RelayPlugin, { resolveArrayConnection } from '@pothos/plugin-relay';
 import { Context, Effect, Layer, Option, pipe } from 'effect';
 import { execute, parse } from 'graphql';
 
-import EffectPlugin from '../index.ts';
-import { Dice, Notification } from './fixtures/services.ts';
+import EffectPlugin from '../index';
+import { Dice } from './fixtures/services';
 
-interface SchemaTypes {
-  Context: {
-    diceResult: number;
-  };
-}
+describe('essential', () => {
+  let builder: InstanceType<typeof SchemaBuilder<{}>>;
 
-let builder: InstanceType<typeof SchemaBuilder<SchemaTypes>>;
+  beforeEach(() => {
+    builder = new SchemaBuilder({
+      plugins: [EffectPlugin],
+      relayOptions: {},
+    });
 
-beforeEach(() => {
-  builder = new SchemaBuilder<SchemaTypes>({
-    plugins: [EffectPlugin],
-    relayOptions: {},
+    builder.queryType({});
   });
 
-  builder.queryType({});
-});
-
-it('should reject Effect if requirements are not met', async () => {
-  builder.queryField('error', t =>
-    t.effect({
-      effect: {
-        contexts: [],
-        services: [],
-      },
-      resolve: () =>
+  it('should return errors if requirements are not met', async () => {
+    builder.queryField('error', t =>
+      t.effect({
+        type: 'Int',
+        effect: {},
         // @ts-expect-error
-        pipe(
-          Dice,
-          Effect.flatMap(dice => dice.roll()),
-        ),
-      type: 'Int',
-    }));
-
-  const schema = builder.toSchema();
-  const document = parse(`{ error }`);
-  const result = await execute({ document, schema });
-
-  expect(result.data).toBeNull();
-  expect(result.errors).not.toBeNull();
-});
-
-describe('effect.services', () => {
-  it('should resolve Effect with injected services', async () => {
-    builder.queryField('roll', t =>
-      t.effect({
-        effect: {
-          services: [
-            [Dice, Dice.of({ roll: () => Effect.succeed(6) })],
-          ],
-        },
-        resolve: () =>
-          pipe(
-            Dice,
-            Effect.flatMap(dice => dice.roll()),
-          ),
-        type: 'Int',
-      }));
-
-    const schema = builder.toSchema();
-    const document = parse(`{ roll }`);
-    const result = await execute({ document, schema });
-
-    expect(result.data).toEqual({ roll: 6 });
-  });
-
-  it('should inject services with context and resolve Effect', async () => {
-    builder.queryField('roll', t =>
-      t.effect({
-        effect: {
-          services: [
-            [Dice, (context: SchemaTypes['Context']) => Dice.of({ roll: () => Effect.succeed(context.diceResult) })],
-          ],
-        },
-        resolve: () =>
-          pipe(
-            Dice,
-            Effect.flatMap(dice => dice.roll()),
-          ),
-        type: 'Int',
-      }));
-
-    const schema = builder.toSchema();
-    const document = parse(`{ roll }`);
-    const result = await execute({
-      contextValue: { diceResult: 42 } satisfies SchemaTypes['Context'],
-      document,
-      schema,
-    });
-
-    expect(result.data).toEqual({ roll: 42 });
-  });
-});
-
-describe('effect.contexts', () => {
-  it('should resolve Effect with injected contexts', async () => {
-    builder.queryField('roll', t =>
-      t.effect({
-        effect: {
-          contexts: [
-            pipe(
-              Context.empty(),
-              Context.add(Dice, Dice.of({ roll: () => Effect.succeed(5) })),
-            ),
-          ],
-        },
-        resolve: () =>
-          pipe(
-            Dice,
-            Effect.flatMap(dice => dice.roll()),
-          ),
-        type: 'Int',
-      }));
-
-    const schema = builder.toSchema();
-    const document = parse(`{ roll }`);
-    const result = await execute({ document, schema });
-
-    expect(result.data).toEqual({ roll: 5 });
-  });
-
-  it('should inject contexts with context and resolve Effect', async () => {
-    builder.queryField('roll', t =>
-      t.effect({
-        effect: {
-          contexts: [
-            (context: SchemaTypes['Context']) =>
-              pipe(
-                Context.empty(),
-                Context.add(Dice, Dice.of({ roll: () => Effect.succeed(context.diceResult) })),
-              ),
-          ],
-        },
-        resolve: () =>
-          pipe(
-            Dice,
-            Effect.flatMap(dice => dice.roll()),
-          ),
-        type: 'Int',
-      }));
-
-    const schema = builder.toSchema();
-    const document = parse(`{ roll }`);
-    const result = await execute({
-      contextValue: { diceResult: 42 } satisfies SchemaTypes['Context'],
-      document,
-      schema,
-    });
-
-    expect(result.data).toEqual({ roll: 42 });
-  });
-});
-
-describe('effect.layers', () => {
-  it('should resolve Effect with injected layers', async () => {
-    builder.queryField('roll', t =>
-      t.effect({
-        effect: {
-          layers: [
-            Layer.succeed(Dice, Dice.of({ roll: () => Effect.succeed(6) })),
-          ],
-        },
-        // FIXME: After update effect/io, To avoid type error, should be use function instead of arrow function
         resolve() {
           return pipe(
             Dice,
             Effect.flatMap(dice => dice.roll()),
           );
         },
+      }));
+
+    const schema = builder.toSchema();
+    const document = parse(`{ error }`);
+    const result = await execute({ document, schema });
+
+    expect(result.data).toBeNull();
+    expect(result.errors).not.toBeNull();
+  });
+
+  it('should return data if reqruirment provided via context', async () => {
+    builder.queryField('roll', t =>
+      t.effect({
         type: 'Int',
+        effect: {
+          contexts: [
+            Context.make(Dice, Dice.of({ roll: () => Effect.succeed(6) })),
+          ],
+        },
+        resolve() {
+          return pipe(
+            Dice,
+            Effect.flatMap(dice => dice.roll()),
+          );
+        },
       }));
 
     const schema = builder.toSchema();
@@ -184,225 +63,162 @@ describe('effect.layers', () => {
     expect(result.data).toEqual({ roll: 6 });
   });
 
-  it('should inject layers with context and resolve Effect', async () => {
+  it('should return data if reqruirment provided via service', async () => {
     builder.queryField('roll', t =>
       t.effect({
+        type: 'Int',
         effect: {
-          layers: [
-            (context: SchemaTypes['Context']) =>
-              Layer.succeed(
-                Dice,
-                Dice.of({ roll: () => Effect.succeed(context.diceResult) }),
-              ),
+          services: [
+            [Dice, Dice.of({ roll: () => Effect.succeed(6) })],
           ],
         },
-        resolve: () =>
-          pipe(
+        resolve() {
+          return pipe(
             Dice,
             Effect.flatMap(dice => dice.roll()),
-          ),
+          );
+        },
+      }));
+
+    const schema = builder.toSchema();
+    const document = parse(`{ roll }`);
+    const result = await execute({ document, schema });
+
+    expect(result.data).toEqual({ roll: 6 });
+  });
+
+  it('should return data if reqruirment provided via layer', async () => {
+    builder.queryField('roll', t =>
+      t.effect({
         type: 'Int',
+        effect: {
+          layers: [
+            Layer.succeed(Dice, Dice.of({ roll: () => Effect.succeed(6) })),
+          ],
+        },
+        resolve() {
+          return pipe(
+            Dice,
+            Effect.flatMap(dice => dice.roll()),
+          );
+        },
+      }));
+
+    const schema = builder.toSchema();
+    const document = parse(`{ roll }`);
+    const result = await execute({ document, schema });
+
+    expect(result.data).toEqual({ roll: 6 });
+  });
+
+  it('should return data if reqruirment provided via context with execution context', async () => {
+    builder.queryField('roll', t =>
+      t.effect({
+        type: 'Int',
+        effect: {
+          contexts: [
+            (context: any) => Context.make(Dice, Dice.of({ roll: () => Effect.succeed(context.diceResult) })),
+          ],
+        },
+        resolve() {
+          return pipe(
+            Dice,
+            Effect.flatMap(dice => dice.roll()),
+          );
+        },
       }));
 
     const schema = builder.toSchema();
     const document = parse(`{ roll }`);
     const result = await execute({
-      contextValue: { diceResult: 42 } satisfies SchemaTypes['Context'],
       document,
       schema,
+      contextValue: { diceResult: 42 },
     });
 
     expect(result.data).toEqual({ roll: 42 });
   });
-});
 
-describe('effectOptions.globalLayer', () => {
-  interface SchemaTypes2 {
-    Context: {
-      message: string;
-    };
-    EffectGlobalLayer: Layer.Layer<never, never, Notification>;
-  }
-
-  it('should resolve Effect with injected global layer', async () => {
-    const builder = new SchemaBuilder<SchemaTypes2>({
-      effectOptions: {
-        globalLayer: Layer.succeed(
-          Notification,
-          Notification.of({ notify: (message) => Effect.log(message) }),
-        ),
-      },
-      plugins: [EffectPlugin],
-      relayOptions: {},
-    });
-
-    builder.queryType({});
-
-    const consoleSpy = jest.spyOn(console, 'log');
-
+  it('should return data if reqruirment provided via service with execution context', async () => {
     builder.queryField('roll', t =>
       t.effect({
-        effect: {
-          layers: [],
-        },
-        resolve: () =>
-          pipe(
-            Notification,
-            Effect.tap(notification => notification.notify('Hello World!')),
-            Effect.map(() => 1),
-          ),
         type: 'Int',
+        effect: {
+          services: [
+            [Dice, (context: any) => Dice.of({ roll: () => Effect.succeed(context.diceResult) })],
+          ],
+        },
+        resolve() {
+          return pipe(
+            Dice,
+            Effect.flatMap(dice => dice.roll()),
+          );
+        },
+      }));
+
+    const schema = builder.toSchema();
+    const document = parse(`{ roll }`);
+    const result = await execute({
+      document,
+      schema,
+      contextValue: { diceResult: 42 },
+    });
+
+    expect(result.data).toEqual({ roll: 42 });
+  });
+
+  it('should return data if reqruirment provided via layer with execution context', async () => {
+    builder.queryField('roll', t =>
+      t.effect({
+        type: 'Int',
+        effect: {
+          layers: [
+            (context: any) => Layer.succeed(Dice, Dice.of({ roll: () => Effect.succeed(context.diceResult) })),
+          ],
+        },
+        resolve() {
+          return pipe(
+            Dice,
+            Effect.flatMap(dice => dice.roll()),
+          );
+        },
+      }));
+
+    const schema = builder.toSchema();
+    const document = parse(`{ roll }`);
+    const result = await execute({
+      document,
+      schema,
+      contextValue: {
+        diceResult: 42,
+      },
+    });
+
+    expect(result.data).toEqual({ roll: 42 });
+  });
+
+  it('should return errors when effect return Option<T> and nullable is not truthy', async () => {
+    builder.queryField('roll', t =>
+      t.effect({
+        type: 'Int',
+        // @ts-expect-error
+        resolve: () => Effect.succeed(Option.some(6)),
       }));
 
     const schema = builder.toSchema();
     const document = parse(`{ roll }`);
     const result = await execute({ document, schema });
 
-    expect(result.data).toEqual({ roll: 1 });
-    expect(consoleSpy.mock.lastCall?.at(0)).toContain('Hello World!');
-
-    consoleSpy.mockRestore();
+    expect(result.data).toBeNull();
+    expect(result.errors).not.toBeNull();
   });
 
-  it('should inject global layer with context and resolve effect', async () => {
-    const builder = new SchemaBuilder<SchemaTypes2>({
-      effectOptions: {
-        globalLayer: (context) =>
-          Layer.succeed(
-            Notification,
-            Notification.of({ notify: () => Effect.log(context.message) }),
-          ),
-      },
-      plugins: [EffectPlugin],
-      relayOptions: {},
-    });
-
-    builder.queryType({});
-
-    const consoleSpy = jest.spyOn(console, 'log');
-
+  it('should resolve Option.some<T> as result data from result which effect returned', async () => {
     builder.queryField('roll', t =>
       t.effect({
-        effect: {
-          layers: [],
-        },
-        resolve: () =>
-          pipe(
-            Notification,
-            Effect.tap(notification => notification.notify('Hello World!')),
-            Effect.map(() => 1),
-          ),
         type: 'Int',
-      }));
-
-    const schema = builder.toSchema();
-    const document = parse(`{ roll }`);
-    const result = await execute({ contextValue: { message: 'Hola!' }, document, schema });
-
-    expect(result.data).toEqual({ roll: 1 });
-    expect(consoleSpy.mock.lastCall?.at(0)).toContain('Hola!');
-
-    consoleSpy.mockRestore();
-  });
-});
-
-describe('effectOptions.globalContext', () => {
-  interface SchemaTypes3 {
-    Context: {
-      message: string;
-    };
-    EffectGlobalContext: Context.Context<Notification>;
-  }
-
-  it('should resolve Effect with injected global layer', async () => {
-    const builder = new SchemaBuilder<SchemaTypes3>({
-      effectOptions: {
-        globalContext: Context.make(
-          Notification,
-          Notification.of({ notify: (message) => Effect.log(message) }),
-        ),
-      },
-      plugins: [EffectPlugin],
-      relayOptions: {},
-    });
-
-    builder.queryType({});
-
-    const consoleSpy = jest.spyOn(console, 'log');
-
-    builder.queryField('roll', t =>
-      t.effect({
-        effect: {
-          contexts: [],
-        },
-        resolve: () =>
-          pipe(
-            Notification,
-            Effect.tap(notification => notification.notify('Hello World!')),
-            Effect.map(() => 1),
-          ),
-        type: 'Int',
-      }));
-
-    const schema = builder.toSchema();
-    const document = parse(`{ roll }`);
-    const result = await execute({ document, schema });
-
-    expect(result.data).toEqual({ roll: 1 });
-    expect(consoleSpy.mock.lastCall?.at(0)).toContain('Hello World!');
-
-    consoleSpy.mockRestore();
-  });
-
-  it('should inject global layer with context and resolve effect', async () => {
-    const builder = new SchemaBuilder<SchemaTypes3>({
-      effectOptions: {
-        globalContext: (context) =>
-          Context.make(
-            Notification,
-            Notification.of({ notify: () => Effect.log(context.message) }),
-          ),
-      },
-      plugins: [EffectPlugin],
-      relayOptions: {},
-    });
-
-    builder.queryType({});
-
-    const consoleSpy = jest.spyOn(console, 'log');
-
-    builder.queryField('roll', t =>
-      t.effect({
-        effect: {
-          contexts: [],
-        },
-        resolve: () =>
-          pipe(
-            Notification,
-            Effect.tap(notification => notification.notify('Hello World!')),
-            Effect.map(() => 1),
-          ),
-        type: 'Int',
-      }));
-
-    const schema = builder.toSchema();
-    const document = parse(`{ roll }`);
-    const result = await execute({ contextValue: { message: 'Hola!' }, document, schema });
-
-    expect(result.data).toEqual({ roll: 1 });
-    expect(consoleSpy.mock.lastCall?.at(0)).toContain('Hola!');
-
-    consoleSpy.mockRestore();
-  });
-});
-
-describe('Option', () => {
-  it('should resolve Option<T> to T if Some', async () => {
-    builder.queryField('roll', t =>
-      t.effect({
         nullable: true,
         resolve: () => Effect.succeed(Option.some(6)),
-        type: 'Int',
       }));
 
     const schema = builder.toSchema();
@@ -410,15 +226,14 @@ describe('Option', () => {
     const result = await execute({ document, schema });
 
     expect(result.data).toEqual({ roll: 6 });
-    expect(result.errors).toBeUndefined();
   });
 
-  it('should resolve Option<T> to null if None', async () => {
+  it('should resolve Option.none<T> as return data from result which effect returned', async () => {
     builder.queryField('roll', t =>
       t.effect({
+        type: 'Int',
         nullable: true,
         resolve: () => Effect.succeed(Option.none()),
-        type: 'Int',
       }));
 
     const schema = builder.toSchema();
@@ -426,12 +241,12 @@ describe('Option', () => {
     const result = await execute({ document, schema });
 
     expect(result.data).toEqual({ roll: null });
-    expect(result.errors).toBeUndefined();
   });
 
-  it('should resolve Option<T>[]', async () => {
+  it('should resolve Option.some<T>[] as return data from result which effect returned', async () => {
     builder.queryField('roll', t =>
       t.effect({
+        type: ['Int'],
         nullable: { items: true, list: false },
         resolve: () =>
           Effect.succeed([
@@ -440,7 +255,6 @@ describe('Option', () => {
             Option.none(),
             Option.some(4),
           ]),
-        type: ['Int'],
       }));
 
     const schema = builder.toSchema();
@@ -448,22 +262,21 @@ describe('Option', () => {
     const result = await execute({ document, schema });
 
     expect(result.data).toEqual({ roll: [1, 2, null, 4] });
-    expect(result.errors).toBeUndefined();
   });
 
-  it('should resolve Option<T[]>', async () => {
+  it('should resolve Option.some<T[]> as return data from result which effect returned', async () => {
     builder.queryField('roll', t =>
       t.effect({
+        type: ['Int'],
         nullable: { items: false, list: true },
         resolve: () => Effect.succeed(Option.some([1, 2, 3, 4])),
-        type: ['Int'],
       }));
 
     builder.queryField('roll2', t =>
       t.effect({
+        type: ['Int'],
         nullable: { items: false, list: true },
         resolve: () => Effect.succeed(Option.none()),
-        type: ['Int'],
       }));
 
     const schema = builder.toSchema();
@@ -471,12 +284,12 @@ describe('Option', () => {
     const result = await execute({ document, schema });
 
     expect(result.data).toEqual({ roll: [1, 2, 3, 4], roll2: null });
-    expect(result.errors).toBeUndefined();
   });
 
-  it('should resolve Option<Option<T>[]>', async () => {
+  it('should resolve Option<Option<T>[]> as return data', async () => {
     builder.queryField('roll', t =>
       t.effect({
+        type: ['Int'],
         nullable: { items: true, list: true },
         resolve: () =>
           Effect.succeed(Option.some([
@@ -485,14 +298,13 @@ describe('Option', () => {
             Option.none(),
             Option.some(4),
           ])),
-        type: ['Int'],
       }));
 
     builder.queryField('roll2', t =>
       t.effect({
+        type: ['Int'],
         nullable: { items: true, list: true },
         resolve: () => Effect.succeed(Option.none()),
-        type: ['Int'],
       }));
 
     const schema = builder.toSchema();
@@ -500,134 +312,135 @@ describe('Option', () => {
     const result = await execute({ document, schema });
 
     expect(result.data).toEqual({ roll: [1, 2, null, 4], roll2: null });
-    expect(result.errors).toBeUndefined();
   });
 });
 
-describe('failErrorConstructor', () => {
-  class NonError {
-    readonly _tag = 'NonError';
-  }
-
-  class CustomError extends Error {
-    readonly _tag = 'CustomError';
-  }
-
-  it('should preserve the type of error-object', async () => {
-    builder.queryField('roll', t =>
-      t.effect({
-        // @ts-expect-error
-        resolve() {
-          return Effect.fail(new CustomError("Boom!"));
-        },
-        type: ['Int'],
-      }));
-
-    const schema = builder.toSchema();
-    const document = parse(`{ roll }`);
-    const result = await execute({ document, schema });
-
-    expect(result.errors?.at(0)?.originalError).toBeInstanceOf(CustomError);
-    expect(result.errors?.at(0)?.message).toContain('Boom!');
-  });
-
-  it('should catch non-error object', async () => {
-    builder.queryField('roll', t =>
-      t.effect({
-        // @ts-expect-error
-        resolve() {
-          return Effect.fail(new NonError());
-        },
-        type: ['Int'],
-      }));
-
-    const schema = builder.toSchema();
-    const document = parse(`{ roll }`);
-    const result = await execute({ document, schema });
-
-    expect(result.errors?.at(0)?.originalError).toBeInstanceOf(Error);
-    expect(result.errors?.at(0)?.message).toContain('NonError');
-  });
-
-  it('should catch non-error object as custom error using failErrorConstructor', async () => {
-    builder.queryField('roll', t =>
-      t.effect({
-        effect: {
-          failErrorConstructor: CustomError,
-        },
-        // @ts-expect-error
-        resolve() {
-          return Effect.fail(new NonError());
-        },
-        type: ['Int'],
-      }));
-
-    const schema = builder.toSchema();
-    const document = parse(`{ roll }`);
-    const result = await execute({ document, schema });
-
-    expect(result.errors?.at(0)?.originalError).toBeInstanceOf(CustomError);
-    expect(result.errors?.at(0)?.message).toContain('NonError');
-  });
-
-  it('should catch non-error object as custom error using defaultFailErrorConstructor', async () => {
-    builder = new SchemaBuilder<SchemaTypes>({
-      effectOptions: {
-        defaultFailErrorConstructor: CustomError,
-      },
+describe('global', () => {
+  it('should return errors if global context is not provided', async () => {
+    const builder = new SchemaBuilder<{
+      EffectGlobalContext: Context.Context<Dice>;
+    }>({
       plugins: [EffectPlugin],
       relayOptions: {},
+      // @ts-expect-error
+      effectOptions: {},
     });
 
-    builder.queryType({});
-
-    builder.queryField('roll', t =>
-      t.effect({
-        // @ts-expect-error
-        resolve() {
-          return Effect.fail(new NonError());
-        },
-        type: ['Int'],
-      }));
+    builder.queryType({
+      fields: t => ({
+        roll: t.effect({
+          type: 'Int',
+          resolve() {
+            return pipe(
+              Dice,
+              Effect.flatMap(dice => dice.roll()),
+            );
+          },
+        }),
+      }),
+    });
 
     const schema = builder.toSchema();
     const document = parse(`{ roll }`);
     const result = await execute({ document, schema });
 
-    expect(result.errors?.at(0)?.originalError).toBeInstanceOf(CustomError);
-    expect(result.errors?.at(0)?.message).toContain('NonError');
+    expect(result.data).toBeNull();
+    expect(result.errors).not.toBeNull();
   });
-});
 
-describe('effect connection', () => {
-  it('t.effectConnection fields should allow querying for paginated effects', async () => {
-    builder = new SchemaBuilder<SchemaTypes>({
-      effectOptions: {},
-      plugins: [EffectPlugin, RelayPlugin],
+  it('should return data if reqruirment provided via global context', async () => {
+    const builder = new SchemaBuilder<{
+      EffectGlobalContext: Context.Context<Dice>;
+    }>({
+      plugins: [EffectPlugin],
       relayOptions: {},
-    });
-
-    builder.queryType({});
-
-    builder.queryField('roll', t =>
-      t.effectConnection({
-        resolve: (root, args) => Effect.succeed(resolveArrayConnection({ args }, [1, 2, 3, 4])),
-        type: 'Int',
-      }));
-
-    const schema = builder.toSchema();
-    const document = parse(`{ roll { edges { node }} }`);
-    const result = await execute({ document, schema });
-
-    expect(result.data).toEqual({
-      roll: {
-        edges: [
-          { node: 1 },
-          { node: 2 },
-          { node: 3 },
-          { node: 4 },
-        ],
+      effectOptions: {
+        globalContext: Context.make(Dice, Dice.of({ roll: () => Effect.succeed(42) })),
       },
     });
+
+    builder.queryType({
+      fields: t => ({
+        roll: t.effect({
+          type: 'Int',
+          resolve() {
+            return pipe(
+              Dice,
+              Effect.flatMap(dice => dice.roll()),
+            );
+          },
+        }),
+      }),
+    });
+
+    const schema = builder.toSchema();
+    const document = parse(`{ roll }`);
+    const result = await execute({ document, schema });
+
+    expect(result.data).toEqual({ roll: 42 });
+  });
+
+  it('should return errors if global layer is not provided', async () => {
+    const builder = new SchemaBuilder<{
+      EffectGlobalLayer: Layer.Layer<never, never, Dice>;
+    }>({
+      plugins: [EffectPlugin],
+      relayOptions: {},
+      // @ts-expect-error
+      effectOptions: {},
+    });
+
+    builder.queryType({
+      fields: t => ({
+        roll: t.effect({
+          type: 'Int',
+          resolve() {
+            return pipe(
+              Dice,
+              Effect.flatMap(dice => dice.roll()),
+            );
+          },
+        }),
+      }),
+    });
+
+    const schema = builder.toSchema();
+    const document = parse(`{ roll }`);
+    const result = await execute({ document, schema });
+
+    expect(result.data).toBeNull();
+    expect(result.errors).not.toBeNull();
+  });
+
+  it('should return data if reqruirment provided via global layer', async () => {
+    const builder = new SchemaBuilder<{
+      EffectGlobalLayer: Layer.Layer<never, never, Dice>;
+    }>({
+      plugins: [EffectPlugin],
+      relayOptions: {},
+      effectOptions: {
+        globalLayer: Layer.succeed(Dice, Dice.of({ roll: () => Effect.succeed(42) })),
+      },
+    });
+
+    builder.queryType({
+      fields: t => ({
+        roll: t.effect({
+          type: 'Int',
+          resolve() {
+            return pipe(
+              Dice,
+              Effect.flatMap(dice => dice.roll()),
+            );
+          },
+        }),
+      }),
+    });
+
+    const schema = builder.toSchema();
+    const document = parse(`{ roll }`);
+    const result = await execute({ document, schema });
+
+    expect(result.data).toEqual({ roll: 42 });
   });
 });
