@@ -1,8 +1,8 @@
 import SchemaBuilder from '@pothos/core';
 import RelayPlugin, { resolveArrayConnection } from '@pothos/plugin-relay';
 import { Effect } from 'effect';
-import EffectPlugin from '../index';
 import { execute, parse } from 'graphql';
+import EffectPlugin from '../index';
 
 let builder: InstanceType<typeof SchemaBuilder<{}>>;
 

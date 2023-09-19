@@ -1,6 +1,21 @@
 # Integration with Relay Plugin
 
-T.B.D
+If you're using Relay Plugin, you can use `t.effectConnection` method to represent connection field with Effect.
+
+```ts
+import { resolveArrayConnection } from '@pothos/plugin-relay';
+
+builder.queryFields(t => ({
+  exampleConnection: t.effectConnection({
+    type: 'Int',
+    resolve() {
+      return Effect.succeed(
+        resolveArrayConnection({ args }, [1, 2, 3, 4]),
+      );
+    },
+  }),
+}));
+```
 
 ---
 

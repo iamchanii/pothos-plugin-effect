@@ -4,4 +4,4 @@ export interface Dice {
   readonly roll: () => Effect.Effect<never, never, number>;
 }
 
-export const Dice = Context.Tag<Dice>();
+export const Dice = Context.Tag<Dice>('Dice');
