@@ -28,6 +28,7 @@ beforeEach(() => {
     relayOptions: {},
     effectOptions: {},
     errorOptions: {},
+    prisma: {} as never,
   });
 
   builder.queryType({});
@@ -255,6 +256,7 @@ it('should return data as error type when field effect throw error, failErrorCon
     errorOptions: {
       defaultTypes: [UnexpectedError],
     },
+    prisma: {} as never,
   });
 
   builder.queryType({});

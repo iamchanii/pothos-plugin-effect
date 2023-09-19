@@ -7,15 +7,19 @@ import type {
   FieldOptionsFromKind,
   InputFieldMap,
   InputShapeFromFields,
+  ListResolveValue,
+  MaybePromise,
   OutputShape,
   OutputType,
   PluginName,
   SchemaTypes,
   ShapeFromTypeParam,
   TypeParam,
+  typeBrandKey,
 } from '@pothos/core';
+import type { PrismaModelTypes, PrismaInterfaceRef, PrismaObjectRef } from '@pothos/plugin-prisma';
 import type { Context as EffectContext, Layer as EffectLayer, Option as EffectOption } from 'effect';
-import type { GraphQLResolveInfo as OriginGraphQLResolveInfo } from 'graphql';
+import type { GraphQLResolveInfo } from 'graphql';
 import type { IsEqual, IsNever, NotAnyType } from 'type-plus';
 
 import { Effect } from 'effect';
@@ -80,6 +84,17 @@ type GetEffectOutputShape<Type, Nullable> = IsEqual<Nullable, true> extends true
   : IsEqual<Nullable, { items: true; list: true }> extends true ? EffectOption.Option<EffectOption.Option<Type>[]>
   : Type;
 
+export type FieldEffectOptions<
+  ServiceEntriesShape extends readonly [...ServiceEntry[]] = readonly [...ServiceEntry[]],
+  ContextsShape extends readonly [...Context[]] = readonly [...Context[]],
+  LayersShape extends readonly [...Layer[]] = readonly [...Layer[]],
+> = {
+  contexts?: ContextsShape;
+  layers?: LayersShape;
+  services?: ServiceEntriesShape;
+  failErrorConstructor?: { new(...args: any[]): unknown };
+};
+
 export type FieldOptions<
   // Pothos Types:
   Types extends SchemaTypes,
@@ -110,18 +125,13 @@ export type FieldOptions<
     'resolve'
   >
   & {
-    effect?: {
-      contexts?: ContextsShape;
-      failErrorConstructor?: { new(...args: any[]): unknown };
-      layers?: LayersShape;
-      services?: ServiceEntriesShape;
-    };
+    effect?: FieldEffectOptions<ServiceEntriesShape, ContextsShape, LayersShape>;
     errors?: 'errors' extends PluginName ? { types?: ErrorsShape } : never;
     resolve(
       parent: ParentShape,
       args: InputShapeFromFields<Args>,
       context: Types['Context'],
-      info: OriginGraphQLResolveInfo,
+      info: GraphQLResolveInfo,
     ): Effect.Effect<
       GetEffectRequirements<
         Types,
@@ -189,7 +199,7 @@ export type ConnectionFieldOptions<
           parent: ParentShape,
           args: ConnectionArgs,
           context: Types['Context'],
-          info: OriginGraphQLResolveInfo,
+          info: GraphQLResolveInfo,
         ): Effect.Effect<
           GetEffectRequirements<
             Types,
@@ -222,3 +232,109 @@ export type PluginOptions<Types extends SchemaTypes> = EmptyToOptional<
     { globalLayer: Types['EffectGlobalLayer'] }
   >
 >;
+
+export type PrismaRef<Model extends PrismaModelTypes, T = {}> =
+  | PrismaInterfaceRef<Model, T>
+  | PrismaObjectRef<Model, T>;
+
+export type WithBrand<T> = T & { [typeBrandKey]: string };
+
+export type PrismaFieldResolver<
+  Types extends SchemaTypes,
+  Model extends PrismaModelTypes,
+  Parent,
+  Param extends TypeParam<Types>,
+  Args extends InputFieldMap,
+  Nullable extends FieldNullability<Param>,
+  ResolveReturnShape,
+  // Effect Types:
+  ServiceEntriesShape extends readonly [...ServiceEntry[]],
+  ContextsShape extends readonly [...Context[]],
+  LayersShape extends readonly [...Layer[]],
+  ErrorsShape extends readonly [...any[]],
+> = (
+  query: {
+    include?: Model['Include'];
+    select?: Model['Select'];
+  },
+  parent: Parent,
+  args: InputShapeFromFields<Args>,
+  context: Types['Context'],
+  info: GraphQLResolveInfo,
+) => Effect.Effect<
+  GetEffectRequirements<
+    Types,
+    ServiceEntriesShape,
+    ContextsShape,
+    LayersShape
+  >,
+  GetEffectErrors<ErrorsShape>,
+  ShapeFromTypeParam<Types, Param, Nullable> extends infer Shape
+    ? [Shape] extends [[readonly (infer Item)[] | null | undefined]] ? ListResolveValue<Shape, Item, ResolveReturnShape>
+    : MaybePromise<Shape>
+    : never
+>;
+
+export type PrismaFieldOptions<
+  // Pothos Types:
+  Types extends SchemaTypes,
+  ParentShape,
+  Type extends
+    | PrismaRef<PrismaModelTypes>
+    | keyof Types['PrismaTypes']
+    | [keyof Types['PrismaTypes']]
+    | [PrismaRef<PrismaModelTypes>],
+  Model extends PrismaModelTypes,
+  Param extends TypeParam<Types>,
+  Args extends InputFieldMap,
+  Nullable extends FieldNullability<Param>,
+  ResolveShape,
+  ResolveReturnShape,
+  // Effect Types:
+  ServiceEntriesShape extends readonly [...ServiceEntry[]],
+  ContextsShape extends readonly [...Context[]],
+  LayersShape extends readonly [...Layer[]],
+  ErrorsShape extends readonly [...any[]],
+  // Pothos Types:
+  Kind extends FieldKind = FieldKind,
+> = FieldOptionsFromKind<
+  Types,
+  ParentShape,
+  Param,
+  Nullable,
+  Args,
+  Kind,
+  ResolveShape,
+  ResolveReturnShape
+> extends infer FieldOptions ? Omit<FieldOptions, 'resolve' | 'type'> & {
+    type: Type;
+    effect?: FieldEffectOptions<ServiceEntriesShape, ContextsShape, LayersShape>;
+    errors?: 'errors' extends PluginName ? { types?: ErrorsShape } : never;
+    resolve: FieldOptions extends { resolve?: (parent: infer Parent, ...args: any[]) => unknown } ? PrismaFieldResolver<
+        Types,
+        Model,
+        Parent,
+        Param,
+        Args,
+        Nullable,
+        ResolveReturnShape,
+        ServiceEntriesShape,
+        ContextsShape,
+        LayersShape,
+        ErrorsShape
+      >
+      : PrismaFieldResolver<
+        Types,
+        Model,
+        ParentShape,
+        Param,
+        Args,
+        Nullable,
+        ResolveReturnShape,
+        ServiceEntriesShape,
+        ContextsShape,
+        LayersShape,
+        ErrorsShape
+      >;
+  }
+  : never;

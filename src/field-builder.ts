@@ -1,9 +1,15 @@
-import { FieldKind, ObjectRef, Resolver, RootFieldBuilder, SchemaTypes } from '@pothos/core';
-import { ConnectionShape } from '@pothos/plugin-relay';
+import { FieldKind, ObjectRef, RootFieldBuilder, SchemaTypes } from '@pothos/core';
+import type { ConnectionShape } from '@pothos/plugin-relay';
 import { Cause, Context, Effect, Exit, Function, Layer, Option, pipe } from 'effect';
-import { GraphQLResolveInfo } from 'graphql';
 
+import type { GraphQLResolveInfo } from 'graphql';
 import type * as EffectPluginTypes from './types';
+
+const fieldBuilderProto = RootFieldBuilder.prototype as PothosSchemaTypes.RootFieldBuilder<
+  SchemaTypes,
+  unknown,
+  FieldKind
+>;
 
 // Check if result is a failure, if so, throw it.
 // If custom FailErrorConstructor is provided, use it to throw error.
@@ -106,40 +112,51 @@ function makeEffectLayer(
     layer = Layer.provide(layer, nextLayer) as any;
   });
 
-  return layer;
+  return layer as unknown as Layer.Layer<never, never, never>;
 }
 
-const fieldBuilderProto = RootFieldBuilder.prototype as PothosSchemaTypes.RootFieldBuilder<
-  SchemaTypes,
-  unknown,
-  FieldKind
->;
+async function resolveEffectField(
+  this: typeof fieldBuilderProto,
+  fieldResult: any,
+  executionContext: any,
+  effect: EffectPluginTypes.FieldEffectOptions,
+  nullable: any,
+) {
+  const effectOptions = this.builder.options.effectOptions;
+
+  // Make effect context and layer
+  const context = makeEffectContext(executionContext, effectOptions?.globalContext, effect.contexts, effect.services);
+  const layer = makeEffectLayer(executionContext, effectOptions?.globalLayer, effect.layers);
+
+  // Provide layer and context to resolve field effect
+  const program = pipe(
+    fieldResult as Effect.Effect<never, never, any>,
+    Effect.provideSomeLayer(layer),
+    Effect.provideSomeContext(context),
+  );
+
+  // Run effect via runPromiseExit to handle error or success value
+  const result = await Effect.runPromiseExit(program);
+
+  // Check if result is a failure, if so, throw it.
+  checkAndThrowResultIfFailure(result, effect.failErrorConstructor || effectOptions?.defaultFailErrorConstructor);
+
+  // Or not, handle success value
+  return handleSuccessValue(result.value, nullable);
+}
+
 fieldBuilderProto.effect = function effect({ effect = {}, resolve, ...options }) {
   return this.field({
     ...options,
-    resolve: (async (parent: unknown, args: any, context_: any, info: GraphQLResolveInfo) => {
-      const effectOptions = this.builder.options.effectOptions;
-
-      // Make effect context and layer
-      const context = makeEffectContext(context_, effectOptions?.globalContext, effect.contexts, effect.services);
-      const layer = makeEffectLayer(context_, effectOptions?.globalLayer, effect.layers);
-
-      // Provide layer and context to resolve field effect
-      const program = pipe(
-        resolve(parent, args, context_, info) as Effect.Effect<never, never, any>,
-        Effect.provideSomeLayer(layer),
-        Effect.provideSomeContext(context),
-      ) as Effect.Effect<never, never, any>;
-
-      // Run effect via runPromiseExit to handle error or success value
-      const result = await Effect.runPromiseExit(program);
-
-      // Check if result is a failure, if so, throw it.
-      checkAndThrowResultIfFailure(result, effect.failErrorConstructor || effectOptions?.defaultFailErrorConstructor);
-
-      // Or not, handle success value
-      return handleSuccessValue(result.value, options.nullable);
-    }) as Resolver<any, any, any, any>,
+    resolve: ((parent: any, args: any, context: {}, info: GraphQLResolveInfo) => {
+      return resolveEffectField.call(
+        this,
+        resolve(parent, args, context, info),
+        context,
+        effect,
+        options.nullable,
+      );
+    }) as never,
   });
 };
 
@@ -198,3 +215,18 @@ fieldBuilderProto.effectConnection = function connection(
 export function capitalize(s: string) {
   return `${s.slice(0, 1).toUpperCase()}${s.slice(1)}`;
 }
+
+fieldBuilderProto.prismaEffect = function prismaEffect({ effect = {}, resolve, ...options }) {
+  return this.prismaField({
+    ...options,
+    resolve: ((query: any, parent: any, args: any, context: {}, info: GraphQLResolveInfo) => {
+      return resolveEffectField.call(
+        this,
+        resolve(query, parent, args, context, info),
+        context,
+        effect,
+        options.nullable,
+      );
+    }) as never,
+  });
+};

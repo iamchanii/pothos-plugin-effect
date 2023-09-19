@@ -13,6 +13,7 @@ import type {
   ShapeFromTypeParam,
   TypeParam,
 } from '@pothos/core';
+import type { PrismaModelTypes, prismaModelKey } from '@pothos/plugin-prisma';
 import type { Context, Layer } from 'effect';
 
 import type { EffectPlugin } from './index';
@@ -136,6 +137,53 @@ declare global {
           >
         >
         : '@pothos/plugin-relay is required to use this method';
+
+      prismaEffect: 'prisma' extends PluginName ? <
+          // Pothos Types:
+          Args extends InputFieldMap,
+          TypeParam extends
+            | EffectPluginTypes.PrismaRef<PrismaModelTypes>
+            | keyof Types['PrismaTypes']
+            | [keyof Types['PrismaTypes']]
+            | [EffectPluginTypes.PrismaRef<PrismaModelTypes>],
+          Nullable extends FieldNullability<Type>,
+          ResolveShape,
+          ResolveReturnShape,
+          Type extends TypeParam extends [unknown] ? [ObjectRef<Model['Shape']>]
+            : ObjectRef<Model['Shape']>,
+          // Effect Types:
+          ServiceEntriesShape extends readonly [...EffectPluginTypes.ServiceEntry[]],
+          ContextsShape extends readonly [...EffectPluginTypes.Context[]],
+          LayersShape extends readonly [...EffectPluginTypes.Layer[]],
+          ErrorsShape extends readonly [...any[]],
+          // Pothos Types:
+          Model extends PrismaModelTypes =
+            & PrismaModelTypes
+            & (TypeParam extends [keyof Types['PrismaTypes']] ? Types['PrismaTypes'][TypeParam[0]]
+              : TypeParam extends [EffectPluginTypes.PrismaRef<PrismaModelTypes>] ? TypeParam[0][typeof prismaModelKey]
+              : TypeParam extends EffectPluginTypes.PrismaRef<PrismaModelTypes> ? TypeParam[typeof prismaModelKey]
+              : TypeParam extends keyof Types['PrismaTypes'] ? Types['PrismaTypes'][TypeParam]
+              : never),
+        >(
+          options: EffectPluginTypes.PrismaFieldOptions<
+            // Pothos Types:
+            Types,
+            ParentShape,
+            TypeParam,
+            Model,
+            Type,
+            Args,
+            Nullable,
+            ResolveShape,
+            ResolveReturnShape,
+            ServiceEntriesShape,
+            ContextsShape,
+            LayersShape,
+            ErrorsShape,
+            Kind
+          >,
+        ) => FieldRef<unknown>
+        : '@pothos/plugin-prisma is required to use this method';
     }
 
     export interface ConnectionShapeHelper<Types extends SchemaTypes, T, Nullable> {}
