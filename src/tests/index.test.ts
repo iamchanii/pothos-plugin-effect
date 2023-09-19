@@ -15,6 +15,36 @@ describe('essential', () => {
       prisma: {} as never,
     });
 
+    builder.queryField('aaaa', t =>
+      t.effect({
+        type: 'Int',
+        effect: {
+          contexts: [
+            (context: any) =>
+              context.isAdmin
+                ? Context.make(
+                  Dice,
+                  Dice.of({
+                    roll: () => Effect.succeed(6),
+                  }),
+                )
+                : Context.empty() as never,
+          ],
+        },
+        resolve() {
+          // $ExpectType Effect.Effect<Dice, never, number>
+          return pipe(
+            Effect.serviceOption(Dice),
+            Effect.flatMap(maybeDice =>
+              Option.match(maybeDice, {
+                onSome: (dice) => dice.roll(),
+                onNone: () => Effect.succeed(-1),
+              })
+            ),
+          );
+        },
+      }));
+
     builder.queryType({});
   });
 

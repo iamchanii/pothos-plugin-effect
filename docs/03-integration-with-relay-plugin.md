@@ -5,16 +5,15 @@ If you're using Relay Plugin, you can use `t.effectConnection` method to represe
 ```ts
 import { resolveArrayConnection } from '@pothos/plugin-relay';
 
-builder.queryFields(t => ({
-  exampleConnection: t.effectConnection({
+builder.queryField('exampleConnection', t =>
+  t.effectConnection({
     type: 'Int',
     resolve() {
       return Effect.succeed(
         resolveArrayConnection({ args }, [1, 2, 3, 4]),
       );
     },
-  }),
-}));
+  }));
 ```
 
 ---
