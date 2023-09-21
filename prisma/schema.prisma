@@ -15,7 +15,7 @@ generator pothos {
 }
 
 generator effect {
-  provider = "pnpm tsx ./src/prisma/generator.ts"
+  provider = "pnpm tsx ./src/prisma-generator/index.ts"
   output   = "../src/tests/fixtures/prisma-client"
 }
 
