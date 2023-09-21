@@ -7,7 +7,7 @@ builder.queryField('user', t =>
   t.prismaEffect({
     type: 'User',
     resolve() {
-      // $ExpectType Effect.Effect<never, BaseError, never>
+      // $ExpectType Effect.Effect<never, never, User>
       return Effect.promise(() =>
         prisma.user.findUniqueOrThrow({
           ...query,

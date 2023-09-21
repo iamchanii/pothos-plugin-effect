@@ -1,0 +1,1 @@
+export { PrismaEffect } from './generated';

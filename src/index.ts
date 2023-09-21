@@ -3,6 +3,8 @@ import SchemaBuilder, { BasePlugin, SchemaTypes } from '@pothos/core';
 import './field-builder';
 import './global-types';
 
+export * from './types';
+
 const pluginName = 'effect';
 
 export default pluginName;
