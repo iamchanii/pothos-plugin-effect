@@ -7,7 +7,7 @@ export function effectify(modelName: string, operation: string, nullable: boolea
       Effect.serviceOption(PothosEffectPrismaClient),
       Effect.flatMap((maybePrisma) =>
         Option.match(maybePrisma, {
-          onNone: () => Effect.die('...'),
+          onNone: () => Effect.die('PothosEffectPrismaClient is not provided.'),
           onSome: (prisma: any) =>
             pipe(
               Effect.promise(() => prisma[modelName][operation](...args)),

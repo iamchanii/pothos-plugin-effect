@@ -4,6 +4,8 @@ import { Cause, Context, Effect, Exit, Function, Layer, Option, pipe } from 'eff
 
 import type { GraphQLResolveInfo } from 'graphql';
 import type * as EffectPlugin from './';
+import { PrismaClient } from '@pothos/plugin-prisma';
+import { PothosEffectPrismaClient } from './prisma';
 
 const fieldBuilderProto = RootFieldBuilder.prototype as PothosSchemaTypes.RootFieldBuilder<
   SchemaTypes,
@@ -69,6 +71,7 @@ function makeEffectContext(
   globalContext: Context.Context<unknown> | undefined,
   contexts: readonly EffectPlugin.Context[] = [],
   services: readonly EffectPlugin.ServiceEntry[] = [],
+  prismaClient: undefined | PrismaClient | ((ctx: {}) => PrismaClient) = undefined,
 ) {
   // If provided, use global context or use empty context
   let context = globalContext ?? Context.empty();
@@ -90,6 +93,15 @@ function makeEffectContext(
 
     context = Context.add(context, tag, nextService);
   }, context);
+
+  // Add prisma client to context if provided
+  if (prismaClient) {
+    const client = typeof prismaClient === 'function'
+      ? prismaClient(executionContext)
+      : prismaClient;
+
+    context = Context.add(context, PothosEffectPrismaClient, client as never);
+  }
 
   return context;
 }
@@ -125,7 +137,13 @@ async function resolveEffectField(
   const effectOptions = this.builder.options.effectOptions;
 
   // Make effect context and layer
-  const context = makeEffectContext(executionContext, effectOptions?.globalContext, effect.contexts, effect.services);
+  const context = makeEffectContext(
+    executionContext,
+    effectOptions?.globalContext,
+    effect.contexts,
+    effect.services,
+    this.builder.options.prisma?.client,
+  );
   const layer = makeEffectLayer(executionContext, effectOptions?.globalLayer, effect.layers);
 
   // Provide layer and context to resolve field effect
