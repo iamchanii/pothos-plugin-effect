@@ -90,6 +90,7 @@
     }
   },
   "dependencies": {
-    "type-plus": "^7.6.0"
+    "type-plus": "^7.6.0",
+    "ts-morph": "^19.0.0"
   }
 }
