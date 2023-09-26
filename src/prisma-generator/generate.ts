@@ -108,7 +108,7 @@ const findAndPatchPrismaDelegateInterfaceDeclarations: FindAndPatchPrismaDelegat
           returnType = `Option.Option<${returnType}>`;
         }
 
-        node.setReturnType(`Effect.Effect<never, never, ${returnType}>`);
+        node.setReturnType(`Effect.Effect<never, PrismaClientKnownRequestError, ${returnType}>`);
       }
 
       node.forEachChild(visitor);
@@ -152,12 +152,12 @@ const insertEffectImportDeclarations: InsertEffectImportDeclarations = (sourceFi
   });
 };
 
-const insertPothosEffectPrismaClientImportDeclaration: InsertPothosEffectPrismaClientImportDeclaration = (
+const insertPothosEffectPrismaInternalImportDeclaration: InsertPothosEffectPrismaClientImportDeclaration = (
   sourceFile,
 ) => {
   sourceFile.addImportDeclaration({
     moduleSpecifier: 'pothos-plugin-effect/prisma/internal',
-    namedImports: ['PothosEffectPrismaClient', 'effectify'],
+    namedImports: ['PothosEffectPrismaClient', 'effectify', 'PrismaClientKnownRequestError'],
   });
 };
 
@@ -217,7 +217,7 @@ export async function generate({ generator, otherGenerators, dmmf }: GeneratorOp
   insertPrismaImportDeclarations(sourceFile, prismaClientGeneratorOutputLocation);
   insertPrismaDelegateDecalarations(sourceFile, prismaDelegateDeclaration);
   insertEffectImportDeclarations(sourceFile);
-  insertPothosEffectPrismaClientImportDeclaration(sourceFile);
+  insertPothosEffectPrismaInternalImportDeclaration(sourceFile);
 
   addPrismaEffectInterface(sourceFile, dmmf.datamodel.models);
   addPrismaEffectImplementation(sourceFile, dmmf);

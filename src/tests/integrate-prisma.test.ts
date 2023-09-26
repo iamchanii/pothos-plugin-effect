@@ -2,7 +2,7 @@ import SchemaBuilder from '@pothos/core';
 import ErrorsPlugin from '@pothos/plugin-errors';
 import PrismaPlugin from '@pothos/plugin-prisma';
 import type PrismaTypes from '@pothos/plugin-prisma/generated';
-import { Context, Effect, pipe } from 'effect';
+import { Console, Context, Effect, pipe } from 'effect';
 import EffectPlugin from '../index';
 import { execute } from './fixtures/execute';
 import prisma from './fixtures/prisma';
@@ -263,6 +263,34 @@ describe('prisma', () => {
   },
 ]
 `);
+  });
+
+  fit('t.prismaEffect should throw error if prisma cause error', async () => {
+    builder.queryType({
+      fields: t => ({
+        user: t.prismaEffect({
+          type: 'User',
+          resolve(query) {
+            return PrismaEffect.user.findUniqueOrThrow({
+              ...query,
+              // @ts-ignore
+              where: { id: '100' },
+            }).pipe(
+              Effect.catchAll(Console.error),
+            );
+          },
+        }),
+      }),
+    });
+
+    const result = await execute(
+      builder,
+      /* GraphQL */ `{ user { id }  }`,
+    );
+
+    expect(result.errors?.[0].originalError).toMatchInlineSnapshot(
+      `[Error: Error: {"_tag":"PrismaClientValidationError","message":"\\nInvalid \`prisma.user.findUniqueOrThrow()\` invocation:\\n\\n{\\n  select: {\\n    id: true\\n  },\\n  where: {\\n    id: \\"100\\"\\n        ~~~~~\\n  }\\n}\\n\\nArgument \`id\`: Invalid value provided. Expected Int, provided String.","cause":{"name":"PrismaClientValidationError","clientVersion":"5.3.0"}}]`,
+    );
   });
 });
 
