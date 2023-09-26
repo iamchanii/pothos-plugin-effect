@@ -269,10 +269,14 @@ export type PrismaFieldResolver<
     LayersShape
   >,
   GetEffectErrors<ErrorsShape>,
-  ShapeFromTypeParam<Types, Param, Nullable> extends infer Shape
-    ? [Shape] extends [[readonly (infer Item)[] | null | undefined]] ? ListResolveValue<Shape, Item, ResolveReturnShape>
-    : MaybePromise<Shape>
-    : never
+  GetEffectOutputShape<
+    ShapeFromTypeParam<Types, Param, Nullable> extends infer Shape
+      ? [Shape] extends [[readonly (infer Item)[] | null | undefined]]
+        ? ListResolveValue<Shape, Item, ResolveReturnShape>
+      : MaybePromise<Shape>
+      : never,
+    Nullable
+  >
 >;
 
 export type PrismaFieldOptions<

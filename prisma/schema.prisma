@@ -14,6 +14,11 @@ generator pothos {
   provider = "prisma-pothos-types"
 }
 
+generator effect {
+  provider = "pnpm tsx ./src/prisma-generator/index.ts"
+  output   = "../src/tests/fixtures/prisma-client"
+}
+
 model User {
   id    Int    @id @default(autoincrement())
   name  String

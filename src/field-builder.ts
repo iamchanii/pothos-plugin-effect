@@ -3,7 +3,9 @@ import type { ConnectionShape } from '@pothos/plugin-relay';
 import { Cause, Context, Effect, Exit, Function, Layer, Option, pipe } from 'effect';
 
 import type { GraphQLResolveInfo } from 'graphql';
-import type * as EffectPluginTypes from './types';
+import type * as EffectPlugin from './';
+import { PrismaClient } from '@pothos/plugin-prisma';
+import { PothosEffectPrismaClient } from './prisma';
 
 const fieldBuilderProto = RootFieldBuilder.prototype as PothosSchemaTypes.RootFieldBuilder<
   SchemaTypes,
@@ -67,8 +69,9 @@ function handleSuccessValue(
 function makeEffectContext(
   executionContext: any,
   globalContext: Context.Context<unknown> | undefined,
-  contexts: readonly EffectPluginTypes.Context[] = [],
-  services: readonly EffectPluginTypes.ServiceEntry[] = [],
+  contexts: readonly EffectPlugin.Context[] = [],
+  services: readonly EffectPlugin.ServiceEntry[] = [],
+  prismaClient: undefined | PrismaClient | ((ctx: {}) => PrismaClient) = undefined,
 ) {
   // If provided, use global context or use empty context
   let context = globalContext ?? Context.empty();
@@ -91,6 +94,15 @@ function makeEffectContext(
     context = Context.add(context, tag, nextService);
   }, context);
 
+  // Add prisma client to context if provided
+  if (prismaClient) {
+    const client = typeof prismaClient === 'function'
+      ? prismaClient(executionContext)
+      : prismaClient;
+
+    context = Context.add(context, PothosEffectPrismaClient, client as never);
+  }
+
   return context;
 }
 
@@ -98,7 +110,7 @@ function makeEffectContext(
 function makeEffectLayer(
   executionContext: any,
   globalLayer: Layer.Layer<unknown, never, unknown> | undefined,
-  layers: readonly EffectPluginTypes.Layer[] = [],
+  layers: readonly EffectPlugin.Layer[] = [],
 ) {
   // If provided, use global layer or use empty layer
   let layer = globalLayer ?? Layer.context();
@@ -119,13 +131,19 @@ async function resolveEffectField(
   this: typeof fieldBuilderProto,
   fieldResult: any,
   executionContext: any,
-  effect: EffectPluginTypes.FieldEffectOptions,
+  effect: EffectPlugin.FieldEffectOptions,
   nullable: any,
 ) {
   const effectOptions = this.builder.options.effectOptions;
 
   // Make effect context and layer
-  const context = makeEffectContext(executionContext, effectOptions?.globalContext, effect.contexts, effect.services);
+  const context = makeEffectContext(
+    executionContext,
+    effectOptions?.globalContext,
+    effect.contexts,
+    effect.services,
+    this.builder.options.prisma?.client,
+  );
   const layer = makeEffectLayer(executionContext, effectOptions?.globalLayer, effect.layers);
 
   // Provide layer and context to resolve field effect

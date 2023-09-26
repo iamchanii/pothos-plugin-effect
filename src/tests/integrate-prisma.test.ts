@@ -7,6 +7,7 @@ import EffectPlugin from '../index';
 import { execute } from './fixtures/execute';
 import prisma from './fixtures/prisma';
 import { Dice } from './fixtures/services';
+import { PrismaEffect } from './fixtures/prisma-client/generated';
 
 describe('prisma', () => {
   let builder: InstanceType<
@@ -66,12 +67,10 @@ describe('prisma', () => {
         user: t.prismaEffect({
           type: 'User',
           resolve(query) {
-            return Effect.promise(() =>
-              prisma.user.findUniqueOrThrow({
-                ...query,
-                where: { id: 1 },
-              })
-            );
+            return PrismaEffect.user.findUniqueOrThrow({
+              ...query,
+              where: { id: 1 },
+            });
           },
         }),
       }),
@@ -149,12 +148,10 @@ describe('prisma', () => {
               Dice,
               Effect.flatMap(dice => dice.roll()),
               Effect.flatMap(id =>
-                Effect.promise(() =>
-                  prisma.user.findUniqueOrThrow({
-                    ...query,
-                    where: { id },
-                  })
-                )
+                PrismaEffect.user.findUniqueOrThrow({
+                  ...query,
+                  where: { id },
+                })
               ),
             );
           },
@@ -218,12 +215,10 @@ describe('prisma', () => {
           },
           resolve(query, _parent, args) {
             return Effect.gen(function*(_) {
-              const user = yield* _(Effect.promise(() =>
-                prisma.user.create({
-                  ...query,
-                  data: { name: args.name },
-                })
-              ));
+              const user = yield* _(PrismaEffect.user.create({
+                ...query,
+                data: { name: args.name },
+              }));
 
               return user;
             });
@@ -353,12 +348,10 @@ describe('integration with errors', () => {
                 return yield* _(Effect.fail(new Error('No user found')));
               }
 
-              return yield* _(Effect.promise(() =>
-                prisma.user.findUniqueOrThrow({
-                  ...query,
-                  where: { id: 1 },
-                })
-              ));
+              return yield* _(PrismaEffect.user.findUniqueOrThrow({
+                ...query,
+                where: { id: 1 },
+              }));
             });
           },
         }),

@@ -16,18 +16,17 @@ import type {
 import type { PrismaModelTypes, prismaModelKey } from '@pothos/plugin-prisma';
 import type { Context, Layer } from 'effect';
 
-import type { EffectPlugin } from './index';
-import type * as EffectPluginTypes from './types';
+import type * as EffectPlugin from './';
 
 /* eslint-disable @typescript-eslint/no-namespace */
 declare global {
   export namespace PothosSchemaTypes {
     export interface Plugins<Types extends SchemaTypes> {
-      effect: EffectPlugin<Types>;
+      effect: EffectPlugin.EffectPlugin<Types>;
     }
 
     export interface SchemaBuilderOptions<Types extends SchemaTypes> {
-      effectOptions?: EffectPluginTypes.PluginOptions<Types>;
+      effectOptions?: EffectPlugin.PluginOptions<Types>;
     }
 
     export interface UserSchemaTypes {
@@ -52,12 +51,12 @@ declare global {
         Nullable extends FieldNullability<Type>,
         ResolveShape,
         // Effect Types:
-        ServiceEntriesShape extends readonly [...EffectPluginTypes.ServiceEntry[]],
-        ContextsShape extends readonly [...EffectPluginTypes.Context[]],
-        LayersShape extends readonly [...EffectPluginTypes.Layer[]],
+        ServiceEntriesShape extends readonly [...EffectPlugin.ServiceEntry[]],
+        ContextsShape extends readonly [...EffectPlugin.Context[]],
+        LayersShape extends readonly [...EffectPlugin.Layer[]],
         ErrorsShape extends readonly [...any[]],
       >(
-        options: EffectPluginTypes.FieldOptions<
+        options: EffectPlugin.FieldOptions<
           // Pothos Types:
           Types,
           ParentShape,
@@ -78,16 +77,16 @@ declare global {
           Nullable extends boolean,
           ResolveReturnShape,
           // Effect Types:
-          ServiceEntriesShape extends readonly [...EffectPluginTypes.ServiceEntry[]],
-          ContextsShape extends readonly [...EffectPluginTypes.Context[]],
-          LayersShape extends readonly [...EffectPluginTypes.Layer[]],
+          ServiceEntriesShape extends readonly [...EffectPlugin.ServiceEntry[]],
+          ContextsShape extends readonly [...EffectPlugin.Context[]],
+          LayersShape extends readonly [...EffectPlugin.Layer[]],
           ErrorsShape extends readonly [...any[]],
           // Relay Types:
           Args extends InputFieldMap = {},
           ConnectionInterfaces extends InterfaceParam<Types>[] = [],
           EdgeInterfaces extends InterfaceParam<Types>[] = [],
         >(
-          options: EffectPluginTypes.ConnectionFieldOptions<
+          options: EffectPlugin.ConnectionFieldOptions<
             Types,
             ParentShape,
             Type,
@@ -112,7 +111,7 @@ declare global {
                   ConnectionInterfaces
                 >
                 | ObjectRef<
-                  EffectPluginTypes.ShapeFromConnection<
+                  EffectPlugin.ShapeFromConnection<
                     ConnectionShapeHelper<Types, ShapeFromTypeParam<Types, Type, false>, false>
                   >
                 >,
@@ -132,7 +131,7 @@ declare global {
             0
           >
         ) => FieldRef<
-          EffectPluginTypes.ShapeFromConnection<
+          EffectPlugin.ShapeFromConnection<
             ConnectionShapeHelper<Types, ShapeFromTypeParam<Types, Type, false>, Nullable>
           >
         >
@@ -142,30 +141,30 @@ declare global {
           // Pothos Types:
           Args extends InputFieldMap,
           TypeParam extends
-            | EffectPluginTypes.PrismaRef<PrismaModelTypes>
+            | EffectPlugin.PrismaRef<PrismaModelTypes>
             | keyof Types['PrismaTypes']
             | [keyof Types['PrismaTypes']]
-            | [EffectPluginTypes.PrismaRef<PrismaModelTypes>],
+            | [EffectPlugin.PrismaRef<PrismaModelTypes>],
           Nullable extends FieldNullability<Type>,
           ResolveShape,
           ResolveReturnShape,
           Type extends TypeParam extends [unknown] ? [ObjectRef<Model['Shape']>]
             : ObjectRef<Model['Shape']>,
           // Effect Types:
-          ServiceEntriesShape extends readonly [...EffectPluginTypes.ServiceEntry[]],
-          ContextsShape extends readonly [...EffectPluginTypes.Context[]],
-          LayersShape extends readonly [...EffectPluginTypes.Layer[]],
+          ServiceEntriesShape extends readonly [...EffectPlugin.ServiceEntry[]],
+          ContextsShape extends readonly [...EffectPlugin.Context[]],
+          LayersShape extends readonly [...EffectPlugin.Layer[]],
           ErrorsShape extends readonly [...any[]],
           // Pothos Types:
           Model extends PrismaModelTypes =
             & PrismaModelTypes
             & (TypeParam extends [keyof Types['PrismaTypes']] ? Types['PrismaTypes'][TypeParam[0]]
-              : TypeParam extends [EffectPluginTypes.PrismaRef<PrismaModelTypes>] ? TypeParam[0][typeof prismaModelKey]
-              : TypeParam extends EffectPluginTypes.PrismaRef<PrismaModelTypes> ? TypeParam[typeof prismaModelKey]
+              : TypeParam extends [EffectPlugin.PrismaRef<PrismaModelTypes>] ? TypeParam[0][typeof prismaModelKey]
+              : TypeParam extends EffectPlugin.PrismaRef<PrismaModelTypes> ? TypeParam[typeof prismaModelKey]
               : TypeParam extends keyof Types['PrismaTypes'] ? Types['PrismaTypes'][TypeParam]
               : never),
         >(
-          options: EffectPluginTypes.PrismaFieldOptions<
+          options: EffectPlugin.PrismaFieldOptions<
             // Pothos Types:
             Types,
             ParentShape,
