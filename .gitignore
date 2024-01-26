@@ -2,3 +2,5 @@
 **/dist
 dev.db
 src/tests/fixtures/prisma-client
+
+.idea/

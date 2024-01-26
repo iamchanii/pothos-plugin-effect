@@ -1,7 +1,7 @@
 import SchemaBuilder from '@pothos/core';
 import ErrorsPlugin from '@pothos/plugin-errors';
 import EffectPlugin from '../index';
-import { Cause, Effect } from 'effect/index';
+import { Cause, Effect } from 'effect';
 import { execute, parse } from 'graphql';
 
 class ForbiddenError extends Error {

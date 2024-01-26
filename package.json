@@ -35,8 +35,9 @@
     }
   },
   "scripts": {
-    "seed": "rm ./prisma/dev.db && prisma db push && tsx prisma/seed.ts",
-    "test": "pnpm seed && NODE_OPTIONS=--experimental-vm-modules jest --watch",
+    "prisma:generate": "mkdir -p src/tests/fixtures/prisma-client && prisma generate",
+    "seed": "rm -f ./prisma/dev.db && prisma db push && tsx prisma/seed.ts",
+    "test": "pnpm prisma:generate && pnpm seed && NODE_OPTIONS=--experimental-vm-modules jest --watch",
     "build": "nanobundle build --external '@prisma/generator-helper' --external 'ts-morph'",
     "prepack": "pnpm build",
     "release": "release-it"
@@ -65,7 +66,7 @@
     "@typescript-eslint/eslint-plugin": "^5.62.0",
     "@typescript-eslint/parser": "^5.62.0",
     "camelcase": "^8.0.0",
-    "effect": "2.0.0-next.32",
+    "effect": "2.2.2",
     "eslint": "^8.49.0",
     "eslint-plugin-dprint-integration": "^0.3.0",
     "graphql": "^16.8.0",
