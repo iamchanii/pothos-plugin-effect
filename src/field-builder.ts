@@ -19,9 +19,8 @@ function checkAndThrowResultIfFailure<E, A>(
   result: Exit.Exit<E, A>,
   FailErrorConstructor: { new(message: string): unknown } = Error,
 ): asserts result is Exit.Success<E, A> {
-  // Check if result is a failure
   if (Exit.isFailure(result)) {
-    const cause = Cause.unannotate(result.cause);
+    const cause = result.cause;
 
     // TODO: shoud it handle empty/die/interrupt/etc cases?
     if (Cause.isFailType(cause) && (cause.error as unknown) instanceof Error) {
@@ -149,8 +148,8 @@ async function resolveEffectField(
   // Provide layer and context to resolve field effect
   const program = pipe(
     fieldResult as Effect.Effect<never, never, any>,
-    Effect.provideSomeLayer(layer),
-    Effect.provideSomeContext(context),
+    Effect.provide(layer),
+    Effect.provide(context),
   );
 
   // Run effect via runPromiseExit to handle error or success value

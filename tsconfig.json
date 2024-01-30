@@ -10,5 +10,5 @@
     "resolveJsonModule": true,
     "outDir": "./dist"
   },
-  "include": ["src", "src/tests"]
+  "include": ["src", "src/tests", "node_modules/@pothos/plugin-prisma"]
 }
