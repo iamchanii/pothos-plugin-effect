@@ -1,0 +1,59 @@
+{
+  "name": "pothos-plugin-effect",
+  "description": "Seamless integration between the Pothos GraphQL and Effect.",
+  "publishConfig": {
+    "access": "public",
+    "registiry": "https://registry.npmjs.org"
+  },
+  "version": "0.8.0",
+  "files": [
+    "package.json",
+    "README.md",
+    "dist"
+  ],
+  "type": "module",
+  "main": "./dist/index.mjs",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "require": "./dist/index.mjs",
+      "import": "./dist/index.mjs"
+    }
+  },
+  "scripts": {
+    "test": "vitest",
+    "build": "nanobundle build",
+    "prepack": "yarn build"
+  },
+  "keywords": [
+    "effect",
+    "pothos",
+    "plugin"
+  ],
+  "author": {
+    "name": "Chanhee Lee",
+    "email": "contact@imch.dev"
+  },
+  "license": "MIT",
+  "devDependencies": {
+    "@pothos/core": "3.41.0",
+    "@pothos/plugin-errors": "3.11.1",
+    "@pothos/plugin-prisma": "3.63.1",
+    "@pothos/plugin-relay": "3.46.0",
+    "@types/graphql": "14.5.0",
+    "@types/node": "20.11.13",
+    "effect": "2.2.2",
+    "nanobundle": "2.0.0",
+    "typescript": "5.4.0-beta"
+  },
+  "peerDependencies": {
+    "@pothos/core": "^3",
+    "effect": ">=2.2.0 <3",
+    "graphql": "^16 || ^17"
+  },
+  "dependencies": {
+    "type-plus": "7.6.0"
+  },
+  "packageManager": "yarn@4.1.0"
+}
