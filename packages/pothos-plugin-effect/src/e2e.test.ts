@@ -1,8 +1,8 @@
 import SchemaBuilder from '@pothos/core';
+import { Effect, Option, Runtime } from 'effect';
+import { execute, parse, printSchema } from 'graphql';
 import { expect, test } from 'vitest';
 import EffectPlugin from './index.js';
-import { Runtime, Effect, Option } from 'effect';
-import { execute, lexicographicSortSchema, parse, printSchema } from 'graphql';
 
 const effectRuntime = Runtime.defaultRuntime;
 
@@ -63,10 +63,20 @@ builder.queryFields((t) => ({
     type: ['String'],
     resolve: () => Effect.succeed(['1']),
   }),
-  arrayNullableString: t.effect({
+  arrayNullableItems: t.effect({
     type: ['String'],
-    nullable: true,
-    resolve: () => Effect.succeedSome(['1', null, '2']),
+    nullable: { list: false, items: true },
+    resolve: () => Effect.succeed([Option.some('1'), Option.none()]),
+  }),
+  arrayNullableList: t.effect({
+    type: ['String'],
+    nullable: { list: true, items: false },
+    resolve: () => Effect.succeedSome(['1', '2']),
+  }),
+  arrayNullableListItems: t.effect({
+    type: ['String'],
+    nullable: { list: true, items: true },
+    resolve: () => Effect.succeedSome([Option.some('1'), Option.none()]),
   }),
 }));
 
@@ -75,7 +85,9 @@ const schema = builder.toSchema();
 test('print schema', () => {
   expect(printSchema(schema)).toMatchInlineSnapshot(`
     "type Query {
-      arrayNullableString: [String!]
+      arrayNullableItems: [String]!
+      arrayNullableList: [String!]
+      arrayNullableListItems: [String]
       arrayString: [String!]!
       boolean: Boolean!
       float: Float!
@@ -104,7 +116,9 @@ test('execute query', async () => {
     id
     nullableId
     arrayString
-    arrayNullableString
+    arrayNullableList
+    arrayNullableItems
+    arrayNullableListItems
   }`);
 
   const result = await execute({ document, schema });
@@ -112,7 +126,18 @@ test('execute query', async () => {
   expect(result).toMatchInlineSnapshot(`
     {
       "data": {
-        "arrayNullableString": null,
+        "arrayNullableItems": [
+          "1",
+          null,
+        ],
+        "arrayNullableList": [
+          "1",
+          "2",
+        ],
+        "arrayNullableListItems": [
+          "1",
+          null,
+        ],
         "arrayString": [
           "1",
         ],
@@ -127,9 +152,6 @@ test('execute query', async () => {
         "nullableString": "1",
         "string": "1",
       },
-      "errors": [
-        [GraphQLError: Cannot return null for non-nullable field Query.arrayNullableString.],
-      ],
     }
   `);
 });

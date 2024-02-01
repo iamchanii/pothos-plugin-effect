@@ -7,12 +7,11 @@ import type {
   OutputShape,
   PluginName,
   SchemaTypes,
-  ShapeFromTypeParam,
   TypeParam,
 } from '@pothos/core';
 import type { Option, Runtime } from 'effect';
 import type { GraphQLResolveInfo } from 'graphql';
-import type { IsEqual } from 'type-plus';
+import type { IsEqual, IsTuple } from 'type-plus';
 
 import { Effect } from 'effect';
 
@@ -23,15 +22,30 @@ type InferRequirements<T> = T extends Runtime.Runtime<infer R> ? R : never;
 type InferError<ErrorTypes extends ErrorConstructor[]> =
   'errors' extends PluginName ? InstanceType<ErrorTypes[number]> : never;
 
-type GetEffectOutputShape<Type, Nullable> = IsEqual<Nullable, true> extends true
+type InferType<Shape> = Exclude<
+  Shape,
+  undefined | null
+> extends readonly (infer T)[]
+  ? T[]
+  : Exclude<Shape, undefined | null>;
+
+type NullableTypeToOption<
+  Type,
+  Nullable,
+  Item = Type extends (infer T)[] ? T : Type,
+> = IsEqual<Nullable, true> extends true
   ? Option.Option<Type>
   : IsEqual<Nullable, { items: true; list: false }> extends true
-    ? Option.Option<Type>[]
+    ? Option.Option<Item>[]
     : IsEqual<Nullable, { items: false; list: true }> extends true
-      ? Option.Option<Type[]>
+      ? Option.Option<Item[]>
       : IsEqual<Nullable, { items: true; list: true }> extends true
-        ? Option.Option<Option.Option<Type>[]>
+        ? Option.Option<Option.Option<Item | null>[]>
         : Type;
+
+type InferSucceedValue<Shape, Nullable, IsTypeTuple> = IsTypeTuple extends true
+  ? NullableTypeToOption<Shape[], Nullable>
+  : NullableTypeToOption<Shape, Nullable>;
 
 export type FieldOptions<
   // Pothos Types:
@@ -67,13 +81,16 @@ export type FieldOptions<
   ): Effect.Effect<
     InferRequirements<Types['EffectRuntime']>,
     InferError<ErrorTypes>,
-    // OutputShape<
-    //   Types,
-    //   [Type] extends [null | readonly (infer Item)[] | undefined]
-    //     ? Item[]
-    //     : Type
-    // >
-    GetEffectOutputShape<ShapeFromTypeParam<Types, Type, Nullable>, Nullable>
+    InferSucceedValue<
+      OutputShape<
+        Types,
+        [Type] extends [null | readonly (infer Item)[] | undefined]
+          ? Item
+          : Type
+      >,
+      Nullable,
+      IsTuple<Type>
+    >
   >;
 };
 
