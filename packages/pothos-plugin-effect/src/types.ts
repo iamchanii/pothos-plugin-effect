@@ -7,9 +7,10 @@ import type {
   OutputShape,
   PluginName,
   SchemaTypes,
+  ShapeFromTypeParam,
   TypeParam,
 } from '@pothos/core';
-import type { Option as EffectOption, Runtime } from 'effect';
+import type { Option, Runtime } from 'effect';
 import type { GraphQLResolveInfo } from 'graphql';
 import type { IsEqual } from 'type-plus';
 
@@ -23,13 +24,13 @@ type InferError<ErrorTypes extends ErrorConstructor[]> =
   'errors' extends PluginName ? InstanceType<ErrorTypes[number]> : never;
 
 type GetEffectOutputShape<Type, Nullable> = IsEqual<Nullable, true> extends true
-  ? EffectOption.Option<Type>
+  ? Option.Option<Type>
   : IsEqual<Nullable, { items: true; list: false }> extends true
-    ? EffectOption.Option<Type>[]
+    ? Option.Option<Type>[]
     : IsEqual<Nullable, { items: false; list: true }> extends true
-      ? EffectOption.Option<Type[]>
+      ? Option.Option<Type[]>
       : IsEqual<Nullable, { items: true; list: true }> extends true
-        ? EffectOption.Option<EffectOption.Option<Type>[]>
+        ? Option.Option<Option.Option<Type>[]>
         : Type;
 
 export type FieldOptions<
@@ -66,15 +67,13 @@ export type FieldOptions<
   ): Effect.Effect<
     InferRequirements<Types['EffectRuntime']>,
     InferError<ErrorTypes>,
-    GetEffectOutputShape<
-      OutputShape<
-        Types,
-        [Type] extends [null | readonly (infer Item)[] | undefined]
-          ? Item
-          : Type
-      >,
-      Nullable
-    >
+    // OutputShape<
+    //   Types,
+    //   [Type] extends [null | readonly (infer Item)[] | undefined]
+    //     ? Item[]
+    //     : Type
+    // >
+    GetEffectOutputShape<ShapeFromTypeParam<Types, Type, Nullable>, Nullable>
   >;
 };
 

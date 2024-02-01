@@ -2,7 +2,7 @@
   "compilerOptions": {
     "target": "ESNext",
     "module": "Node16",
-    "moduleResolution": "Node16",
+    "moduleResolution": "NodeNext",
     "esModuleInterop": true,
     "allowSyntheticDefaultImports": true,
     "forceConsistentCasingInFileNames": true,
