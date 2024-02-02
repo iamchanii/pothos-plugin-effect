@@ -6,19 +6,20 @@
     "registiry": "https://registry.npmjs.org"
   },
   "version": "0.8.0",
-  "files": [
-    "package.json",
-    "README.md",
-    "dist"
-  ],
+  "files": ["package.json", "README.md", "dist"],
   "type": "module",
-  "main": "./dist/index.mjs",
-  "types": "./dist/index.d.ts",
+  "main": "./dist/core/index.mjs",
+  "types": "./dist/core/index.d.ts",
   "exports": {
     ".": {
-      "types": "./dist/index.d.ts",
-      "require": "./dist/index.mjs",
-      "import": "./dist/index.mjs"
+      "types": "./dist/core/index.d.ts",
+      "require": "./dist/core/index.mjs",
+      "import": "./dist/core/index.mjs"
+    },
+    "./relay": {
+      "types": "./dist/relay/index.d.ts",
+      "require": "./dist/relay/index.mjs",
+      "import": "./dist/relay/index.mjs"
     }
   },
   "scripts": {
@@ -26,11 +27,7 @@
     "build": "nanobundle build",
     "prepack": "yarn build"
   },
-  "keywords": [
-    "effect",
-    "pothos",
-    "plugin"
-  ],
+  "keywords": ["effect", "pothos", "plugin"],
   "author": {
     "name": "Chanhee Lee",
     "email": "contact@imch.dev"
@@ -42,11 +39,11 @@
     "@pothos/plugin-relay": "3.46.0",
     "@types/graphql": "14.5.0",
     "@types/node": "20.11.13",
-    "@vitest/coverage-v8": "^1.2.2",
+    "@vitest/coverage-v8": "1.2.2",
     "effect": "2.2.2",
     "nanobundle": "2.0.0",
     "typescript": "5.4.0-beta",
-    "vitest": "^1.2.2"
+    "vitest": "1.2.2"
   },
   "peerDependencies": {
     "@pothos/core": "^3",
@@ -55,7 +52,7 @@
   },
   "dependencies": {
     "tiny-invariant": "^1.3.1",
-    "type-plus": "7.6.0"
+    "type-plus": "^7.6.0"
   },
   "packageManager": "yarn@4.1.0"
 }

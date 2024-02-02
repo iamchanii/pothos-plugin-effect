@@ -16,7 +16,12 @@
       },
       "suspicious": {
         "noExplicitAny": "off",
-        "noShadowRestrictedNames": "off"
+        "noShadowRestrictedNames": "off",
+        "noEmptyInterface": "off",
+        "noRedeclare": "off"
+      },
+      "complexity": {
+        "noBannedTypes": "off"
       }
     }
   },

@@ -1,13 +1,29 @@
 import SchemaBuilder from '@pothos/core';
 import ErrorsPlugin from '@pothos/plugin-errors';
-import { Effect, Option, Runtime } from 'effect';
+import { Context, Effect, Layer, Option, Scope } from 'effect';
 import { execute, parse, printSchema } from 'graphql';
 import { expect, test } from 'vitest';
 import EffectPlugin from './index.js';
 
-const effectRuntime = Runtime.defaultRuntime;
+interface UserService {
+  getUser(): Effect.Effect<never, Error, { id: number }>;
+  getAllUsers(): Effect.Effect<never, Error, { id: number }[]>;
+}
 
-const builder = new SchemaBuilder({
+const UserService = Context.Tag<UserService>('UserService');
+
+const UserServiceLive = Layer.succeed(UserService, {
+  getUser: () => Effect.succeed({ id: 1 }),
+  getAllUsers: () => Effect.succeed([{ id: 1 }, { id: 2 }]),
+});
+
+const scope = Effect.runSync(Scope.make());
+
+const effectRuntime = await Effect.runPromise(
+  Layer.toRuntime(UserServiceLive).pipe(Scope.extend(scope)),
+);
+
+const builder = new SchemaBuilder<{ EffectRuntime: typeof effectRuntime }>({
   plugins: [EffectPlugin, ErrorsPlugin],
   effectOptions: { effectRuntime },
   errorOptions: {
