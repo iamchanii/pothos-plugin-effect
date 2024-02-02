@@ -11,6 +11,10 @@ const builder = new SchemaBuilder({
   effectOptions: { effectRuntime },
 });
 
+const User = builder.objectRef<{ id: number }>('User').implement({
+  fields: (t) => ({ id: t.exposeID('id') }),
+});
+
 builder.queryType({});
 
 builder.queryFields((t) => ({
@@ -78,6 +82,14 @@ builder.queryFields((t) => ({
     nullable: { list: true, items: true },
     resolve: () => Effect.succeedSome([Option.some('1'), Option.none()]),
   }),
+  object: t.effect({
+    type: User,
+    resolve: () => Effect.succeed({ id: 1 }),
+  }),
+  promiseObject: t.effect({
+    type: User,
+    resolve: () => Effect.succeed(Promise.resolve({ id: 1 })),
+  }),
 }));
 
 const schema = builder.toSchema();
@@ -98,7 +110,13 @@ test('print schema', () => {
       nullableId: ID
       nullableInt: Int
       nullableString: String
+      object: User!
+      promiseObject: User!
       string: String!
+    }
+
+    type User {
+      id: ID!
     }"
   `);
 });
@@ -119,6 +137,8 @@ test('execute query', async () => {
     arrayNullableList
     arrayNullableItems
     arrayNullableListItems
+    object { id }
+    promiseObject { id }
   }`);
 
   const result = await execute({ document, schema });
@@ -150,6 +170,12 @@ test('execute query', async () => {
         "nullableId": "1",
         "nullableInt": 1,
         "nullableString": "1",
+        "object": {
+          "id": "1",
+        },
+        "promiseObject": {
+          "id": "1",
+        },
         "string": "1",
       },
     }

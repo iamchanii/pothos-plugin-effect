@@ -4,6 +4,7 @@ import type {
   FieldOptionsFromKind,
   InputFieldMap,
   InputShapeFromFields,
+  MaybePromise,
   OutputShape,
   PluginName,
   SchemaTypes,
@@ -44,8 +45,8 @@ type NullableTypeToOption<
         : Type;
 
 type InferSucceedValue<Shape, Nullable, IsTypeTuple> = IsTypeTuple extends true
-  ? NullableTypeToOption<Shape[], Nullable>
-  : NullableTypeToOption<Shape, Nullable>;
+  ? MaybePromise<NullableTypeToOption<Shape[], Nullable>>
+  : MaybePromise<NullableTypeToOption<Shape, Nullable>>;
 
 export type FieldOptions<
   // Pothos Types:

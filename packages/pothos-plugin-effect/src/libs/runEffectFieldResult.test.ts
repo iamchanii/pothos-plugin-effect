@@ -36,6 +36,14 @@ test('resolve effect field result', async () => {
   expect(result).toEqual({ id: 1 });
 });
 
+test.only('resolve effect field with Promise result', async () => {
+  const program = Effect.succeed(Promise.resolve({ id: 1 }));
+
+  const result = await runEffectFieldResult(program, runtime);
+
+  expect(result).toEqual({ id: 1 });
+});
+
 test('resolve effect field with Option.some result', async () => {
   const program = pipe(
     UserService,
