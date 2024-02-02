@@ -12,23 +12,18 @@ import type {
 } from '@pothos/core';
 import type { Option, Runtime } from 'effect';
 import type { GraphQLResolveInfo } from 'graphql';
-import type { IsEqual, IsTuple } from 'type-plus';
+import type { IsEqual, IsTuple, NotAnyType } from 'type-plus';
 
 import { Effect } from 'effect';
 
-export type ErrorConstructor = new (...args: any[]) => Error;
+export type ErrorConstructor = new (...args: any[]) => any;
 
 type InferRequirements<T> = T extends Runtime.Runtime<infer R> ? R : never;
 
 type InferError<ErrorTypes extends ErrorConstructor[]> =
-  'errors' extends PluginName ? InstanceType<ErrorTypes[number]> : never;
-
-type InferType<Shape> = Exclude<
-  Shape,
-  undefined | null
-> extends readonly (infer T)[]
-  ? T[]
-  : Exclude<Shape, undefined | null>;
+  'errors' extends PluginName
+    ? NotAnyType<InstanceType<ErrorTypes[number]>>
+    : never;
 
 type NullableTypeToOption<
   Type,
@@ -57,7 +52,7 @@ export type FieldOptions<
   Nullable extends FieldNullability<Type>,
   ResolveReturnShape,
   // Effect Types:
-  ErrorTypes extends ErrorConstructor[],
+  ErrorTypes extends [...ErrorConstructor[]],
   // Pothos Types:
   Kind extends FieldKind = FieldKind,
 > = Omit<

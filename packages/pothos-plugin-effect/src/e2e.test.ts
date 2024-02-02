@@ -1,4 +1,5 @@
 import SchemaBuilder from '@pothos/core';
+import ErrorsPlugin from '@pothos/plugin-errors';
 import { Effect, Option, Runtime } from 'effect';
 import { execute, parse, printSchema } from 'graphql';
 import { expect, test } from 'vitest';
@@ -7,8 +8,22 @@ import EffectPlugin from './index.js';
 const effectRuntime = Runtime.defaultRuntime;
 
 const builder = new SchemaBuilder({
-  plugins: [EffectPlugin],
+  plugins: [EffectPlugin, ErrorsPlugin],
   effectOptions: { effectRuntime },
+  errorOptions: {
+    defaultTypes: [Error],
+  },
+});
+
+const ErrorInterface = builder.interfaceRef<Error>('Error').implement({
+  fields: (t) => ({
+    message: t.exposeString('message'),
+  }),
+});
+
+builder.objectType(Error, {
+  name: 'BaseError',
+  interfaces: [ErrorInterface],
 });
 
 const User = builder.objectRef<{ id: number }>('User').implement({
@@ -90,19 +105,35 @@ builder.queryFields((t) => ({
     type: User,
     resolve: () => Effect.succeed(Promise.resolve({ id: 1 })),
   }),
+  getUser: t.effect({
+    type: User,
+    errors: {
+      types: [Error],
+    },
+    resolve: () => Effect.succeed({ id: 1 }),
+  }),
 }));
 
 const schema = builder.toSchema();
 
 test('print schema', () => {
   expect(printSchema(schema)).toMatchInlineSnapshot(`
-    "type Query {
+    "type BaseError implements Error {
+      message: String!
+    }
+
+    interface Error {
+      message: String!
+    }
+
+    type Query {
       arrayNullableItems: [String]!
       arrayNullableList: [String!]
       arrayNullableListItems: [String]
       arrayString: [String!]!
       boolean: Boolean!
       float: Float!
+      getUser: QueryGetUserResult!
       id: ID!
       int: Int!
       nullableBoolean: Boolean
@@ -113,6 +144,12 @@ test('print schema', () => {
       object: User!
       promiseObject: User!
       string: String!
+    }
+
+    union QueryGetUserResult = BaseError | QueryGetUserSuccess
+
+    type QueryGetUserSuccess {
+      data: User!
     }
 
     type User {
@@ -139,6 +176,12 @@ test('execute query', async () => {
     arrayNullableListItems
     object { id }
     promiseObject { id }
+    getUser {
+      __typename
+      ... on QueryGetUserSuccess {
+        data { id }
+      }
+    }
   }`);
 
   const result = await execute({ document, schema });
@@ -163,6 +206,12 @@ test('execute query', async () => {
         ],
         "boolean": true,
         "float": 1.1,
+        "getUser": {
+          "__typename": "QueryGetUserSuccess",
+          "data": {
+            "id": "1",
+          },
+        },
         "id": "1",
         "int": 1,
         "nullableBoolean": true,

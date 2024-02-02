@@ -42,7 +42,7 @@ declare global {
         Nullable extends FieldNullability<Type>,
         ResolveShape,
         // Effect Types:
-        ErrorTypes extends Types.ErrorConstructor[],
+        ErrorTypes extends [...Types.ErrorConstructor[]],
       >(
         options: Types.FieldOptions<
           // Pothos Types:
