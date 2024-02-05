@@ -1,15 +1,15 @@
 import { Function, Option } from 'effect';
 
-export type InferNullableType<Value> = Value extends Option.Option<infer T>
-  ? T extends Array<Option.Option<infer U>>
-    ? (U | null)[] | null
-    : T | null
-  : Value extends Array<Option.Option<infer T>>
-    ? Array<T | null>
-    : Value;
+export type NullableValue<T = any> =
+  | Option.Option<Option.Option<T>[]>
+  | Option.Option<T[]>
+  | Option.Some<T>[]
+  | (T | null)[]
+  | T
+  | null;
 
-export type InferNullableTypeShape<Value> = NonNullable<Value> extends infer T
-  ? T extends (infer U | null)[]
+export type InferNullableType<Value> = Value extends NullableValue<infer T>
+  ? T extends Option.Option<infer U>
     ? U
     : T
   : never;

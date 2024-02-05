@@ -1,11 +1,17 @@
 import SchemaBuilder from '@pothos/core';
 import ErrorsPlugin from '@pothos/plugin-errors';
 import RelayPlugin from '@pothos/plugin-relay';
-import { Context, Effect, Layer, Option, Scope, pipe } from 'effect';
+import { Console, Context, Effect, Layer, Option, Scope, pipe } from 'effect';
 import { execute, parse, printSchema } from 'graphql';
 import { expect, test } from 'vitest';
 import EffectPlugin from '../core/index.js';
-import { resolveArrayConnectionEffect } from './index.js';
+import {
+  CursorConnectionArgs,
+  OffsetConnectionArgs,
+  resolveArrayConnectionEffect,
+  resolveCursorConnectionEffect,
+  resolveOffsetConnectionEffect,
+} from './index.js';
 
 interface UserService {
   getUser(): Effect.Effect<never, Error, { id: number }>;
@@ -65,7 +71,7 @@ builder.queryFields((t) => ({
     nullable: true,
     resolve: (_root, args) =>
       pipe(
-        Effect.succeedSome(['1', '2', '3', null, true]),
+        Effect.succeedSome(['1', '2', '3', null]),
         resolveArrayConnectionEffect({ args }),
       ),
   }),
@@ -81,6 +87,26 @@ builder.queryFields((t) => ({
           Option.none(),
         ]),
         resolveArrayConnectionEffect({ args }),
+      ),
+  }),
+  cursorConnection: t.effectConnection({
+    type: 'String',
+    resolve: (_root, args) =>
+      pipe(
+        CursorConnectionArgs,
+        Effect.tap((args) => Console.log({ args })),
+        Effect.map(() => ['1', '2', '3', '4']),
+        resolveCursorConnectionEffect({ args, toCursor: (value) => value }),
+      ),
+  }),
+  offsetConnection: t.effectConnection({
+    type: 'String',
+    resolve: (_root, args) =>
+      pipe(
+        OffsetConnectionArgs,
+        Effect.tap((args) => Console.log({ args })),
+        Effect.map(() => ['1', '2', '3', '4']),
+        resolveOffsetConnectionEffect({ args }),
       ),
   }),
 }));
@@ -106,8 +132,10 @@ test('print schema', () => {
 
     type Query {
       connection(after: ID, before: ID, first: Int, last: Int): QueryConnection!
+      cursorConnection(after: ID, before: ID, first: Int, last: Int): QueryCursorConnection!
       nullableConnection(after: ID, before: ID, first: Int, last: Int): QueryNullableConnection
       nullableItemConnection(after: ID, before: ID, first: Int, last: Int): QueryNullableItemConnection
+      offsetConnection(after: ID, before: ID, first: Int, last: Int): QueryOffsetConnection!
     }
 
     type QueryConnection {
@@ -116,6 +144,16 @@ test('print schema', () => {
     }
 
     type QueryConnectionEdge {
+      cursor: String!
+      node: String!
+    }
+
+    type QueryCursorConnection {
+      edges: [QueryCursorConnectionEdge]!
+      pageInfo: PageInfo!
+    }
+
+    type QueryCursorConnectionEdge {
       cursor: String!
       node: String!
     }
@@ -140,6 +178,16 @@ test('print schema', () => {
       node: String!
     }
 
+    type QueryOffsetConnection {
+      edges: [QueryOffsetConnectionEdge]!
+      pageInfo: PageInfo!
+    }
+
+    type QueryOffsetConnectionEdge {
+      cursor: String!
+      node: String!
+    }
+
     type User {
       id: ID!
     }"
@@ -155,6 +203,12 @@ test('execute query', async () => {
       edges { cursor node }
     }
     nullableItemConnection {
+      edges { cursor node }
+    }
+    cursorConnection {
+      edges { cursor node }
+    }
+    offsetConnection {
       edges { cursor node }
     }
   }`);
@@ -180,6 +234,26 @@ test('execute query', async () => {
             },
             {
               "cursor": "T2Zmc2V0Q29ubmVjdGlvbjoz",
+              "node": "4",
+            },
+          ],
+        },
+        "cursorConnection": {
+          "edges": [
+            {
+              "cursor": "1",
+              "node": "1",
+            },
+            {
+              "cursor": "2",
+              "node": "2",
+            },
+            {
+              "cursor": "3",
+              "node": "3",
+            },
+            {
+              "cursor": "4",
               "node": "4",
             },
           ],
@@ -216,6 +290,26 @@ test('execute query', async () => {
               "node": "3",
             },
             null,
+          ],
+        },
+        "offsetConnection": {
+          "edges": [
+            {
+              "cursor": "T2Zmc2V0Q29ubmVjdGlvbjow",
+              "node": "1",
+            },
+            {
+              "cursor": "T2Zmc2V0Q29ubmVjdGlvbjox",
+              "node": "2",
+            },
+            {
+              "cursor": "T2Zmc2V0Q29ubmVjdGlvbjoy",
+              "node": "3",
+            },
+            {
+              "cursor": "T2Zmc2V0Q29ubmVjdGlvbjoz",
+              "node": "4",
+            },
           ],
         },
       },

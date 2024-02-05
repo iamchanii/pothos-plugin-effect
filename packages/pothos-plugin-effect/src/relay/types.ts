@@ -3,10 +3,12 @@ import type {
   FieldNullability,
   InputFieldMap,
   InputShapeFromFields,
-  OutputShape,
   OutputType,
   SchemaTypes,
+  ShapeFromTypeParam,
+  UnionToIntersection,
 } from '@pothos/core';
+import { ConnectionShape } from '@pothos/plugin-relay';
 import { Effect } from 'effect';
 import type { GraphQLResolveInfo } from 'graphql';
 import {
@@ -15,6 +17,12 @@ import {
   InferError,
   InferRequirements,
 } from '../core/index.js';
+
+export type NoUnion<T, TResult, TError> = [Extract<T, null>] extends [
+  UnionToIntersection<Extract<T, null>>,
+]
+  ? TResult
+  : TError;
 
 export type InferSucceedValue<
   Types extends SchemaTypes,
@@ -77,28 +85,13 @@ export type ConnectionFieldOptions<
         ): Effect.Effect<
           InferRequirements<Types['EffectRuntime']>,
           InferError<ErrorTypes>,
-          InferSucceedValue<
+          ConnectionShape<
             Types,
-            OutputShape<
-              Types,
-              [Type] extends [null | readonly (infer Item)[] | undefined]
-                ? Item
-                : Type
-            >,
-            Nullable
+            ShapeFromTypeParam<Types, Type, Nullable>,
+            Nullable,
+            EdgeNullability,
+            NodeNullability
           >
-
-          // InferSucceedValue<
-          //   ShapeFromConnection<
-          //     PothosSchemaTypes.ConnectionShapeHelper<
-          //       Types,
-          //       ShapeFromTypeParam<Types, Type, false>,
-          //       Nullable
-          //     >
-          //   >,
-          //   Nullable,
-          //   false
-          // >
         >;
         type: Type;
       }
