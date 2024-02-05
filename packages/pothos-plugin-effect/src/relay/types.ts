@@ -4,6 +4,7 @@ import type {
   InputFieldMap,
   InputShapeFromFields,
   OutputType,
+  PluginName,
   SchemaTypes,
   ShapeFromTypeParam,
   UnionToIntersection,
@@ -94,6 +95,9 @@ export type ConnectionFieldOptions<
           >
         >;
         type: Type;
+        errors?: 'errors' extends PluginName
+          ? { types?: ErrorConstructor }
+          : never;
       }
     : never);
 
