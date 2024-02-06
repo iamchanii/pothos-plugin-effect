@@ -5,7 +5,7 @@ import RelayPlugin, {
   resolveCursorConnection,
   resolveOffsetConnection,
 } from '@pothos/plugin-relay';
-import { Context, Effect, Layer, Option, Scope } from 'effect';
+import { Context, Effect, Layer, Option, Scope, pipe } from 'effect';
 import { execute, parse, printSchema } from 'graphql';
 import { expect, test } from 'vitest';
 import EffectPlugin from './index.js';
@@ -139,7 +139,13 @@ builder.queryFields((t) => ({
   }),
   object: t.field({
     type: Entity,
-    resolve: () => t.effect(Effect.succeed({ id: 1 })),
+    resolve: () =>
+      t.effect(
+        pipe(
+          EntityService,
+          Effect.flatMap((service) => service.getEntity()),
+        ),
+      ),
   }),
   promiseObject: t.field({
     type: Entity,
@@ -206,7 +212,7 @@ builder.queryFields((t) => ({
             Option.some('1'),
             Option.some('2'),
             Option.some('3'),
-            Option.some(null),
+            Option.none(),
           ]),
         );
 
