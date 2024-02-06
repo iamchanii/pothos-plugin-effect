@@ -260,6 +260,12 @@ test('print schema', () => {
       startCursor: String
     }
 
+    type Post {
+      content: String
+      id: ID!
+      title: String!
+    }
+
     type Query {
       arrayNullableItems: [String]!
       arrayNullableList: [String!]
@@ -281,6 +287,7 @@ test('print schema', () => {
       nullableString: String
       object: Entity!
       offsetConnection(after: ID, before: ID, first: Int, last: Int): QueryOffsetConnection
+      post: Post
       promiseObject: Entity!
       string: String!
       user: User!
@@ -406,6 +413,11 @@ test('execute query', async () => {
     }
     userConnection {
       edges { cursor node { id email } }
+    }
+    post {
+      id
+      title
+      content
     }
   }`);
 
@@ -533,6 +545,11 @@ test('execute query', async () => {
             },
             null,
           ],
+        },
+        "post": {
+          "content": "Book Content",
+          "id": "1",
+          "title": "Book Title",
         },
         "promiseObject": {
           "id": "1",
