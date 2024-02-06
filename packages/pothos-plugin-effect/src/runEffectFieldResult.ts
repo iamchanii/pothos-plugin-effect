@@ -1,6 +1,6 @@
 import { Effect, Runtime } from 'effect';
-import { handleNullableValue } from '../libs/handleNullableValue.js';
-import { handleExit } from '../libs/handleExit.js';
+import { handleNullableValue } from './handleNullableValue.js';
+import { handleExit } from './handleExit.js';
 
 export async function runEffectFieldResult<R, E, A>(
   effectFieldResult: Effect.Effect<R, E, A>,

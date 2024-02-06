@@ -1936,7 +1936,6 @@ __metadata:
   resolution: "pothos-plugin-effect-project@workspace:."
   dependencies:
     "@biomejs/biome": "npm:1.5.3"
-    vitest: "npm:^1.2.2"
   languageName: unknown
   linkType: soft
 
@@ -2506,7 +2505,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"vitest@npm:1.2.2, vitest@npm:^1.2.2":
+"vitest@npm:1.2.2":
   version: 1.2.2
   resolution: "vitest@npm:1.2.2"
   dependencies:

@@ -11,8 +11,7 @@
   },
   "license": "MIT",
   "devDependencies": {
-    "@biomejs/biome": "1.5.3",
-    "vitest": "^1.2.2"
+    "@biomejs/biome": "1.5.3"
   },
   "packageManager": "yarn@4.1.0"
 }

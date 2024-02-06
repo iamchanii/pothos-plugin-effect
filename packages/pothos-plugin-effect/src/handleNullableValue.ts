@@ -1,22 +1,21 @@
 import { Function, Option } from 'effect';
 
-export type NullableValue<T = any> =
-  | Option.Option<Option.Option<T>[]>
-  | Option.Option<T[]>
-  | Option.Some<T>[]
-  | (T | null)[]
-  | T
-  | null;
-
-export type InferNullableType<Value> = Value extends NullableValue<infer T>
-  ? T extends Option.Option<infer U>
-    ? U
-    : T
-  : never;
+export type InferEffectValueType<
+  Value,
+  Nullable = false,
+> = Value extends Option.Option<infer T>
+  ? InferEffectValueType<T, true>
+  : Value extends (infer T)[]
+    ? Nullable extends true
+      ? InferEffectValueType<T>[] | null
+      : InferEffectValueType<T>[]
+    : Nullable extends true
+      ? Value | null
+      : Value;
 
 export function handleNullableValue<
   Value,
-  TReturn extends InferNullableType<Value>,
+  TReturn extends InferEffectValueType<Value>,
 >(value: Value): TReturn {
   if (Option.isOption(value)) {
     return Option.match(value, {

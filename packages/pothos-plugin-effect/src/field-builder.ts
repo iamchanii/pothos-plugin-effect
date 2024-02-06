@@ -9,16 +9,9 @@ const fieldBuilderProto =
     FieldKind
   >;
 
-fieldBuilderProto.effect = function effect({ resolve, ...options }) {
+fieldBuilderProto.effect = function effect(effectFieldResult) {
   const effectRuntime =
     this.builder.options.effectOptions?.effectRuntime ?? Runtime.defaultRuntime;
 
-  return this.field({
-    ...options,
-    resolve(parent: any, args: any, context: any, info: any) {
-      const effectFieldResult = resolve(parent, args, context, info);
-
-      return runEffectFieldResult(effectFieldResult, effectRuntime) as never;
-    },
-  });
+  return runEffectFieldResult(effectFieldResult, effectRuntime) as never;
 };
