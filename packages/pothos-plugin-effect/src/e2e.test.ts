@@ -12,6 +12,14 @@ import EffectPlugin from './index.js';
 import type PrismaTypes from '../prisma/pothos-types.js';
 import { PrismaClient } from '@prisma/client';
 import PrismaPlugin from '@pothos/plugin-prisma';
+import { drizzle } from 'drizzle-orm/better-sqlite3';
+import Database from 'better-sqlite3';
+import { Post } from '../drizzle/schema.js';
+import * as drizzleSchema from '../drizzle/schema.js';
+
+const sqlite = new Database('./prisma/dev.db');
+
+const db = drizzle(sqlite, { schema: drizzleSchema });
 
 const prisma = new PrismaClient();
 
@@ -64,6 +72,14 @@ builder.prismaObject('User', {
     id: t.exposeID('id'),
     email: t.exposeString('email'),
     name: t.exposeString('name', { nullable: true }),
+  }),
+});
+
+const Post = builder.objectRef<Post>('Post').implement({
+  fields: (t) => ({
+    id: t.exposeID('id'),
+    title: t.exposeString('title'),
+    content: t.exposeString('content', { nullable: true }),
   }),
 });
 
@@ -207,6 +223,11 @@ builder.queryFields((t) => ({
     type: 'User',
     cursor: 'id',
     resolve: (query) => t.effect(Effect.succeed(prisma.user.findMany(query))),
+  }),
+  post: t.field({
+    type: Post,
+    nullable: true,
+    resolve: () => t.effect(Effect.succeed(db.query.posts.findFirst())),
   }),
 }));
 
