@@ -1,13 +1,9 @@
-## Install
+# Contributing Guide
 
-```sh
-pnpm install
-```
+## Install Node.js
 
-## Run tests
+Install the version of Node.js specified in `.tool-versions`. It doesn't matter how, I personally recommend to use asdf-vm for manage Node.js version.
 
-```sh
-pnpm test
-```
+## Run Test
 
-This command will be remove `./prisma/dev.db` (if exists), run `prisma db push` to create new `dev.db` and setup database data to running test cases about Prisma plugin integration.
+You can run `vitest` using `yarn test` in project root. Write test cases for major changes.

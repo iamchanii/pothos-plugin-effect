@@ -1,0 +1,10 @@
+{
+  "mode": "pre",
+  "tag": "next",
+  "initialVersions": {
+    "pothos-plugin-effect": "0.8.0"
+  },
+  "changesets": [
+    "tricky-months-protect"
+  ]
+}

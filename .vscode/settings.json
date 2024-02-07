@@ -1,9 +1,8 @@
 {
-  "prettier.enable": false,
   "editor.formatOnSave": true,
-  "eslint.format.enable": true,
-  "[typescript]": {
-    "editor.defaultFormatter": "dbaeumer.vscode-eslint"
-  },
-  "typescript.tsdk": "node_modules/typescript/lib"
+  "editor.defaultFormatter": "biomejs.biome",
+  "typescript.tsdk": "node_modules/typescript/lib",
+  "[markdown]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  }
 }
