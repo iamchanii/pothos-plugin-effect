@@ -6,29 +6,15 @@
     "registiry": "https://registry.npmjs.org"
   },
   "version": "0.8.0",
-  "files": [
-    "package.json",
-    "README.md",
-    "dist"
-  ],
+  "files": ["package.json", "README.md", "dist"],
   "type": "module",
-  "main": "./dist/core/index.mjs",
-  "types": "./dist/core/index.d.ts",
+  "main": "./dist/index.mjs",
+  "types": "./dist/index.d.ts",
   "exports": {
     ".": {
-      "types": "./dist/core/index.d.ts",
-      "require": "./dist/core/index.mjs",
-      "import": "./dist/core/index.mjs"
-    },
-    "./relay": {
-      "types": "./dist/relay/index.d.ts",
-      "require": "./dist/relay/index.mjs",
-      "import": "./dist/relay/index.mjs"
-    },
-    "./prisma": {
-      "types": "./dist/prisma/index.d.ts",
-      "require": "./dist/prisma/index.mjs",
-      "import": "./dist/prisma/index.mjs"
+      "types": "./dist/index.d.ts",
+      "require": "./dist/index.mjs",
+      "import": "./dist/index.mjs"
     }
   },
   "scripts": {
@@ -36,11 +22,7 @@
     "build": "nanobundle build",
     "prepack": "yarn build"
   },
-  "keywords": [
-    "effect",
-    "pothos",
-    "plugin"
-  ],
+  "keywords": ["effect", "pothos", "plugin"],
   "author": {
     "name": "Chanhee Lee",
     "email": "contact@imch.dev"

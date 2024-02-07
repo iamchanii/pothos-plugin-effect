@@ -4,11 +4,6 @@
 
 Seamless integration between the [Pothos GraphQL](https://pothos-graphql.dev/) and [Effect](https://effect.website/).
 
-## Requirements
-
-- `@pothos/core^3`
-- `effect>=2.2.0`
-
 ## Getting Started
 
 You can use `Effect.Effect<R, E, A>` within resolver functions using `t.effect`. and that's it.
@@ -26,6 +21,19 @@ builder.queryFields((t) => ({
   }),
 }));
 ```
+
+## Installtation
+
+Install `pothos-effect-plugin` and `effect`. Effect is a peer-dependency.
+
+```
+yarn add pothos-plugin-effect effect
+```
+
+## Requirements
+
+- `@pothos/core^3`
+- `effect>=2.2.0`
 
 ## Key Features
 
