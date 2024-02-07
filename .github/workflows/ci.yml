@@ -1,15 +1,15 @@
-name: Release
+name: CI
 
 on:
+  pull_request_target:
+    types: [assigned, opened, synchronize, reopened]
   push:
     branches:
       - main
       - next
 
-concurrency: ${{ github.workflow }}-${{ github.ref }}
-
 jobs:
-  release:
+  test:
     name: Release
     runs-on: ubuntu-latest
     steps:
@@ -24,11 +24,11 @@ jobs:
       - name: Install Dependencies
         run: yarn
 
-      - name: Create Release Pull Request or Publish to npm
-        id: changesets
-        uses: changesets/action@v1
-        with:
-          version: yarn changeset version
+      - name: Run Test
+        run: yarn test --coverage
+
+      - name: Upload coverage reports to Codecov
+        uses: codecov/codecov-action@v3
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          NPM_TOKEN: ${{ secrets.NPM_PUBLISH_TOKEN }}
+          CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
+  
