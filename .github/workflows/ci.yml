@@ -16,15 +16,13 @@ jobs:
       - name: Checkout Repo
         uses: actions/checkout@v4
 
+      - run: corepack enable
+
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version-file: '.tool-versions'
           cache: 'yarn'
-
-      - run: |
-          corepack enable
-          yarn -v
 
       - name: Install Dependencies
         run: yarn
