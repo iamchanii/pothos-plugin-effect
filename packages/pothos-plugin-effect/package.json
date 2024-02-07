@@ -25,7 +25,8 @@
     "test": "vitest",
     "build": "nanobundle build",
     "postinstall": "yarn prisma generate",
-    "prepack": "yarn build"
+    "prepack": "yarn build",
+    "publish": "yarn npm publish"
   },
   "keywords": [
     "effect",
