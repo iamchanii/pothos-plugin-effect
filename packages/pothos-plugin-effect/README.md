@@ -1,6 +1,8 @@
 # pothos-plugin-effect
 
-<img src="https://img.shields.io/badge/-Biome-60A5FA?logo=biome&logoColor=white" /> [![codecov](https://codecov.io/gh/iamchanii/pothos-plugin-effect/graph/badge.svg?token=J232OH6YD2)](https://codecov.io/gh/iamchanii/pothos-plugin-effect)
+[![npm version](https://badge.fury.io/js/pothos-plugin-effect.svg)](https://badge.fury.io/js/pothos-plugin-effect)
+[![codecov](https://codecov.io/gh/iamchanii/pothos-plugin-effect/graph/badge.svg?token=J232OH6YD2)](https://codecov.io/gh/iamchanii/pothos-plugin-effect)
+![biome](https://img.shields.io/badge/-Biome-60A5FA?logo=biome&logoColor=white)
 
 Seamless integration between the [Pothos GraphQL](https://pothos-graphql.dev/) and [Effect](https://effect.website/).
 
