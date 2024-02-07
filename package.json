@@ -1,7 +1,9 @@
 {
   "name": "pothos-plugin-effect-project",
   "private": true,
-  "workspaces": ["packages/*"],
+  "workspaces": [
+    "packages/*"
+  ],
   "type": "module",
   "author": {
     "name": "Chanhee Lee",
