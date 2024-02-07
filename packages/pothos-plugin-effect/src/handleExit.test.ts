@@ -16,7 +16,7 @@ test('if exit is failure, throw error and wrap cause.error with Error if string'
 
   expect(() => handleExit(exit)).toThrowError('Failed to load');
   expect(() => handleExit(exit)).toThrowErrorMatchingInlineSnapshot(
-    `[Error: Error: Failed to load]`,
+    `[Error: Failed to load]`,
   );
 });
 
@@ -31,7 +31,7 @@ test('if cause is die type should be handled', () => {
 
   expect(() => handleExit(exit)).toThrowError('I/O error');
   expect(() => handleExit(exit)).toThrowErrorMatchingInlineSnapshot(
-    `[Error: Error: I/O error]`,
+    `[Error: I/O error]`,
   );
 });
 

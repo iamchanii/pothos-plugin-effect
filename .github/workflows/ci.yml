@@ -10,7 +10,7 @@ on:
 
 jobs:
   test:
-    name: Release
+    name: Test
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Repo
