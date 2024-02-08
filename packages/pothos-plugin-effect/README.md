@@ -75,9 +75,7 @@ t.effect(
 You can configure a custom runtime when you configure `SchemaBuilder`.
 
 ```tsx
-const effectRuntime = await Effect.runPromise(
-  Layer.toRuntime(AppLayerLive).pipe(Scope.extend(scope))
-);
+declare const effectRuntime: Runtime.Runtime<UserService>;
 
 const builder = new SchemaBuilder<{
   EffectRuntime: typeof effectRuntime;

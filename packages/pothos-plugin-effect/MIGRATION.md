@@ -95,7 +95,7 @@ t.effect({
 declare const effectRuntime: Runtime.Runtime<UserService>;
 
 const builder = new SchemaBuilder<{
-  EffectRuntime: Runtime.Runtime<UserService>;
+  EffectRuntime: typeof effectRuntime;
 }>({
   plugins: [EffectPlugin],
   effectOptions: { effectRuntime },
@@ -161,8 +161,9 @@ t.connection({
 t.connection({
   type: "Int",
   resolve: async (_root, args) =>
-    resolveCursorConnection({ args, toCursor: (id) => id }, (_params) =>
-      t.effect(Effect.succeed([1, 2, 3, 4]))
+    resolveCursorConnection(
+      { args, toCursor: (id) => id },
+      (_params) => t.effect(Effect.succeed([1, 2, 3, 4]))
     ),
 });
 
@@ -200,7 +201,10 @@ t.prismaEffect({
   effect: {
     /* ... */
   },
-  resolve: (query) => PrismaEffect.user.findFirstOrThrow({ ...query }),
+  resolve: (query) =>
+    PrismaEffect.user.findFirstOrThrow({
+      ...query,
+    }),
 });
 ```
 
@@ -211,7 +215,13 @@ t.prismaEffect({
 t.prismaField({
   type: "User",
   resolve: (query) =>
-    t.effect(Effect.succeed(prisma.user.findFirstOrThrow({ ...query }))),
+    t.effect(
+      Effect.succeed(
+        prisma.user.findFirstOrThrow({
+          ...query,
+        })
+      )
+    ),
 });
 ```
 

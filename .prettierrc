@@ -1,0 +1,10 @@
+{
+  "overrides": [
+    {
+      "files": "MIGRATION.md",
+      "options": {
+        "printWidth": 60
+      }
+    }
+  ]
+}
