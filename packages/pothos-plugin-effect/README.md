@@ -24,6 +24,8 @@ builder.queryFields((t) => ({
 }));
 ```
 
+> Have you been used since 0.x? [See MIGRATION.md](/packages/pothos-plugin-effect/MIGRATION.md).
+
 ## Installtation
 
 Install `pothos-effect-plugin` and `effect`. Effect is a peer-dependency.
