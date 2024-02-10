@@ -1,5 +1,11 @@
 # pothos-plugin-effect
 
+## 1.0.1
+
+### Patch Changes
+
+- 50af9df: Remove postinstall script for `prisma generate`
+
 ## 1.0.0
 
 ### Major Changes
