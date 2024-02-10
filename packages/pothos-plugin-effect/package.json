@@ -6,11 +6,7 @@
     "registiry": "https://registry.npmjs.org"
   },
   "version": "1.0.0",
-  "files": [
-    "package.json",
-    "README.md",
-    "dist"
-  ],
+  "files": ["package.json", "README.md", "dist"],
   "type": "module",
   "main": "./dist/index.mjs",
   "types": "./dist/index.d.ts",
@@ -22,17 +18,12 @@
     }
   },
   "scripts": {
-    "test": "vitest",
+    "test": "yarn prisma generate && vitest",
     "build": "nanobundle build",
-    "postinstall": "yarn prisma generate",
     "prepack": "yarn build",
     "publish": "yarn npm publish"
   },
-  "keywords": [
-    "effect",
-    "pothos",
-    "plugin"
-  ],
+  "keywords": ["effect", "pothos", "plugin"],
   "author": {
     "name": "Chanhee Lee",
     "email": "contact@imch.dev"
