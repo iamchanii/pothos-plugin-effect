@@ -1,5 +1,11 @@
 # pothos-plugin-effect
 
+## 1.1.0
+
+### Minor Changes
+
+- a8ab60c: Change type parameters
+
 ## 1.0.1
 
 ### Patch Changes
