@@ -24,10 +24,10 @@ const db = drizzle(sqlite, { schema: drizzleSchema });
 const prisma = new PrismaClient();
 
 interface EntityService {
-  getEntity(): Effect.Effect<never, Error, { id: number }>;
+  getEntity(): Effect.Effect<{ id: number }, Error>;
 }
 
-const EntityService = Context.Tag<EntityService>('EntityService');
+const EntityService = Context.GenericTag<EntityService>('EntityService');
 
 const EntityServiceLive = Layer.succeed(EntityService, {
   getEntity: () => Effect.succeed({ id: 1 }),

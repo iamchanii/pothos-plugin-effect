@@ -8,7 +8,7 @@ Seamless integration between the [Pothos GraphQL](https://pothos-graphql.dev/) a
 
 ## Getting Started
 
-You can use `Effect.Effect<R, E, A>` within resolver functions using `t.effect`. and that's it.
+You can use `Effect.Effect<A, E, R>` within resolver functions using `t.effect`. and that's it.
 
 ```ts
 import EffectPlugin from "pothos-plugin-effect";
@@ -37,7 +37,7 @@ yarn add pothos-plugin-effect effect
 ## Requirements
 
 - `@pothos/core^3`
-- `effect>=2.2.0`
+- `effect>=2.3.0`
 
 ## Key Features
 

@@ -2,15 +2,14 @@ import { Context, Effect, Layer, Option, Runtime, Scope, pipe } from 'effect';
 import { expect, test } from 'vitest';
 import { runEffectFieldResult } from './runEffectFieldResult.js';
 
-interface UserService {
-  getUser(): Effect.Effect<never, Error, { id: number }>;
-  findUser(
-    id: number,
-  ): Effect.Effect<never, Error, Option.Option<{ id: number }>>;
-  queryUsers(): Effect.Effect<never, Error, Option.Option<{ id: number }>[]>;
-}
-
-const UserService = Context.Tag<UserService>('UserService');
+class UserService extends Context.Tag('UserService')<
+  UserService,
+  {
+    getUser(): Effect.Effect<{ id: number }, Error>;
+    findUser(id: number): Effect.Effect<Option.Option<{ id: number }>, Error>;
+    queryUsers(): Effect.Effect<Option.Option<{ id: number }>[], Error>;
+  }
+>() {}
 
 const UserServiceLive = Layer.succeed(UserService, {
   getUser: () => Effect.succeed({ id: 1 }),
