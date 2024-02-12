@@ -1,6 +1,6 @@
 import { Cause, Exit } from 'effect';
 
-export function handleExit<E, A>(exit: Exit.Exit<E, A>): A {
+export function handleExit<A, E>(exit: Exit.Exit<A, E>): A {
   if (Exit.isFailure(exit)) {
     const defect = Cause.squash(exit.cause);
 

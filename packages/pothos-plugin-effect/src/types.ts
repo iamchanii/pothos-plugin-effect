@@ -47,6 +47,6 @@ export interface FieldOptions<
     E,
     A,
   >(
-    effect: Effect.Effect<R, E, A>,
+    effect: Effect.Effect<A, E, R>,
   ): Promise<Awaited<InferEffectValueType<A>>>;
 }

@@ -2146,10 +2146,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"effect@npm:2.2.2":
-  version: 2.2.2
-  resolution: "effect@npm:2.2.2"
-  checksum: 10c0/438fcffcc8b7ff2a86dbb3df7e6ffb113c86581d36a137e21849749d1d6e84a099f37a83d2102358d45ebcf37314d7d38aef6c032ea4f4fd6f7a03954898f112
+"effect@npm:^2.3.3":
+  version: 2.3.3
+  resolution: "effect@npm:2.3.3"
+  checksum: 10c0/bc25d9f723d4fab3234c3448e9b2c785101012949a7934f69ad39b6856abe70654d07a5cadeec84a8e7f2edea968cd2b671405c6a075a6734b49cdf3f63ca39b
   languageName: node
   linkType: hard
 
@@ -4421,7 +4421,7 @@ __metadata:
     better-sqlite3: "npm:^9.4.0"
     drizzle-kit: "npm:^0.20.14"
     drizzle-orm: "npm:^0.29.3"
-    effect: "npm:2.2.2"
+    effect: "npm:^2.3.3"
     nanobundle: "npm:2.0.0"
     prisma: "npm:^5.9.1"
     tiny-invariant: "npm:^1.3.1"
@@ -4430,7 +4430,7 @@ __metadata:
     vitest: "npm:1.2.2"
   peerDependencies:
     "@pothos/core": ^3
-    effect: ">=2.2.0 <3"
+    effect: ">=2.3.0 <3"
     graphql: ^16 || ^17
   languageName: unknown
   linkType: soft
