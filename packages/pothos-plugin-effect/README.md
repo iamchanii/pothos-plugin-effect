@@ -37,7 +37,7 @@ yarn add pothos-plugin-effect effect
 ## Requirements
 
 - `@pothos/core^3`
-- `effect>=2.3.0`
+- `effect>=3.0.0`
 
 ## Key Features
 
