@@ -4430,7 +4430,7 @@ __metadata:
     vitest: "npm:1.2.2"
   peerDependencies:
     "@pothos/core": ^3
-    effect: ^3
+    effect: ">=3.0.0 <4"
     graphql: ^16 || ^17
   languageName: unknown
   linkType: soft
