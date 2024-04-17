@@ -6,11 +6,7 @@
     "registiry": "https://registry.npmjs.org"
   },
   "version": "1.1.0",
-  "files": [
-    "package.json",
-    "README.md",
-    "dist"
-  ],
+  "files": ["package.json", "README.md", "dist"],
   "type": "module",
   "main": "./dist/index.mjs",
   "types": "./dist/index.d.ts",
@@ -27,11 +23,7 @@
     "prepack": "yarn build",
     "publish": "yarn npm publish"
   },
-  "keywords": [
-    "effect",
-    "pothos",
-    "plugin"
-  ],
+  "keywords": ["effect", "pothos", "plugin"],
   "author": {
     "name": "Chanhee Lee",
     "email": "contact@imch.dev"
@@ -50,7 +42,7 @@
     "better-sqlite3": "^9.4.0",
     "drizzle-kit": "^0.20.14",
     "drizzle-orm": "^0.29.3",
-    "effect": "^2.3.3",
+    "effect": "^3.0.0",
     "nanobundle": "2.0.0",
     "prisma": "^5.9.1",
     "typescript": "5.4.0-beta",
@@ -58,7 +50,7 @@
   },
   "peerDependencies": {
     "@pothos/core": "^3",
-    "effect": ">=2.3.0 <3",
+    "effect": ">=3.0.0 <4",
     "graphql": "^16 || ^17"
   },
   "dependencies": {
