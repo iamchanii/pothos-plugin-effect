@@ -5,5 +5,8 @@ export default defineConfig({
     coverage: {
       exclude: ['*.js', 'prisma/*'],
     },
+    alias: {
+      graphql: 'graphql/index.js',
+    },
   },
 });
