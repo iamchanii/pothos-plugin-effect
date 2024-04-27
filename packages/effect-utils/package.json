@@ -1,0 +1,47 @@
+{
+  "name": "effect-utils",
+  "version": "0.0.0",
+  "description": "A utility library for working with Effect",
+  "type": "module",
+  "publishConfig": {
+    "access": "public",
+    "registiry": "https://registry.npmjs.org"
+  },
+  "files": [
+    "package.json",
+    "README.md",
+    "dist"
+  ],
+  "main": "./dist/index.mjs",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "require": "./dist/index.mjs",
+      "import": "./dist/index.mjs"
+    }
+  },
+  "scripts": {
+    "test": "vitest",
+    "build": "nanobundle build",
+    "prepack": "yarn build",
+    "publish": "yarn npm publish"
+  },
+  "keywords": [
+    "effect"
+  ],
+  "author": {
+    "name": "Chanhee Lee",
+    "email": "contact@imch.dev"
+  },
+  "license": "MIT",
+  "packageManager": "yarn@4.1.0",
+  "devDependencies": {
+    "@types/node": "^20.12.7",
+    "@vitest/coverage-v8": "*",
+    "effect": "^3.0.6",
+    "nanobundle": "*",
+    "typescript": "*",
+    "vitest": "*"
+  }
+}
