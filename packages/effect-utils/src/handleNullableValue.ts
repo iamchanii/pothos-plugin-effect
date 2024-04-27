@@ -1,21 +1,9 @@
 import { Function, Option } from 'effect';
-
-export type InferEffectValueType<
-  Value,
-  Nullable = false,
-> = Value extends Option.Option<infer T>
-  ? InferEffectValueType<T, true>
-  : Value extends (infer T)[]
-    ? Nullable extends true
-      ? InferEffectValueType<T>[] | null
-      : InferEffectValueType<T>[]
-    : Nullable extends true
-      ? Value | null
-      : Value;
+import { InferValueType } from './types.js';
 
 export function handleNullableValue<
   Value,
-  TReturn extends InferEffectValueType<Value>,
+  TReturn extends InferValueType<Value>,
 >(value: Value): TReturn {
   if (Option.isOption(value)) {
     return Option.match(value, {

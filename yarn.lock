@@ -1164,12 +1164,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/node@npm:*":
-  version: 20.11.16
-  resolution: "@types/node@npm:20.11.16"
+"@types/node@npm:*, @types/node@npm:^20.12.7":
+  version: 20.12.7
+  resolution: "@types/node@npm:20.12.7"
   dependencies:
     undici-types: "npm:~5.26.4"
-  checksum: 10c0/4886b90278e9c877a84efd3edd4667cd990e032d77268d2a798b99ebc1901ea336fa7dfbe9eaf4ad6ad1da9ce2ec31baf300038a3905838692362eb19904ebde
+  checksum: 10c0/dce80d63a3b91892b321af823d624995c61e39c6a223cc0ac481a44d337640cc46931d33efb3beeed75f5c85c3bda1d97cef4c5cd4ec333caf5dee59cff6eca0
   languageName: node
   linkType: hard
 
@@ -1186,15 +1186,6 @@ __metadata:
   version: 12.20.55
   resolution: "@types/node@npm:12.20.55"
   checksum: 10c0/3b190bb0410047d489c49bbaab592d2e6630de6a50f00ba3d7d513d59401d279972a8f5a598b5bb8ddc1702f8a2f4ec57a65d93852f9c329639738e7053637d1
-  languageName: node
-  linkType: hard
-
-"@types/node@npm:^20.12.7":
-  version: 20.12.7
-  resolution: "@types/node@npm:20.12.7"
-  dependencies:
-    undici-types: "npm:~5.26.4"
-  checksum: 10c0/dce80d63a3b91892b321af823d624995c61e39c6a223cc0ac481a44d337640cc46931d33efb3beeed75f5c85c3bda1d97cef4c5cd4ec333caf5dee59cff6eca0
   languageName: node
   linkType: hard
 
@@ -2141,7 +2132,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"effect-utils@workspace:packages/effect-utils":
+"effect-utils@npm:^0, effect-utils@workspace:packages/effect-utils":
   version: 0.0.0-use.local
   resolution: "effect-utils@workspace:packages/effect-utils"
   dependencies:
@@ -2151,6 +2142,8 @@ __metadata:
     nanobundle: "npm:*"
     typescript: "npm:*"
     vitest: "npm:*"
+  peerDependencies:
+    effect: ">=3.0.0 <4"
   languageName: unknown
   linkType: soft
 
@@ -4437,9 +4430,9 @@ __metadata:
     drizzle-kit: "npm:^0.20.14"
     drizzle-orm: "npm:^0.29.3"
     effect: "npm:^3.0.0"
+    effect-utils: "npm:^0"
     nanobundle: "npm:2.0.0"
     prisma: "npm:^5.9.1"
-    tiny-invariant: "npm:^1.3.1"
     type-plus: "npm:^7.6.0"
     typescript: "npm:5.4.0-beta"
     vitest: "npm:1.2.2"
@@ -5370,13 +5363,6 @@ __metadata:
     es5-ext: "npm:~0.10.46"
     next-tick: "npm:1"
   checksum: 10c0/fc43c6a01f52875e57d301ae9ec47b3021c6d9b96de5bc6e4e5fc4a3d2b25ebaab69faf6fe85520efbef0ad784537748f88f7efd7b6b2bf0a177c8bc7a66ca7c
-  languageName: node
-  linkType: hard
-
-"tiny-invariant@npm:^1.3.1":
-  version: 1.3.1
-  resolution: "tiny-invariant@npm:1.3.1"
-  checksum: 10c0/5b87c1d52847d9452b60d0dcb77011b459044e0361ca8253bfe7b43d6288106e12af926adb709a6fc28900e3864349b91dad9a4ac93c39aa15f360b26c2ff4db
   languageName: node
   linkType: hard
 

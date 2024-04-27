@@ -1,6 +1,6 @@
 {
   "name": "effect-utils",
-  "version": "0.0.0",
+  "version": "0.0.1",
   "description": "A utility library for working with Effect",
   "type": "module",
   "publishConfig": {
@@ -36,6 +36,9 @@
   },
   "license": "MIT",
   "packageManager": "yarn@4.1.0",
+  "peerDependencies": {
+    "effect": ">=3.0.0 <4"
+  },
   "devDependencies": {
     "@types/node": "^20.12.7",
     "@vitest/coverage-v8": "*",
