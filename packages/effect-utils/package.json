@@ -7,7 +7,11 @@
     "access": "public",
     "registiry": "https://registry.npmjs.org"
   },
-  "files": ["package.json", "README.md", "dist"],
+  "files": [
+    "package.json",
+    "README.md",
+    "dist"
+  ],
   "main": "./dist/index.mjs",
   "types": "./dist/index.d.ts",
   "exports": {
@@ -20,10 +24,13 @@
   "scripts": {
     "test": "vitest",
     "build": "nanobundle build",
+    "ci": "yarn test --coverage && yarn build",
     "prepack": "yarn build",
     "publish": "yarn npm publish"
   },
-  "keywords": ["effect"],
+  "keywords": [
+    "effect"
+  ],
   "author": {
     "name": "Chanhee Lee",
     "email": "contact@imch.dev"

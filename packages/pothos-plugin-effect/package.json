@@ -24,6 +24,7 @@
   "scripts": {
     "test": "yarn prisma generate && vitest",
     "build": "nanobundle build",
+    "ci": "yarn test --coverage && yarn build",
     "prepack": "yarn build",
     "publish": "yarn npm publish"
   },
@@ -62,7 +63,7 @@
     "graphql": "^16 || ^17"
   },
   "dependencies": {
-    "effect-utils": "^0.0.1",
+    "effect-utils": "workspace:^",
     "type-plus": "^7.6.0"
   },
   "packageManager": "yarn@4.1.0"

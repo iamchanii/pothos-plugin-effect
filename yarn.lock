@@ -2431,7 +2431,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"effect-utils@npm:^0.0.1, effect-utils@workspace:packages/effect-utils":
+"effect-utils@workspace:^, effect-utils@workspace:packages/effect-utils":
   version: 0.0.0-use.local
   resolution: "effect-utils@workspace:packages/effect-utils"
   dependencies:
@@ -3400,7 +3400,7 @@ __metadata:
     "@graphql-tools/utils": "npm:^10"
     "@types/node": "npm:^20.12.7"
     effect: "npm:^3.0.6"
-    effect-utils: "npm:^0.0.1"
+    effect-utils: "workspace:^"
     graphql: "npm:^16.8.1"
     nanobundle: "npm:*"
     typescript: "npm:*"
@@ -4866,15 +4866,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"pothos-plugin-effect-project@workspace:.":
-  version: 0.0.0-use.local
-  resolution: "pothos-plugin-effect-project@workspace:."
-  dependencies:
-    "@biomejs/biome": "npm:1.5.3"
-    "@changesets/cli": "npm:^2.27.1"
-  languageName: unknown
-  linkType: soft
-
 "pothos-plugin-effect@workspace:packages/pothos-plugin-effect":
   version: 0.0.0-use.local
   resolution: "pothos-plugin-effect@workspace:packages/pothos-plugin-effect"
@@ -4891,7 +4882,7 @@ __metadata:
     drizzle-kit: "npm:^0.20.14"
     drizzle-orm: "npm:^0.29.3"
     effect: "npm:^3.0.0"
-    effect-utils: "npm:^0.0.1"
+    effect-utils: "workspace:^"
     graphql: "npm:*"
     nanobundle: "npm:*"
     prisma: "npm:5.9.1"
@@ -5251,6 +5242,15 @@ __metadata:
   checksum: 10c0/f88017e8a599b055c555fe9b9dc2eee3def3067701600492a2dc2ed3ba78c3f0b1d7927f9ed934afef936167a73447121e8f7fbc4804b73f6c181e2d7f52e853
   languageName: node
   linkType: hard
+
+"root@workspace:.":
+  version: 0.0.0-use.local
+  resolution: "root@workspace:."
+  dependencies:
+    "@biomejs/biome": "npm:1.5.3"
+    "@changesets/cli": "npm:^2.27.1"
+  languageName: unknown
+  linkType: soft
 
 "run-parallel@npm:^1.1.9":
   version: 1.2.0

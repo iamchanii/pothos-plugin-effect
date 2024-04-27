@@ -24,6 +24,7 @@
   "scripts": {
     "test": "vitest",
     "build": "nanobundle build",
+    "ci": "yarn test --coverage && yarn build",
     "prepack": "yarn build",
     "publish": "yarn npm publish"
   },
@@ -52,6 +53,6 @@
   },
   "dependencies": {
     "@graphql-tools/utils": "^10",
-    "effect-utils": "^0.0.1"
+    "effect-utils": "workspace:^"
   }
 }
