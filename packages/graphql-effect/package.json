@@ -1,0 +1,57 @@
+{
+  "name": "graphql-effect",
+  "version": "0.0.1",
+  "description": "Make your GraphQL Schema to allow use Effect",
+  "type": "module",
+  "publishConfig": {
+    "access": "public",
+    "registiry": "https://registry.npmjs.org"
+  },
+  "files": [
+    "package.json",
+    "README.md",
+    "dist"
+  ],
+  "main": "./dist/index.mjs",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "require": "./dist/index.mjs",
+      "import": "./dist/index.mjs"
+    }
+  },
+  "scripts": {
+    "test": "vitest",
+    "build": "nanobundle build",
+    "prepack": "yarn build",
+    "publish": "yarn npm publish"
+  },
+  "keywords": [
+    "effect",
+    "graphql",
+    "graphql-schema"
+  ],
+  "author": {
+    "name": "Chanhee Lee",
+    "email": "contact@imch.dev"
+  },
+  "license": "MIT",
+  "packageManager": "yarn@4.1.0",
+  "peerDependencies": {
+    "effect": ">=3.0.0 <4"
+  },
+  "devDependencies": {
+    "@graphql-tools/schema": "^10.0.3",
+    "@types/node": "^20.12.7",
+    "effect": "^3.0.6",
+    "graphql": "^16.8.1",
+    "nanobundle": "*",
+    "typescript": "*",
+    "vitest": "^1.5.2"
+  },
+  "dependencies": {
+    "@graphql-tools/utils": "^10",
+    "effect-utils": "^0.0.1"
+  }
+}
