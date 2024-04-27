@@ -28,7 +28,9 @@ declare global {
       ParentShape,
       Kind extends FieldKind = FieldKind,
     > {
+      /** @deprecated Use executeEffect instead */
       effect: Types.FieldOptions<Types>;
+      executeEffect: Types.FieldOptions<Types>;
     }
   }
 }

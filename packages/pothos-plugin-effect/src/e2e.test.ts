@@ -87,60 +87,61 @@ builder.queryType({});
 
 builder.queryFields((t) => ({
   int: t.int({
-    resolve: () => t.effect(Effect.succeed(1)),
+    resolve: () => t.executeEffect(Effect.succeed(1)),
   }),
   nullableInt: t.int({
     nullable: true,
-    resolve: () => t.effect(Effect.succeedSome(1)),
+    resolve: () => t.executeEffect(Effect.succeedSome(1)),
   }),
   string: t.string({
-    resolve: () => t.effect(Effect.succeed('1')),
+    resolve: () => t.executeEffect(Effect.succeed('1')),
   }),
   nullableString: t.string({
     nullable: true,
-    resolve: () => t.effect(Effect.succeedSome('1')),
+    resolve: () => t.executeEffect(Effect.succeedSome('1')),
   }),
   float: t.float({
-    resolve: () => t.effect(Effect.succeed(1.1)),
+    resolve: () => t.executeEffect(Effect.succeed(1.1)),
   }),
   nullableFloat: t.float({
     nullable: true,
-    resolve: () => t.effect(Effect.succeedSome(1.1)),
+    resolve: () => t.executeEffect(Effect.succeedSome(1.1)),
   }),
   boolean: t.boolean({
-    resolve: () => t.effect(Effect.succeed(true)),
+    resolve: () => t.executeEffect(Effect.succeed(true)),
   }),
   nullableBoolean: t.boolean({
     nullable: true,
-    resolve: () => t.effect(Effect.succeedSome(true)),
+    resolve: () => t.executeEffect(Effect.succeedSome(true)),
   }),
   id: t.id({
-    resolve: () => t.effect(Effect.succeed('1')),
+    resolve: () => t.executeEffect(Effect.succeed('1')),
   }),
   nullableId: t.id({
     nullable: true,
-    resolve: () => t.effect(Effect.succeedSome('1')),
+    resolve: () => t.executeEffect(Effect.succeedSome('1')),
   }),
   arrayString: t.stringList({
-    resolve: () => t.effect(Effect.succeed(['1'])),
+    resolve: () => t.executeEffect(Effect.succeed(['1'])),
   }),
   arrayNullableItems: t.stringList({
     nullable: { list: false, items: true },
-    resolve: () => t.effect(Effect.succeed([Option.some('1'), Option.none()])),
+    resolve: () =>
+      t.executeEffect(Effect.succeed([Option.some('1'), Option.none()])),
   }),
   arrayNullableList: t.stringList({
     nullable: { list: true, items: false },
-    resolve: () => t.effect(Effect.succeedSome(['1', '2'])),
+    resolve: () => t.executeEffect(Effect.succeedSome(['1', '2'])),
   }),
   arrayNullableListItems: t.stringList({
     nullable: { list: true, items: true },
     resolve: () =>
-      t.effect(Effect.succeedSome([Option.some('1'), Option.none()])),
+      t.executeEffect(Effect.succeedSome([Option.some('1'), Option.none()])),
   }),
   object: t.field({
     type: Entity,
     resolve: () =>
-      t.effect(
+      t.executeEffect(
         pipe(
           EntityService,
           Effect.flatMap((service) => service.getEntity()),
@@ -149,19 +150,21 @@ builder.queryFields((t) => ({
   }),
   promiseObject: t.field({
     type: Entity,
-    resolve: () => t.effect(Effect.succeed(Promise.resolve({ id: 1 }))),
+    resolve: () => t.executeEffect(Effect.succeed(Promise.resolve({ id: 1 }))),
   }),
   getEntity: t.field({
     type: Entity,
     errors: {
       types: [Error],
     },
-    resolve: () => t.effect(Effect.succeed({ id: 1 })),
+    resolve: () => t.executeEffect(Effect.succeed({ id: 1 })),
   }),
   connection: t.connection({
     type: 'String',
     resolve: async (_root, args) => {
-      const result = await t.effect(Effect.succeed(['1', '2', '3', '4']));
+      const result = await t.executeEffect(
+        Effect.succeed(['1', '2', '3', '4']),
+      );
       //    ^?
 
       return resolveArrayConnection({ args }, result);
@@ -171,7 +174,9 @@ builder.queryFields((t) => ({
     type: 'String',
     nullable: true,
     resolve: async (_root, args) => {
-      const result = await t.effect(Effect.succeed(['1', '2', '3', null]));
+      const result = await t.executeEffect(
+        Effect.succeed(['1', '2', '3', null]),
+      );
       //    ^?
 
       return resolveArrayConnection({ args }, result);
@@ -181,7 +186,9 @@ builder.queryFields((t) => ({
     type: 'String',
     nullable: true,
     resolve: async (_root, args) => {
-      const result = await t.effect(Effect.succeed(['1', '2', '3', null]));
+      const result = await t.executeEffect(
+        Effect.succeed(['1', '2', '3', null]),
+      );
       //    ^?
 
       return resolveArrayConnection({ args }, result);
@@ -193,7 +200,7 @@ builder.queryFields((t) => ({
       return resolveCursorConnection(
         { args, toCursor: (value) => value },
         async () => {
-          const result = await t.effect(Effect.succeed(['1', '2', '3']));
+          const result = await t.executeEffect(Effect.succeed(['1', '2', '3']));
           //    ^?
 
           return result;
@@ -206,7 +213,7 @@ builder.queryFields((t) => ({
     nullable: true,
     resolve: async (_root, args) => {
       return resolveOffsetConnection({ args }, async () => {
-        const result = await t.effect(
+        const result = await t.executeEffect(
           //    ^?
           Effect.succeed([
             Option.some('1'),
@@ -223,17 +230,20 @@ builder.queryFields((t) => ({
   user: t.prismaField({
     type: 'User',
     resolve: (query) =>
-      t.effect(Effect.succeed(prisma.user.findFirstOrThrow({ ...query }))),
+      t.executeEffect(
+        Effect.succeed(prisma.user.findFirstOrThrow({ ...query })),
+      ),
   }),
   userConnection: t.prismaConnection({
     type: 'User',
     cursor: 'id',
-    resolve: (query) => t.effect(Effect.succeed(prisma.user.findMany(query))),
+    resolve: (query) =>
+      t.executeEffect(Effect.succeed(prisma.user.findMany(query))),
   }),
   post: t.field({
     type: Post,
     nullable: true,
-    resolve: () => t.effect(Effect.succeed(db.query.posts.findFirst())),
+    resolve: () => t.executeEffect(Effect.succeed(db.query.posts.findFirst())),
   }),
 }));
 

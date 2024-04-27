@@ -9,9 +9,12 @@ const fieldBuilderProto =
     FieldKind
   >;
 
-fieldBuilderProto.effect = function effect(effectFieldResult) {
+fieldBuilderProto.executeEffect = function effect(effectFieldResult) {
   const effectRuntime =
     this.builder.options.effectOptions?.effectRuntime ?? Runtime.defaultRuntime;
 
   return executeEffect(effectFieldResult, effectRuntime) as never;
 };
+
+/** @deprecated */
+fieldBuilderProto.effect = fieldBuilderProto.executeEffect;
