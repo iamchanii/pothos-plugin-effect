@@ -1,7 +1,7 @@
 import type { MaybePromise, PluginName, SchemaTypes } from '@pothos/core';
 import type { Effect, Option, Runtime } from 'effect';
+import type { InferValueType } from 'effect-utils';
 import type { IsEqual, NotAnyType } from 'type-plus';
-import { InferEffectValueType } from './handleNullableValue.js';
 
 export type ErrorConstructor = new (...args: any[]) => any;
 
@@ -48,5 +48,5 @@ export interface FieldOptions<
     A,
   >(
     effect: Effect.Effect<A, E, R>,
-  ): Promise<Awaited<InferEffectValueType<A>>>;
+  ): Promise<Awaited<InferValueType<A>>>;
 }

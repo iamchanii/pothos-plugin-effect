@@ -1148,15 +1148,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/graphql@npm:14.5.0":
-  version: 14.5.0
-  resolution: "@types/graphql@npm:14.5.0"
-  dependencies:
-    graphql: "npm:*"
-  checksum: 10c0/b55a22e7654d161c6337e90c5ff04277977ef3acf78a8d14d26e4b039d1e8cc98ca108c8d93ea92576530222410b5d4bd47cb75293ef60505d454a9300d487ff
-  languageName: node
-  linkType: hard
-
 "@types/minimist@npm:^1.2.0":
   version: 1.2.5
   resolution: "@types/minimist@npm:1.2.5"
@@ -2132,7 +2123,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"effect-utils@npm:^0, effect-utils@workspace:packages/effect-utils":
+"effect-utils@npm:^0.0.1, effect-utils@workspace:packages/effect-utils":
   version: 0.0.0-use.local
   resolution: "effect-utils@workspace:packages/effect-utils"
   dependencies:
@@ -2974,7 +2965,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"graphql@npm:*":
+"graphql@npm:16.8.1":
   version: 16.8.1
   resolution: "graphql@npm:16.8.1"
   checksum: 10c0/129c318156b466f440914de80dbf7bc67d17f776f2a088a40cb0da611d19a97c224b1c6d2b13cbcbc6e5776e45ed7468b8432f9c3536724e079b44f1a3d57a8a
@@ -4423,14 +4414,14 @@ __metadata:
     "@pothos/plugin-relay": "npm:3.46.0"
     "@prisma/client": "npm:5.9.1"
     "@types/better-sqlite3": "npm:^7.6.9"
-    "@types/graphql": "npm:14.5.0"
     "@types/node": "npm:20.11.13"
     "@vitest/coverage-v8": "npm:1.2.2"
     better-sqlite3: "npm:^9.4.0"
     drizzle-kit: "npm:^0.20.14"
     drizzle-orm: "npm:^0.29.3"
     effect: "npm:^3.0.0"
-    effect-utils: "npm:^0"
+    effect-utils: "npm:^0.0.1"
+    graphql: "npm:^16.8.1"
     nanobundle: "npm:2.0.0"
     prisma: "npm:^5.9.1"
     type-plus: "npm:^7.6.0"
