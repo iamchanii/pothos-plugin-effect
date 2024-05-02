@@ -11,7 +11,8 @@ import { expect, test } from 'vitest';
 import EffectPlugin from './index.js';
 import type PrismaTypes from '../prisma/pothos-types.js';
 import { PrismaClient } from '@prisma/client';
-import PrismaPlugin from '@pothos/plugin-prisma';
+import PrismaPlugin, { queryFromInfo } from '@pothos/plugin-prisma';
+
 import { drizzle } from 'drizzle-orm/better-sqlite3';
 import Database from 'better-sqlite3';
 import { Post } from '../drizzle/schema.js';
@@ -67,7 +68,7 @@ const Entity = builder.objectRef<{ id: number }>('Entity').implement({
   fields: (t) => ({ id: t.exposeID('id') }),
 });
 
-builder.prismaObject('User', {
+const UserSchema = builder.prismaObject('User', {
   fields: (t) => ({
     id: t.exposeID('id'),
     email: t.exposeString('email'),
@@ -88,6 +89,10 @@ builder.queryType({});
 builder.queryFields((t) => ({
   int: t.int({
     resolve: () => t.executeEffect(Effect.succeed(1)),
+  }),
+  int2: t.effect({
+    type: 'Int',
+    resolve: () => Effect.succeed(1),
   }),
   nullableInt: t.int({
     nullable: true,
@@ -227,18 +232,16 @@ builder.queryFields((t) => ({
       });
     },
   }),
-  user: t.prismaField({
-    type: 'User',
-    resolve: (query) =>
-      t.executeEffect(
-        Effect.succeed(prisma.user.findFirstOrThrow({ ...query })),
-      ),
+  user: t.field({
+    type: UserSchema,
+    resolve: (_root, _args, context, info) =>
+      t.executeEffect(Effect.succeed(prisma.user.findFirstOrThrow())),
   }),
   userConnection: t.prismaConnection({
     type: 'User',
     cursor: 'id',
     resolve: (query) =>
-      t.executeEffect(Effect.succeed(prisma.user.findMany(query))),
+      t.executeEffect(Effect.succeed(prisma.user.findMany({ ...query }))),
   }),
   post: t.field({
     type: Post,
@@ -288,6 +291,7 @@ test('print schema', () => {
       getEntity: QueryGetEntityResult!
       id: ID!
       int: Int!
+      int2: Int!
       nullableBoolean: Boolean
       nullableConnection(after: ID, before: ID, first: Int, last: Int): QueryNullableConnection
       nullableFloat: Float
@@ -381,6 +385,7 @@ test('print schema', () => {
 test('execute query', async () => {
   const document = parse(`{
     int
+    int2
     nullableInt
     string
     nullableString
@@ -497,6 +502,7 @@ test('execute query', async () => {
         },
         "id": "1",
         "int": 1,
+        "int2": 1,
         "nullableBoolean": true,
         "nullableConnection": {
           "edges": [

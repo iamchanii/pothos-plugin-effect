@@ -1,52 +1,87 @@
-import type { MaybePromise, PluginName, SchemaTypes } from '@pothos/core';
+import type {
+  FieldNullability,
+  InputFieldMap,
+  InputShapeFromFields,
+  MaybePromise,
+  SchemaTypes,
+  ShapeFromTypeParam,
+  TypeParam,
+} from '@pothos/core';
 import type { Effect, Option, Runtime } from 'effect';
 import type { InferValueType } from 'effect-utils';
-import type { IsEqual, NotAnyType } from 'type-plus';
+import { GraphQLResolveInfo } from 'graphql';
 
-export type ErrorConstructor = new (...args: any[]) => any;
+type InferRequirements<T> = T extends Runtime.Runtime<infer R> ? R : never;
 
-export type InferRequirements<T> = T extends Runtime.Runtime<infer R>
-  ? R
-  : never;
-
-export type InferError<ErrorTypes extends ErrorConstructor[]> =
-  'errors' extends PluginName
-    ? NotAnyType<InstanceType<ErrorTypes[number]>>
-    : never;
-
-export type NullableTypeToOption<
-  Type,
-  Nullable,
-  Item = Type extends (infer T)[] ? T : Type,
-> = IsEqual<Nullable, true> extends true
-  ? Option.Option<Type>
-  : IsEqual<Nullable, { items: true; list: false }> extends true
-    ? Option.Option<Item>[]
-    : IsEqual<Nullable, { items: false; list: true }> extends true
-      ? Option.Option<Item[]>
-      : IsEqual<Nullable, { items: true; list: true }> extends true
-        ? Option.Option<Option.Option<Item | null>[]>
-        : Type;
-
-export type InferSucceedValue<Shape, Nullable, IsTypeTuple> =
-  IsTypeTuple extends true
-    ? MaybePromise<NullableTypeToOption<Shape[], Nullable>>
-    : MaybePromise<NullableTypeToOption<Shape, Nullable>>;
-
-export type EffectOptions<Types extends SchemaTypes> = {
+export type EffectPluginOptions<Types extends SchemaTypes> = {
   effectRuntime: Types['EffectRuntime'];
 };
 
-export interface FieldOptions<
+type MaybeOption<T> =
+  | T
+  /**
+   * This is more flexible than the way Effect handles nullable values,
+   * which means you can use `Option<T>` with `null` and `undefined`.
+   *
+   * This can be handled strictly via plugin options later.
+   */
+  | (null extends T ? Option.Option<T> | null | undefined : never);
+
+type Resolver<R extends Runtime.Runtime<never>, Parent, Args, Context, Type> = (
+  parent: Parent,
+  args: Args,
+  context: Context,
+  info: GraphQLResolveInfo,
+) => [Type] extends [readonly (infer Item)[] | null | undefined]
+  ? ListResolveValue<R, Type, Item>
+  : Effect.Effect<MaybePromise<MaybeOption<Type>>, never, R>;
+
+type ListResolveValue<
+  R extends Runtime.Runtime<never>,
+  Type,
+  Item,
+> = null extends Type
+  ? Effect.Effect<MaybeOption<readonly MaybeOption<Item>[]>, never, R>
+  : Effect.Effect<readonly MaybeOption<Item>[], never, R>;
+
+// Note: should be able to use the Stream API provided by Effect.
+// type GeneratorResolver<Type, Item> = null extends Type
+//   ? AsyncGenerator<Item | null | undefined, Item | null | undefined>
+//   : AsyncGenerator<Item, Item>;
+
+export interface EffectFieldOptions<
+  Types extends SchemaTypes,
+  ParentShape,
+  Type extends TypeParam<Types>,
+  Nullable extends FieldNullability<Type>,
+  Args extends InputFieldMap,
+  ResolveReturnShape,
+> extends Omit<
+    PothosSchemaTypes.FieldOptions<
+      Types,
+      ParentShape,
+      Type,
+      Nullable,
+      Args,
+      ParentShape,
+      ResolveReturnShape
+    >,
+    'resolve'
+  > {
+  resolve: Resolver<
+    Types['EffectRuntime'],
+    ParentShape,
+    InputShapeFromFields<Args>,
+    Types['Context'],
+    ShapeFromTypeParam<Types, Type, Nullable>
+  >;
+}
+
+export interface ExecuteEffect<
   // Pothos Types:
   Types extends SchemaTypes,
 > {
-  <
-    // Effect Types:
-    R extends InferRequirements<Types['EffectRuntime']>,
-    E,
-    A,
-  >(
+  <A, E, R extends InferRequirements<Types['EffectRuntime']>>(
     effect: Effect.Effect<A, E, R>,
   ): Promise<Awaited<InferValueType<A>>>;
 }

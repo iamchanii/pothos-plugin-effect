@@ -6,11 +6,7 @@
     "registiry": "https://registry.npmjs.org"
   },
   "version": "1.2.0",
-  "files": [
-    "package.json",
-    "README.md",
-    "dist"
-  ],
+  "files": ["package.json", "README.md", "dist"],
   "type": "module",
   "main": "./dist/index.mjs",
   "types": "./dist/index.d.ts",
@@ -28,11 +24,7 @@
     "prepack": "yarn build",
     "publish": "yarn npm publish"
   },
-  "keywords": [
-    "effect",
-    "pothos",
-    "plugin"
-  ],
+  "keywords": ["effect", "pothos", "plugin"],
   "author": {
     "name": "Chanhee Lee",
     "email": "contact@imch.dev"
@@ -63,8 +55,7 @@
     "graphql": "^16 || ^17"
   },
   "dependencies": {
-    "effect-utils": "workspace:^",
-    "type-plus": "^7.6.0"
+    "effect-utils": "workspace:^"
   },
   "packageManager": "yarn@4.1.0"
 }

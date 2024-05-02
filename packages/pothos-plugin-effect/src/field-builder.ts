@@ -9,12 +9,25 @@ const fieldBuilderProto =
     FieldKind
   >;
 
-fieldBuilderProto.executeEffect = function effect(effectFieldResult) {
+fieldBuilderProto.executeEffect = function (effectFieldResult) {
   const effectRuntime =
     this.builder.options.effectOptions?.effectRuntime ?? Runtime.defaultRuntime;
 
   return executeEffect(effectFieldResult, effectRuntime) as never;
 };
 
-/** @deprecated */
-fieldBuilderProto.effect = fieldBuilderProto.executeEffect;
+fieldBuilderProto.effect = function ({
+  resolve: effectFieldResolve,
+  ...options
+}) {
+  return this.field({
+    ...options,
+    // @ts-ignore
+    resolve: async (root, args, context, info) => {
+      const effectFieldResult = effectFieldResolve(root, args, context, info);
+
+      // @ts-ignore
+      return this.executeEffect(effectFieldResult);
+    },
+  });
+};
