@@ -2445,7 +2445,7 @@ __metadata:
     "@repeaterjs/repeater": "npm:^3.0.5"
     "@types/node": "npm:^20.12.7"
     "@vitest/coverage-v8": "npm:*"
-    effect: "npm:^3.0.6"
+    effect: "npm:^3.1.0"
     nanobundle: "npm:*"
     typescript: "npm:*"
     vitest: "npm:*"
@@ -2454,10 +2454,10 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"effect@npm:^3.0.0, effect@npm:^3.0.6":
-  version: 3.0.6
-  resolution: "effect@npm:3.0.6"
-  checksum: 10c0/186286d1ac6e4115c438f599f02d11661c34a5cfcaff6d0e994f855b95ade19604bc7c9e020bb48b7fd4e75eded8142e2e75bc96cea4daec48e14af819045935
+"effect@npm:^3.1.0, effect@npm:^3.1.5":
+  version: 3.1.5
+  resolution: "effect@npm:3.1.5"
+  checksum: 10c0/d03eea4b403cbe057ecc60c60fe9a3ef58e541bd79eaf4e8165db4abf436e7928cdad3553ad325c054457c60b5ce91fb436aa06c6df822dd0943d251c2a77a99
   languageName: node
   linkType: hard
 
@@ -3407,7 +3407,7 @@ __metadata:
     "@graphql-tools/schema": "npm:^10.0.3"
     "@graphql-tools/utils": "npm:^10"
     "@types/node": "npm:^20.12.7"
-    effect: "npm:^3.0.6"
+    effect: "npm:^3.1.0"
     effect-utils: "workspace:^"
     graphql: "npm:^16.8.1"
     nanobundle: "npm:*"
@@ -4882,7 +4882,7 @@ __metadata:
     better-sqlite3: "npm:^9.4.0"
     drizzle-kit: "npm:^0.20.14"
     drizzle-orm: "npm:^0.29.3"
-    effect: "npm:^3.0.0"
+    effect: "npm:^3.1.5"
     effect-utils: "workspace:^"
     graphql: "npm:*"
     nanobundle: "npm:*"

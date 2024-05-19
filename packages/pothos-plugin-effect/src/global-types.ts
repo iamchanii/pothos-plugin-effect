@@ -37,11 +37,13 @@ declare global {
       Kind extends FieldKind = FieldKind,
     > {
       executeEffect: PluginTypes.ExecuteEffect<Types>;
+      executeStream: PluginTypes.ExecuteStream<Types>;
 
       effect: <
         Type extends TypeParam<Types>,
         Nullable extends FieldNullability<Type>,
         Args extends InputFieldMap,
+        ResolveShape,
         ResolveReturnShape,
       >(
         options: PluginTypes.EffectFieldOptions<
@@ -50,6 +52,8 @@ declare global {
           Type,
           Nullable,
           Args,
+          Kind,
+          ResolveShape,
           ResolveReturnShape
         >,
       ) => FieldRef<ShapeFromTypeParam<Types, Type, Nullable>>;

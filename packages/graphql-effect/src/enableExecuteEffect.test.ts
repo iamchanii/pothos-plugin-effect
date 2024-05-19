@@ -1,8 +1,18 @@
 import { makeExecutableSchema } from '@graphql-tools/schema';
-import { Context, Effect, Layer, Scope } from 'effect';
-import { execute, parse } from 'graphql';
+import { Context, Effect, Layer, Scope, Stream } from 'effect';
+import { execute, parse, subscribe } from 'graphql';
 import { expect, test } from 'vitest';
 import { enableExecuteEffect } from './enableExecuteEffect.js';
+
+const fromAsync = async <T>(iterator: AsyncIterable<T>) => {
+  const result = [];
+
+  for await (const value of iterator) {
+    result.push(value);
+  }
+
+  return result;
+};
 
 interface EntityService {
   getEntityContent(): Effect.Effect<string>;
@@ -18,7 +28,12 @@ const baseSchema = makeExecutableSchema({
   typeDefs: `type Query {
     foo: String!
     bar: String!
-  }`,
+  }
+  
+  type Subscription {
+    foo: Int!
+  }
+  `,
   resolvers: {
     Query: {
       foo: () => {
@@ -29,6 +44,12 @@ const baseSchema = makeExecutableSchema({
           const entityService = yield* EntityService;
           return yield* entityService.getEntityContent();
         }),
+    },
+    Subscription: {
+      foo: {
+        subscribe: () => Stream.range(1, 5),
+        resolve: (value) => value,
+      },
     },
   },
 });
@@ -61,5 +82,43 @@ test('should return "bar" as result', async () => {
         "bar": "bar",
       },
     }
+  `);
+});
+
+test('should resolve Stream as subscription', async () => {
+  const schema = enableExecuteEffect(baseSchema);
+  const result = await subscribe({
+    schema,
+    document: parse(`subscription { foo }`),
+  });
+
+  expect(await fromAsync(result as any)).toMatchInlineSnapshot(`
+    [
+      {
+        "data": {
+          "foo": 1,
+        },
+      },
+      {
+        "data": {
+          "foo": 2,
+        },
+      },
+      {
+        "data": {
+          "foo": 3,
+        },
+      },
+      {
+        "data": {
+          "foo": 4,
+        },
+      },
+      {
+        "data": {
+          "foo": 5,
+        },
+      },
+    ]
   `);
 });

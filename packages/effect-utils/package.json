@@ -43,7 +43,7 @@
   "devDependencies": {
     "@types/node": "^20.12.7",
     "@vitest/coverage-v8": "*",
-    "effect": "^3.0.6",
+    "effect": "^3.1.0",
     "nanobundle": "*",
     "typescript": "*",
     "vitest": "*"
