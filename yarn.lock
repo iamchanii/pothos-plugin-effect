@@ -1260,6 +1260,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@repeaterjs/repeater@npm:^3.0.5":
+  version: 3.0.5
+  resolution: "@repeaterjs/repeater@npm:3.0.5"
+  checksum: 10c0/e6e1aca2bbfe0b8e974bc5185a6839f9e78ec8acb96b6d6911a9dfc958443689f9bc38bcc6d554e6c8598f597f0151841aafbd1ee3ef16262ee93d18b2c1d4b5
+  languageName: node
+  linkType: hard
+
 "@rollup/rollup-android-arm-eabi@npm:4.16.4":
   version: 4.16.4
   resolution: "@rollup/rollup-android-arm-eabi@npm:4.16.4"
@@ -2435,6 +2442,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "effect-utils@workspace:packages/effect-utils"
   dependencies:
+    "@repeaterjs/repeater": "npm:^3.0.5"
     "@types/node": "npm:^20.12.7"
     "@vitest/coverage-v8": "npm:*"
     effect: "npm:^3.0.6"
