@@ -1,6 +1,6 @@
 # pothos-plugin-effect
 
-✨ _Perfect_ ✨ compination of [Pothos GraphQL](https://pothos-graphql.dev/) and [Effect](https://effect.website/). This powerful combination will take your GraphQL development experience to the next level!
+✨ _Perfect_ ✨ combination of [Pothos GraphQL](https://pothos-graphql.dev/) and [Effect](https://effect.website/). This powerful combination will take your GraphQL development experience to the next level!
 
 ```typescript
 import EffectPlugin from "pothos-plugin-effect";
