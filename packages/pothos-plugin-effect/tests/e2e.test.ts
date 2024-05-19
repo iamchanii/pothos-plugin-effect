@@ -51,6 +51,7 @@ test('print schema', () => {
       int: Int!
       intList: [Int!]!
       posts: Post
+      roll: Int!
       string: String!
       stringList: [String!]!
       user: User!
