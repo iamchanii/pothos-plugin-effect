@@ -1539,7 +1539,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"acorn@npm:^8.11.3, acorn@npm:^8.8.2":
+"acorn@npm:^8.11.3":
   version: 8.11.3
   resolution: "acorn@npm:8.11.3"
   bin:
@@ -2445,7 +2445,7 @@ __metadata:
     "@repeaterjs/repeater": "npm:^3.0.5"
     "@types/node": "npm:^20.12.7"
     "@vitest/coverage-v8": "npm:*"
-    effect: "npm:^3.0.6"
+    effect: "npm:^3.1.0"
     nanobundle: "npm:*"
     typescript: "npm:*"
     vitest: "npm:*"
@@ -2454,10 +2454,10 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"effect@npm:^3.0.0, effect@npm:^3.0.6":
-  version: 3.0.6
-  resolution: "effect@npm:3.0.6"
-  checksum: 10c0/186286d1ac6e4115c438f599f02d11661c34a5cfcaff6d0e994f855b95ade19604bc7c9e020bb48b7fd4e75eded8142e2e75bc96cea4daec48e14af819045935
+"effect@npm:^3.1.0, effect@npm:^3.1.5":
+  version: 3.1.5
+  resolution: "effect@npm:3.1.5"
+  checksum: 10c0/d03eea4b403cbe057ecc60c60fe9a3ef58e541bd79eaf4e8165db4abf436e7928cdad3553ad325c054457c60b5ce91fb436aa06c6df822dd0943d251c2a77a99
   languageName: node
   linkType: hard
 
@@ -3407,7 +3407,7 @@ __metadata:
     "@graphql-tools/schema": "npm:^10.0.3"
     "@graphql-tools/utils": "npm:^10"
     "@types/node": "npm:^20.12.7"
-    effect: "npm:^3.0.6"
+    effect: "npm:^3.1.0"
     effect-utils: "workspace:^"
     graphql: "npm:^16.8.1"
     nanobundle: "npm:*"
@@ -3697,13 +3697,6 @@ __metadata:
     call-bind: "npm:^1.0.2"
     has-tostringtag: "npm:^1.0.0"
   checksum: 10c0/6090587f8a8a8534c0f816da868bc94f32810f08807aa72fa7e79f7e11c466d281486ffe7a788178809c2aa71fe3e700b167fe80dd96dad68026bfff8ebf39f7
-  languageName: node
-  linkType: hard
-
-"is-buffer@npm:^2.0.5":
-  version: 2.0.5
-  resolution: "is-buffer@npm:2.0.5"
-  checksum: 10c0/e603f6fced83cf94c53399cff3bda1a9f08e391b872b64a73793b0928be3e5f047f2bcece230edb7632eaea2acdbfcb56c23b33d8a20c820023b230f1485679a
   languageName: node
   linkType: hard
 
@@ -4889,12 +4882,11 @@ __metadata:
     better-sqlite3: "npm:^9.4.0"
     drizzle-kit: "npm:^0.20.14"
     drizzle-orm: "npm:^0.29.3"
-    effect: "npm:^3.0.0"
+    effect: "npm:^3.1.5"
     effect-utils: "workspace:^"
     graphql: "npm:*"
     nanobundle: "npm:*"
     prisma: "npm:5.9.1"
-    type-plus: "npm:^7.6.0"
     typescript: "npm:*"
     vitest: "npm:*"
   peerDependencies:
@@ -5823,17 +5815,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"tersify@npm:^3.11.1":
-  version: 3.12.1
-  resolution: "tersify@npm:3.12.1"
-  dependencies:
-    acorn: "npm:^8.8.2"
-    is-buffer: "npm:^2.0.5"
-    unpartial: "npm:^1.0.4"
-  checksum: 10c0/b2701bacb9c8f1e063ca2c1c1d1559cfac491230b95d1b33a273343aa9ad8c62130a9f54a64f381a221d56869df74f938c3a284187e769697db49bc8cc7e7e4a
-  languageName: node
-  linkType: hard
-
 "test-exclude@npm:^6.0.0":
   version: 6.0.0
   resolution: "test-exclude@npm:6.0.0"
@@ -5983,16 +5964,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"type-plus@npm:^7.6.0":
-  version: 7.6.2
-  resolution: "type-plus@npm:7.6.2"
-  dependencies:
-    tersify: "npm:^3.11.1"
-    unpartial: "npm:^1.0.4"
-  checksum: 10c0/79c75bc3ad5b8e72021b2424c3d21dfae1177cf7afd64b894dd821b6f580dcf792a9951e8e8effdad682019cd143008da1163e4df4371963ec2ad899b3171163
-  languageName: node
-  linkType: hard
-
 "type@npm:^2.7.2":
   version: 2.7.2
   resolution: "type@npm:2.7.2"
@@ -6120,13 +6091,6 @@ __metadata:
   version: 0.1.2
   resolution: "universalify@npm:0.1.2"
   checksum: 10c0/e70e0339f6b36f34c9816f6bf9662372bd241714dc77508d231d08386d94f2c4aa1ba1318614f92015f40d45aae1b9075cd30bd490efbe39387b60a76ca3f045
-  languageName: node
-  linkType: hard
-
-"unpartial@npm:^1.0.4":
-  version: 1.0.5
-  resolution: "unpartial@npm:1.0.5"
-  checksum: 10c0/bdfe89d0712679e22eee654a645493a2aad2428bf9cc0d27d5b56e986001e40c1c70b41407708f33d5ccffe1ced71ee3245e99bb62559fef3d6960feac625a07
   languageName: node
   linkType: hard
 

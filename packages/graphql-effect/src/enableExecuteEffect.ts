@@ -1,7 +1,7 @@
 import { MapperKind, mapSchema } from '@graphql-tools/utils';
-import { Effect, Runtime } from 'effect';
-import { executeEffect } from 'effect-utils';
+import { Runtime } from 'effect';
 import { GraphQLSchema } from 'graphql';
+import { effectResolver } from './effectResolver.js';
 
 export function enableExecuteEffect<R>(
   schema: GraphQLSchema,
@@ -9,19 +9,13 @@ export function enableExecuteEffect<R>(
 ) {
   return mapSchema(schema, {
     [MapperKind.OBJECT_FIELD](fieldConfig) {
-      const originalResolve = fieldConfig.resolve;
+      if (fieldConfig.resolve) {
+        fieldConfig.resolve = effectResolver(fieldConfig.resolve, runtime);
+      }
 
-      fieldConfig.resolve = async (source, args, context, info) => {
-        if (originalResolve) {
-          const result = await originalResolve(source, args, context, info);
-
-          if (Effect.isEffect(result)) {
-            return executeEffect(result as never, runtime);
-          }
-
-          return result;
-        }
-      };
+      if (fieldConfig.subscribe) {
+        fieldConfig.subscribe = effectResolver(fieldConfig.subscribe, runtime);
+      }
 
       return fieldConfig;
     },

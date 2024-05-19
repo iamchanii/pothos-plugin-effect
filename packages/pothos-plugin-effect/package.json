@@ -1,6 +1,6 @@
 {
   "name": "pothos-plugin-effect",
-  "description": "Seamless integration between the Pothos GraphQL and Effect.",
+  "description": "✨ Perfect compination of Pothos GraphQL and Effect",
   "publishConfig": {
     "access": "public",
     "registiry": "https://registry.npmjs.org"
@@ -50,7 +50,7 @@
     "better-sqlite3": "^9.4.0",
     "drizzle-kit": "^0.20.14",
     "drizzle-orm": "^0.29.3",
-    "effect": "^3.0.0",
+    "effect": "^3.1.5",
     "graphql": "*",
     "nanobundle": "*",
     "prisma": "5.9.1",
@@ -63,8 +63,7 @@
     "graphql": "^16 || ^17"
   },
   "dependencies": {
-    "effect-utils": "workspace:^",
-    "type-plus": "^7.6.0"
+    "effect-utils": "workspace:^"
   },
   "packageManager": "yarn@4.1.0"
 }
