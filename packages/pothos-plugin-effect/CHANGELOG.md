@@ -1,5 +1,11 @@
 # pothos-plugin-effect
 
+## 1.4.0
+
+### Minor Changes
+
+- 030a664: Add `t.effectWithInput`
+
 ## 1.3.0
 
 ### Minor Changes
