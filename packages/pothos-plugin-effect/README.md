@@ -31,6 +31,7 @@ No friendly documentation is currently available, but you can check out the test
 - [Adding and configuring plugins to `SchemaBuilder`](https://github.com/iamchanii/pothos-plugin-effect/blob/main/packages/pothos-plugin-effect/tests/schema/builder.ts#L9-L23)
 - [Adding a field using `t.effect`](https://github.com/iamchanii/pothos-plugin-effect/blob/main/packages/pothos-plugin-effect/tests/schema/base.ts)
 - [Using with the Errors plugin](https://github.com/iamchanii/pothos-plugin-effect/blob/main/packages/pothos-plugin-effect/tests/schema/error.ts)
+- [Using with the With-Input plugin](https://github.com/iamchanii/pothos-plugin-effect/blob/main/packages/pothos-plugin-effect/tests/schema/withInput.ts)
 - [Using with the Prisma](https://github.com/iamchanii/pothos-plugin-effect/blob/main/packages/pothos-plugin-effect/tests/schema/prisma.ts)
 - [Using with the Drizzle](https://github.com/iamchanii/pothos-plugin-effect/blob/main/packages/pothos-plugin-effect/tests/schema/drizzle.ts)
 - [Adding a subscription field using `Stream`](https://github.com/iamchanii/pothos-plugin-effect/blob/main/packages/pothos-plugin-effect/tests/schema/stream.ts#L11)

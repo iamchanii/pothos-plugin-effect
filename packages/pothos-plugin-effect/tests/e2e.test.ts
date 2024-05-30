@@ -20,12 +20,21 @@ test('print schema', () => {
 
     type Mutation {
       addPost(title: String!): MutationAddPostResult!
+      sendMessages(input: MutationSendMessagesInput!): String!
     }
 
     union MutationAddPostResult = BaseError | MutationAddPostSuccess
 
     type MutationAddPostSuccess {
       data: Boolean!
+    }
+
+    input MutationSendMessagesInput {
+      """The message to send"""
+      message: String!
+
+      """The target of the message"""
+      target: String!
     }
 
     type PageInfo {
@@ -288,5 +297,21 @@ test('subscription newPosts field', async () => {
         "newPosts": "10",
       },
     ]
+  `);
+});
+
+test('mutation.sendMessages field', async () => {
+  const document = parse(`mutation {
+    sendMessages(input: { target: "John", message: "Hello" })
+  }`);
+
+  const result = await execute({ document, schema });
+
+  expect(result).toMatchInlineSnapshot(`
+    {
+      "data": {
+        "sendMessages": "Sent message "Hello" to John successfully!",
+      },
+    }
   `);
 });

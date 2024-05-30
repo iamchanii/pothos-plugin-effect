@@ -2,8 +2,10 @@ import type {
   FieldKind,
   FieldNullability,
   InputFieldMap,
+  InputFieldRef,
   InputShapeFromFields,
   MaybePromise,
+  PluginName,
   SchemaTypes,
   ShapeFromTypeParam,
   TypeParam,
@@ -217,6 +219,50 @@ export type EffectFieldOptions<
   ResolveShape,
   ResolveReturnShape
 >[Kind];
+
+export type EffectFieldWithInputOptions<
+  Types extends SchemaTypes,
+  ParentShape,
+  Type extends TypeParam<Types>,
+  Nullable extends FieldNullability<Type>,
+  Args extends Record<string, InputFieldRef<unknown, 'Arg'>>,
+  Kind extends FieldKind,
+  ResolveShape,
+  ResolveReturnShape,
+  Fields extends Record<string, InputFieldRef<unknown, 'InputObject'>>,
+  InputName extends string,
+  ArgRequired extends boolean,
+> = Omit<
+  EffectFieldOptions<
+    Types,
+    ParentShape,
+    Type,
+    Nullable,
+    Args & {
+      [K in InputName]: InputFieldRef<
+        | InputShapeFromFields<Fields>
+        | (true extends ArgRequired ? never : null | undefined)
+      >;
+    },
+    Kind,
+    ResolveShape,
+    ResolveReturnShape
+  >,
+  'args'
+> &
+  // @ts-ignore
+  PothosSchemaTypes.FieldWithInputBaseOptions<
+    Types,
+    Args & {
+      [K in InputName]: InputFieldRef<
+        | InputShapeFromFields<Fields>
+        | (true extends ArgRequired ? never : null | undefined)
+      >;
+    },
+    Fields,
+    InputName,
+    ArgRequired
+  >;
 
 export type EffectPluginOptions<Types extends SchemaTypes> = {
   effectRuntime: Types['EffectRuntime'];

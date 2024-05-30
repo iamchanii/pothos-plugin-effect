@@ -1186,6 +1186,16 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@pothos/plugin-with-input@npm:^3.10.1":
+  version: 3.10.1
+  resolution: "@pothos/plugin-with-input@npm:3.10.1"
+  peerDependencies:
+    "@pothos/core": "*"
+    graphql: ">=15.1.0"
+  checksum: 10c0/c16daa5610ac2933274619e064abc3586cf7326c5e0ac82fbb579afaa245a0211d7fb67bc0384a62e406609e998c8b0c0de7fe532c1334dfd5ac10432b19453a
+  languageName: node
+  linkType: hard
+
 "@prisma/client@npm:5.9.1":
   version: 5.9.1
   resolution: "@prisma/client@npm:5.9.1"
@@ -4875,6 +4885,7 @@ __metadata:
     "@pothos/plugin-errors": "npm:3.11.1"
     "@pothos/plugin-prisma": "npm:3.63.1"
     "@pothos/plugin-relay": "npm:3.46.0"
+    "@pothos/plugin-with-input": "npm:^3.10.1"
     "@prisma/client": "npm:5.9.1"
     "@types/better-sqlite3": "npm:^7.6.9"
     "@types/node": "npm:20.11.13"

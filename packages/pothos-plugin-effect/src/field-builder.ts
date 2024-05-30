@@ -37,10 +37,34 @@ fieldBuilderProto.effect = function (options) {
     },
     // @ts-ignore
     subscribe: async (root, args, context, info) => {
-      if ('subscribe' in options) {
+      if ('subscribe' in options && typeof options.subscribe === 'function') {
         const effectFieldResult = options.subscribe(root, args, context, info);
 
+        return this.executeStream(effectFieldResult);
+      }
+    },
+  });
+};
+
+// @ts-ignore
+fieldBuilderProto.effectWithInput = function (options) {
+  // @ts-ignore
+  return this.fieldWithInput({
+    ...options,
+    // @ts-ignore
+    resolve: async (root, args, context, info) => {
+      if ('resolve' in options) {
+        const effectFieldResult = options.resolve(root, args, context, info);
+
         // @ts-ignore
+        return this.executeEffect(effectFieldResult);
+      }
+    },
+    // @ts-ignore
+    subscribe: async (root, args, context, info) => {
+      if ('subscribe' in options && typeof options.subscribe === 'function') {
+        const effectFieldResult = options.subscribe(root, args, context, info);
+
         return this.executeStream(effectFieldResult);
       }
     },

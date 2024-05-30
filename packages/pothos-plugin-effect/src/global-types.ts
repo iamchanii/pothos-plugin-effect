@@ -3,6 +3,8 @@ import type {
   FieldNullability,
   FieldRef,
   InputFieldMap,
+  InputFieldRef,
+  PluginName,
   SchemaTypes,
   ShapeFromTypeParam,
   TypeParam,
@@ -57,6 +59,36 @@ declare global {
           ResolveReturnShape
         >,
       ) => FieldRef<ShapeFromTypeParam<Types, Type, Nullable>>;
+
+      effectWithInput: 'withInput' extends PluginName
+        ? <
+            Type extends TypeParam<Types>,
+            Nullable extends FieldNullability<Type>,
+            Args extends Record<string, InputFieldRef<unknown, 'Arg'>>,
+            ResolveShape,
+            ResolveReturnShape,
+            Fields extends Record<
+              string,
+              InputFieldRef<unknown, 'InputObject'>
+            >,
+            InputName extends string,
+            ArgRequired extends boolean,
+          >(
+            options: PluginTypes.EffectFieldWithInputOptions<
+              Types,
+              ParentShape,
+              Type,
+              Nullable,
+              Args,
+              Kind,
+              ResolveShape,
+              ResolveReturnShape,
+              Fields,
+              InputName,
+              ArgRequired
+            >,
+          ) => FieldRef<ShapeFromTypeParam<Types, Type, Nullable>>
+        : '@pothos/plugin-with-input is required to use this method';
     }
   }
 }
