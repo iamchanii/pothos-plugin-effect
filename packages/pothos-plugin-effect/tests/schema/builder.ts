@@ -20,10 +20,10 @@ export const builder = new SchemaBuilder<{
     PrismaPlugin,
     WithInputPlugin,
   ],
-  effectOptions: { effectRuntime },
-  errorOptions: {
+  effect: { effectRuntime },
+  errors: {
     defaultTypes: [Error],
   },
   prisma: { client: prisma },
-  relayOptions: {},
+  relay: {},
 });

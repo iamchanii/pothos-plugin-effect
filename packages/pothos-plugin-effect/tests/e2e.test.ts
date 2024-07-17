@@ -11,16 +11,16 @@ import { schema } from './schema/index.js';
 test('print schema', () => {
   expect(printSchema(lexicographicSortSchema(schema))).toMatchInlineSnapshot(`
     "type BaseError implements Error {
-      message: String!
+      message: String
     }
 
     interface Error {
-      message: String!
+      message: String
     }
 
     type Mutation {
-      addPost(title: String!): MutationAddPostResult!
-      sendMessages(input: MutationSendMessagesInput!): String!
+      addPost(title: String!): MutationAddPostResult
+      sendMessages(input: MutationSendMessagesInput!): String
     }
 
     union MutationAddPostResult = BaseError | MutationAddPostSuccess
@@ -46,45 +46,45 @@ test('print schema', () => {
 
     type Post {
       content: String
-      id: ID!
-      title: String!
+      id: ID
+      title: String
     }
 
     type Query {
-      boolean: Boolean!
-      booleanList: [Boolean!]!
-      float: Float!
-      floatList: [Float!]!
-      id: ID!
-      idList: [ID!]!
-      int: Int!
-      intList: [Int!]!
+      boolean: Boolean
+      booleanList: [Boolean!]
+      float: Float
+      floatList: [Float!]
+      id: ID
+      idList: [ID!]
+      int: Int
+      intList: [Int!]
       posts: Post
-      roll: Int!
-      string: String!
-      stringList: [String!]!
-      user: User!
-      users(after: ID, before: ID, first: Int, last: Int): UserConnection!
+      roll: Int
+      string: String
+      stringList: [String!]
+      user: User
+      users(after: String, before: String, first: Int, last: Int): UserConnection
     }
 
     type Subscription {
-      newPosts: ID!
+      newPosts: ID
     }
 
     type User {
-      email: String!
-      id: ID!
+      email: String
+      id: ID
       name: String
     }
 
     type UserConnection {
-      edges: [UserEdge]!
+      edges: [UserEdge]
       pageInfo: PageInfo!
     }
 
     type UserEdge {
       cursor: String!
-      node: User!
+      node: User
     }"
   `);
 });

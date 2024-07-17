@@ -3,13 +3,12 @@ import type {
   FieldNullability,
   FieldRef,
   InputFieldMap,
-  InputFieldRef,
   PluginName,
   SchemaTypes,
   ShapeFromTypeParam,
   TypeParam,
 } from '@pothos/core';
-import type { Runtime } from 'effect';
+import type { Effect, Runtime } from 'effect';
 import type { EffectPlugin } from './index.js';
 import type * as PluginTypes from './types.js';
 
@@ -20,7 +19,7 @@ declare global {
     }
 
     export interface SchemaBuilderOptions<Types extends SchemaTypes> {
-      effectOptions?: PluginTypes.EffectPluginOptions<Types>;
+      effect?: PluginTypes.EffectPluginOptions<Types>;
     }
 
     export interface UserSchemaTypes {
@@ -46,7 +45,7 @@ declare global {
         Nullable extends FieldNullability<Type>,
         Args extends InputFieldMap,
         ResolveShape,
-        ResolveReturnShape,
+        ResolveReturnShape extends Effect.Effect<any>,
       >(
         options: PluginTypes.EffectFieldOptions<
           Types,
@@ -58,19 +57,16 @@ declare global {
           ResolveShape,
           ResolveReturnShape
         >,
-      ) => FieldRef<ShapeFromTypeParam<Types, Type, Nullable>>;
+      ) => FieldRef<Types, ShapeFromTypeParam<Types, Type, Nullable>>;
 
       effectWithInput: 'withInput' extends PluginName
         ? <
             Type extends TypeParam<Types>,
             Nullable extends FieldNullability<Type>,
-            Args extends Record<string, InputFieldRef<unknown, 'Arg'>>,
+            Args extends InputFieldMap,
             ResolveShape,
-            ResolveReturnShape,
-            Fields extends Record<
-              string,
-              InputFieldRef<unknown, 'InputObject'>
-            >,
+            ResolveReturnShape extends Effect.Effect<any>,
+            Fields extends InputFieldMap,
             InputName extends string,
             ArgRequired extends boolean,
           >(
@@ -87,8 +83,16 @@ declare global {
               InputName,
               ArgRequired
             >,
-          ) => FieldRef<ShapeFromTypeParam<Types, Type, Nullable>>
+          ) => FieldRef<Types, ShapeFromTypeParam<Types, Type, Nullable>>
         : '@pothos/plugin-with-input is required to use this method';
     }
+
+    interface FieldWithInputBaseOptions<
+      Types extends SchemaTypes,
+      Args extends InputFieldMap,
+      Fields extends InputFieldMap,
+      InputName extends string,
+      ArgRequired extends boolean,
+    > {}
   }
 }
