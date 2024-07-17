@@ -38,7 +38,7 @@ No friendly documentation is currently available, but you can check out the test
 
 ## Requirements
 
-- `@pothos/core^3`
+- `@pothos/core^4`
 - `effect>=3.0.0`
 
 ## Acknowledges
