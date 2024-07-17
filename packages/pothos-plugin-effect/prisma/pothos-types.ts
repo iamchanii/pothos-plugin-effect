@@ -17,6 +17,7 @@ export default interface PrismaTypes {
             posts: {
                 Shape: Post[];
                 Name: "Post";
+                Nullable: false;
             };
         };
     };
@@ -36,6 +37,7 @@ export default interface PrismaTypes {
             author: {
                 Shape: User;
                 Name: "User";
+                Nullable: false;
             };
         };
     };

@@ -1,6 +1,6 @@
 import { FieldKind, RootFieldBuilder, SchemaTypes } from '@pothos/core';
-import { Runtime } from 'effect';
-import { executeEffect, executeStream } from 'effect-utils';
+import { Effect, Runtime } from 'effect';
+import { executeEffect, executeStream, isStream } from 'effect-utils';
 
 const fieldBuilderProto =
   RootFieldBuilder.prototype as PothosSchemaTypes.RootFieldBuilder<
@@ -11,14 +11,14 @@ const fieldBuilderProto =
 
 fieldBuilderProto.executeEffect = function (effectFieldResult) {
   const effectRuntime =
-    this.builder.options.effectOptions?.effectRuntime ?? Runtime.defaultRuntime;
+    this.builder.options.effect?.effectRuntime ?? Runtime.defaultRuntime;
 
   return executeEffect(effectFieldResult, effectRuntime) as never;
 };
 
 fieldBuilderProto.executeStream = function (effectFieldResult) {
   const effectRuntime =
-    this.builder.options.effectOptions?.effectRuntime ?? Runtime.defaultRuntime;
+    this.builder.options.effect?.effectRuntime ?? Runtime.defaultRuntime;
 
   return executeStream(effectFieldResult, effectRuntime) as never;
 };
@@ -31,8 +31,13 @@ fieldBuilderProto.effect = function (options) {
       if ('resolve' in options) {
         const effectFieldResult = options.resolve(root, args, context, info);
 
-        // @ts-ignore
-        return this.executeEffect(effectFieldResult);
+        if (Effect.isEffect(effectFieldResult)) {
+          return this.executeEffect(effectFieldResult);
+        }
+
+        if (isStream(effectFieldResult)) {
+          return this.executeStream(effectFieldResult);
+        }
       }
     },
     // @ts-ignore
@@ -56,8 +61,15 @@ fieldBuilderProto.effectWithInput = function (options) {
       if ('resolve' in options) {
         const effectFieldResult = options.resolve(root, args, context, info);
 
-        // @ts-ignore
-        return this.executeEffect(effectFieldResult);
+        if (Effect.isEffect(effectFieldResult)) {
+          // @ts-ignore
+          return this.executeEffect(effectFieldResult);
+        }
+
+        if (isStream(effectFieldResult)) {
+          // @ts-ignore
+          return this.executeStream(effectFieldResult);
+        }
       }
     },
     // @ts-ignore

@@ -1,11 +1,10 @@
 import type {
+  ArgumentRef,
   FieldKind,
   FieldNullability,
   InputFieldMap,
-  InputFieldRef,
   InputShapeFromFields,
   MaybePromise,
-  PluginName,
   SchemaTypes,
   ShapeFromTypeParam,
   TypeParam,
@@ -225,11 +224,11 @@ export type EffectFieldWithInputOptions<
   ParentShape,
   Type extends TypeParam<Types>,
   Nullable extends FieldNullability<Type>,
-  Args extends Record<string, InputFieldRef<unknown, 'Arg'>>,
+  Args extends InputFieldMap,
   Kind extends FieldKind,
   ResolveShape,
   ResolveReturnShape,
-  Fields extends Record<string, InputFieldRef<unknown, 'InputObject'>>,
+  Fields extends InputFieldMap,
   InputName extends string,
   ArgRequired extends boolean,
 > = Omit<
@@ -239,7 +238,8 @@ export type EffectFieldWithInputOptions<
     Type,
     Nullable,
     Args & {
-      [K in InputName]: InputFieldRef<
+      [K in InputName]: ArgumentRef<
+        Types,
         | InputShapeFromFields<Fields>
         | (true extends ArgRequired ? never : null | undefined)
       >;
@@ -250,11 +250,11 @@ export type EffectFieldWithInputOptions<
   >,
   'args'
 > &
-  // @ts-ignore
   PothosSchemaTypes.FieldWithInputBaseOptions<
     Types,
     Args & {
-      [K in InputName]: InputFieldRef<
+      [K in InputName]: ArgumentRef<
+        Types,
         | InputShapeFromFields<Fields>
         | (true extends ArgRequired ? never : null | undefined)
       >;

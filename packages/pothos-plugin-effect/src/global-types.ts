@@ -3,7 +3,6 @@ import type {
   FieldNullability,
   FieldRef,
   InputFieldMap,
-  InputFieldRef,
   PluginName,
   SchemaTypes,
   ShapeFromTypeParam,
@@ -20,7 +19,7 @@ declare global {
     }
 
     export interface SchemaBuilderOptions<Types extends SchemaTypes> {
-      effectOptions?: PluginTypes.EffectPluginOptions<Types>;
+      effect?: PluginTypes.EffectPluginOptions<Types>;
     }
 
     export interface UserSchemaTypes {
@@ -58,19 +57,16 @@ declare global {
           ResolveShape,
           ResolveReturnShape
         >,
-      ) => FieldRef<ShapeFromTypeParam<Types, Type, Nullable>>;
+      ) => FieldRef<Types, ShapeFromTypeParam<Types, Type, Nullable>>;
 
       effectWithInput: 'withInput' extends PluginName
         ? <
             Type extends TypeParam<Types>,
             Nullable extends FieldNullability<Type>,
-            Args extends Record<string, InputFieldRef<unknown, 'Arg'>>,
+            Args extends InputFieldMap,
             ResolveShape,
             ResolveReturnShape,
-            Fields extends Record<
-              string,
-              InputFieldRef<unknown, 'InputObject'>
-            >,
+            Fields extends InputFieldMap,
             InputName extends string,
             ArgRequired extends boolean,
           >(
@@ -87,8 +83,16 @@ declare global {
               InputName,
               ArgRequired
             >,
-          ) => FieldRef<ShapeFromTypeParam<Types, Type, Nullable>>
+          ) => FieldRef<Types, ShapeFromTypeParam<Types, Type, Nullable>>
         : '@pothos/plugin-with-input is required to use this method';
     }
+
+    interface FieldWithInputBaseOptions<
+      Types extends SchemaTypes,
+      Args extends InputFieldMap,
+      Fields extends InputFieldMap,
+      InputName extends string,
+      ArgRequired extends boolean,
+    > {}
   }
 }
