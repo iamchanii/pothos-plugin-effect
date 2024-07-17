@@ -31,23 +31,28 @@ type Resolver<
   Args,
   Context,
   Type,
-  Return,
+  Return extends Effect.Effect<any>,
 > = (
   parent: Parent,
   args: Args,
   context: Context,
   info: GraphQLResolveInfo,
-) => [Type] extends [readonly (infer Item)[] | null | undefined]
-  ? ListResolveValue<R, Type, Item, Return>
-  : Effect.Effect<
-      MaybePromise<MaybeOption<Type>>,
-      unknown,
-      InferRequirements<R>
-    >;
+) => [Effect.Effect.Success<Return>] extends [Type]
+  ? [Type] extends [readonly (infer Item)[] | null | undefined]
+    ? ListResolveValue<R, Type, Item, Return>
+    : Effect.Effect<
+        MaybePromise<MaybeOption<Type>>,
+        unknown,
+        InferRequirements<R>
+      >
+  : `Error: The resolved Effect is an invalid type.`;
 
-type ListResolveValue<R extends Runtime.Runtime<never>, Type, Item, Return> = [
-  Return,
-] extends [Stream.Stream<unknown>]
+type ListResolveValue<
+  R extends Runtime.Runtime<never>,
+  Type,
+  Item,
+  Return extends Effect.Effect<any>,
+> = [Return] extends [Stream.Stream<unknown>]
   ? GeneratorResolver<Type, Item> | Return
   : null extends Type
     ? Effect.Effect<
@@ -85,7 +90,7 @@ interface FieldOptionsByKind<
   Nullable extends FieldNullability<Type>,
   Args extends InputFieldMap,
   ResolveShape,
-  ResolveReturnShape,
+  ResolveReturnShape extends Effect.Effect<any>,
 > {
   Query: Omit<
     PothosSchemaTypes.QueryFieldOptions<
@@ -208,7 +213,7 @@ export type EffectFieldOptions<
   Args extends InputFieldMap,
   Kind extends FieldKind,
   ResolveShape,
-  ResolveReturnShape,
+  ResolveReturnShape extends Effect.Effect<any>,
 > = FieldOptionsByKind<
   Types,
   ParentShape,
@@ -227,7 +232,7 @@ export type EffectFieldWithInputOptions<
   Args extends InputFieldMap,
   Kind extends FieldKind,
   ResolveShape,
-  ResolveReturnShape,
+  ResolveReturnShape extends Effect.Effect<any>,
   Fields extends InputFieldMap,
   InputName extends string,
   ArgRequired extends boolean,

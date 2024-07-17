@@ -8,7 +8,7 @@ import type {
   ShapeFromTypeParam,
   TypeParam,
 } from '@pothos/core';
-import type { Runtime } from 'effect';
+import type { Effect, Runtime } from 'effect';
 import type { EffectPlugin } from './index.js';
 import type * as PluginTypes from './types.js';
 
@@ -45,7 +45,7 @@ declare global {
         Nullable extends FieldNullability<Type>,
         Args extends InputFieldMap,
         ResolveShape,
-        ResolveReturnShape,
+        ResolveReturnShape extends Effect.Effect<any>,
       >(
         options: PluginTypes.EffectFieldOptions<
           Types,
@@ -65,7 +65,7 @@ declare global {
             Nullable extends FieldNullability<Type>,
             Args extends InputFieldMap,
             ResolveShape,
-            ResolveReturnShape,
+            ResolveReturnShape extends Effect.Effect<any>,
             Fields extends InputFieldMap,
             InputName extends string,
             ArgRequired extends boolean,
