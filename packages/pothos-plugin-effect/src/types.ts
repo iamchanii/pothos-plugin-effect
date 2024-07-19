@@ -31,37 +31,35 @@ type Resolver<
   Args,
   Context,
   Type,
-  Return extends Effect.Effect<any>,
+  Return extends Effect.Effect<unknown, unknown, unknown>,
 > = (
   parent: Parent,
   args: Args,
   context: Context,
   info: GraphQLResolveInfo,
-) => [Effect.Effect.Success<Return>] extends [Type]
-  ? [Type] extends [readonly (infer Item)[] | null | undefined]
-    ? ListResolveValue<R, Type, Item, Return>
-    : Effect.Effect<
-        MaybePromise<MaybeOption<Type>>,
-        unknown,
-        InferRequirements<R>
-      >
-  : `Error: The resolved Effect is an invalid type.`;
+) => [Type] extends [readonly (infer Item)[] | null | undefined]
+  ? ListResolveValue<R, Type, Item, Return>
+  : Effect.Effect<
+      MaybePromise<MaybeOption<Type>>,
+      unknown,
+      InferRequirements<R>
+    >;
 
 type ListResolveValue<
   R extends Runtime.Runtime<never>,
   Type,
   Item,
-  Return extends Effect.Effect<any>,
+  Return extends Effect.Effect<unknown, unknown, unknown>,
 > = [Return] extends [Stream.Stream<unknown>]
   ? GeneratorResolver<Type, Item> | Return
   : null extends Type
     ? Effect.Effect<
-        MaybeOption<readonly MaybeOption<Item>[]>,
+        MaybePromise<MaybeOption<readonly MaybeOption<Item>[]>>,
         unknown,
         InferRequirements<R>
       >
     : Effect.Effect<
-        readonly MaybeOption<Item>[],
+        MaybePromise<readonly MaybeOption<Item>[]>,
         unknown,
         InferRequirements<R>
       >;
@@ -90,7 +88,7 @@ interface FieldOptionsByKind<
   Nullable extends FieldNullability<Type>,
   Args extends InputFieldMap,
   ResolveShape,
-  ResolveReturnShape extends Effect.Effect<any>,
+  ResolveReturnShape extends Effect.Effect<unknown, unknown, unknown>,
 > {
   Query: Omit<
     PothosSchemaTypes.QueryFieldOptions<
@@ -213,7 +211,7 @@ export type EffectFieldOptions<
   Args extends InputFieldMap,
   Kind extends FieldKind,
   ResolveShape,
-  ResolveReturnShape extends Effect.Effect<any>,
+  ResolveReturnShape extends Effect.Effect<unknown, unknown, unknown>,
 > = FieldOptionsByKind<
   Types,
   ParentShape,
@@ -232,7 +230,7 @@ export type EffectFieldWithInputOptions<
   Args extends InputFieldMap,
   Kind extends FieldKind,
   ResolveShape,
-  ResolveReturnShape extends Effect.Effect<any>,
+  ResolveReturnShape extends Effect.Effect<unknown, unknown, unknown>,
   Fields extends InputFieldMap,
   InputName extends string,
   ArgRequired extends boolean,

@@ -46,7 +46,7 @@ const makePostService = Effect.gen(function* () {
   const drizzle = yield* Drizzle;
 
   return {
-    getPost: () => drizzle.query.posts.findFirst(),
+    getPosts: () => drizzle.query.posts.findMany(),
   };
 });
 

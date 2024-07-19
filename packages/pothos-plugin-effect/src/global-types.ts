@@ -45,7 +45,7 @@ declare global {
         Nullable extends FieldNullability<Type>,
         Args extends InputFieldMap,
         ResolveShape,
-        ResolveReturnShape extends Effect.Effect<any>,
+        ResolveReturnShape extends Effect.Effect<unknown, unknown, unknown>,
       >(
         options: PluginTypes.EffectFieldOptions<
           Types,
@@ -65,7 +65,7 @@ declare global {
             Nullable extends FieldNullability<Type>,
             Args extends InputFieldMap,
             ResolveShape,
-            ResolveReturnShape extends Effect.Effect<any>,
+            ResolveReturnShape extends Effect.Effect<unknown, unknown, unknown>,
             Fields extends InputFieldMap,
             InputName extends string,
             ArgRequired extends boolean,

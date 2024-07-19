@@ -8,7 +8,8 @@ builder.queryFields((t) => ({
   }),
   intList: t.effect({
     type: ['Int'],
-    resolve: () => Effect.succeed([1, 2, 3]),
+    nullable: false,
+    resolve: () => Effect.succeed([1, 2, '3']),
   }),
   string: t.effect({
     type: 'String',

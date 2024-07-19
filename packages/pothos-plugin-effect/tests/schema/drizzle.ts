@@ -15,12 +15,12 @@ export const PostSchema = builder
 
 builder.queryFields((t) => ({
   posts: t.effect({
-    type: PostSchema,
+    type: [PostSchema],
     nullable: true,
     resolve: () =>
       Effect.gen(function* () {
         const postService = yield* PostService;
-        return postService.getPost();
+        return postService.getPosts();
       }),
   }),
 }));
