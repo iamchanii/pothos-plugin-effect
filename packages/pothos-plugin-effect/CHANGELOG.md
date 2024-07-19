@@ -1,5 +1,11 @@
 # pothos-plugin-effect
 
+## 2.0.1
+
+### Patch Changes
+
+- dd00bf5: Fix type
+
 ## 2.0.0
 
 ### Major Changes
