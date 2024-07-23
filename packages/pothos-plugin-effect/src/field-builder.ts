@@ -32,6 +32,7 @@ fieldBuilderProto.effect = function (options) {
         const effectFieldResult = options.resolve(root, args, context, info);
 
         if (Effect.isEffect(effectFieldResult)) {
+          // @ts-ignore
           return this.executeEffect(effectFieldResult);
         }
 
